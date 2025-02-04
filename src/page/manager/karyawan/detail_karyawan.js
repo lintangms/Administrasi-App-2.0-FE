@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { toast } from "react-toastify";
 import { FaUser, FaMapMarkerAlt, FaPhone, FaCalendarAlt, FaGraduationCap, FaCoins, FaInfoCircle, FaLock, FaBuilding } from "react-icons/fa"; // Menggunakan ikon dari react-icons
 
 const DetailKaryawan = () => {
-    const { id } = useParams();
+    const { id } = useParams();  // Mengambil ID dari URL
     const [karyawan, setKaryawan] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -15,21 +14,23 @@ const DetailKaryawan = () => {
     useEffect(() => {
         const fetchKaryawanDetail = async () => {
             try {
+                // Mengambil data karyawan dari backend
                 const response = await axios.get(`${BACKEND_URL}/api/karyawan/karyawan/${id}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                setKaryawan(response.data);
+                setKaryawan(response.data);  // Menyimpan data karyawan
             } catch (err) {
                 console.error("Error fetching karyawan detail:", err);
-                setError("Gagal mengambil detail karyawan");
+                setError("Gagal mengambil detail karyawan");  // Menangani error
             } finally {
-                setLoading(false);
+                setLoading(false);  // Mengubah status loading setelah request selesai
             }
         };
 
-        fetchKaryawanDetail();
-    }, [id, token, BACKEND_URL]);
+        fetchKaryawanDetail();  // Memanggil fungsi untuk mengambil data
+    }, [id, token, BACKEND_URL]);  // Menambahkan dependensi agar fungsi dijalankan ulang jika ID atau token berubah
 
+    // Menampilkan loading atau error jika data belum tersedia
     if (loading) return <p className="text-center mt-4">Loading...</p>;
     if (error) return <p className="text-center text-danger">{error}</p>;
 
@@ -41,10 +42,15 @@ const DetailKaryawan = () => {
                     <div className="col-md-4 text-center">
                         <div className="profile-card">
                             <img
-                                src={karyawan.gambar ? (karyawan.gambar.startsWith("http") ? karyawan.gambar : `${BACKEND_URL}/uploads/${karyawan.gambar}`) : "/img/avatars/default-avatar.png"}
+                                src={karyawan.gambar
+                                    ? (karyawan.gambar.startsWith("http")
+                                        ? karyawan.gambar
+                                        : `${BACKEND_URL}/uploads/${karyawan.gambar}`)
+                                    : "/img/avatars/default-avatar.png"}  // Menggunakan gambar default jika tidak ada gambar
                                 alt={karyawan.nama}
                                 className="profile-image rounded-circle shadow"
                             />
+
                             <h3 className="mt-3">{karyawan.nama}</h3>
                             <span className="badge bg-primary px-3 py-2">{karyawan.nama_jabatan}</span>
                         </div>
