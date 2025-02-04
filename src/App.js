@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate, useLocation, useNavigate } from "react-router-dom";
 import SidebarManager from "./component/sidebar/sidebar_manager";
 import SidebarFarmer from "./component/sidebar/sidebar_farmer";
 import SidebarDirektur from "./component/sidebar/sidebar_direktur";
@@ -189,4 +189,10 @@ function App() {
   );
 }
 
-export default App;
+export default function Root() {
+  return (
+    <Router>
+      <App />
+    </Router>
+  );
+}

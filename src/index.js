@@ -1,17 +1,17 @@
-import React from "react";
-import ReactDOM from "react-dom/client"; // Pastikan Anda menggunakan 'react-dom/client'
-import { BrowserRouter } from "react-router-dom"; // Impor BrowserRouter
-import App from "./App";
-import "./index.css";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
 
-// Cari elemen root di dalam file HTML Anda
-const root = ReactDOM.createRoot(document.getElementById("root"));
-
-// Gunakan createRoot untuk merender aplikasi Anda
+const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <BrowserRouter> {/* Hanya gunakan BrowserRouter di sini */}
-      <App />
-    </BrowserRouter>
+    <App />
   </React.StrictMode>
 );
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
