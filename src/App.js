@@ -26,6 +26,11 @@ import Inventaris from "./page/manager/inventaris/inventaris";
 import Farming from "./page/direktur/perolehan/farming";
 import Boosting from "./page/direktur/perolehan/boosting";
 import ScanQR from "./page/manager/scan/scan";
+import Akun from "./page/manager/akun/akun";
+import Akun_Direktur from "./page/direktur/akun/akun";
+import Pengeluaran from "./page/manager/pengeluaran/pengeluaran";
+import Pengeluaran_Direktur from "./page/direktur/pengeluaran/pengeluaran";
+import Kasbon from "./page/farmer/kasbon/kasbon";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -58,6 +63,7 @@ function App() {
   const toggleSidebar = () => {
     setIsSidebarOpen((prevState) => !prevState);
   };
+
 
   return (
     <div
@@ -110,7 +116,7 @@ function App() {
               onToggleSidebar={toggleSidebar}
             />
           )}
-          {jabatan === " direktur" && (
+          {jabatan === "direktur" && (
             <SidebarDirektur
               jabatan={jabatan}
               isSidebarOpen={isSidebarOpen}
@@ -143,6 +149,8 @@ function App() {
           <Route path="/manager/detail_karyawan/:id" element={<DetailKaryawan />} />
           <Route path="/manager/profile" element={<Profile />} />
           <Route path="/manager/inventaris" element={<Inventaris />} />
+          <Route path="/manager/akun" element={<Akun />} />
+          <Route path="/manager/pengeluaran" element={<Pengeluaran />} />
 
           <Route path="/spv/dashboard" element={<DashboardSPV />} />
           <Route path="/spv/jabatandivisi" element={<Jabatan_Divisi />} />
@@ -150,16 +158,18 @@ function App() {
           <Route path="/spv/karyawan" element={<Karyawan />} />
           <Route path="/spv/detail_karyawan/:id" element={<DetailKaryawan />} />
           <Route path="/spv/profile" element={<Profile />} />
-          
+
           <Route path="/farmer/dashboard" element={<DashboardFarmer />} />
           <Route path="/farmer/absensi" element={<AbsensiFarmer />} />
           <Route path="/farmer/perolehan" element={<PerolehanFarming />} />
           <Route path="/farmer/profile" element={<Profile />} />
+          <Route path="/farmer/kasbon" element={<Kasbon />} />
 
           <Route path="/booster/dashboard" element={<DashboardBooster />} />
           <Route path="/booster/absensi" element={<AbsensiBooster />} />
           <Route path="/booster/perolehan" element={<PerolehanBoosting />} />
           <Route path="/booster/profile" element={<Profile />} />
+          <Route path="/booster/kasbon" element={<Kasbon />} />
 
           <Route path="/direktur/dashboard" element={<DashboardDirektur />} />
           <Route path="/direktur/jabatandivisi" element={<Jabatan_Divisi_Direktur />} />
@@ -169,7 +179,9 @@ function App() {
           <Route path="/direktur/profile" element={<Profile />} />
           <Route path="/direktur/perolehan_farming" element={<Farming />} />
           <Route path="/direktur/perolehan_boosting" element={<Boosting />} />
-          
+          <Route path="/direktur/akun" element={<Akun_Direktur />} />
+          <Route path="/direktur/pengeluaran" element={<Pengeluaran_Direktur />} />
+
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </div>

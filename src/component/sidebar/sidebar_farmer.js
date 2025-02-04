@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   FaHome,
-  FaUser ,
+  FaUser,
   FaGamepad,
   FaBook,
   FaSquare,
@@ -48,7 +48,7 @@ const Header = ({ toggleSidebar, userName, userRole }) => {
           <FaBars />
         </button>
       </div>
-      
+
       <div>
         <Link to={userRole === "farmer" ? "/farmer/profile" : "/booster/profile"} style={{ color: "#fff", textDecoration: "none" }}>
           <button
@@ -140,6 +140,14 @@ const SidebarFarmer = () => {
                     </Link>
                   </li>
                 )}
+                  {userRole === "farmer" && (
+                  <li className={`sidebar-item ${location.pathname === "/farmer/kasbon" ? "active" : ""}`}>
+                    <Link className="sidebar-link" to="/farmer/kasbon">
+                      <FaGamepad className="align-middle" />{" "}
+                      <span className="align-middle">Kasbon</span>
+                    </Link>
+                  </li>
+                )}
                 {userRole === "booster" && (
                   <li className={`sidebar-item ${location.pathname === "/booster/dashboard" ? "active" : ""}`}>
                     <Link className="sidebar-link" to="/booster/dashboard">
@@ -164,9 +172,17 @@ const SidebarFarmer = () => {
                     </Link>
                   </li>
                 )}
+                 {userRole === "booster" && (
+                  <li className={`sidebar-item ${location.pathname === "/booster/kasbon" ? "active" : ""}`}>
+                    <Link className="sidebar-link" to="/booster/kasbon">
+                      <FaMoneyBill className="align-middle" />{" "}
+                      <span className="align-middle">Kasbon</span>
+                    </Link>
+                  </li>
+                )}
                 <li className={`sidebar-item ${location.pathname === "/sign-up" ? "active" : ""}`}>
                   <Link className="sidebar-link" to="/sign-up">
-                    <FaUser  className="align-middle" />{" "}
+                    <FaUser className="align-middle" />{" "}
                     <span className="align-middle">Sign Up</span>
                   </Link>
                 </li>
@@ -197,10 +213,10 @@ const SidebarFarmer = () => {
                   </Link>
                 </li>
                 <li className="sidebar-item">
-                  <button className="sidebar-link" onClick={handleLogout}>
+                  <Link className="sidebar-link" to="#" onClick={handleLogout}>
                     <FaSignOutAlt className="align-middle" />{" "}
                     <span className="align-middle">Logout</span>
-                  </button>
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -250,7 +266,7 @@ const SidebarFarmer = () => {
                     </li>
                     <li className={`sidebar-item ${location.pathname === "/farmer/absensi" ? "active" : ""}`}>
                       <Link className="sidebar-link" to="/farmer/absensi">
-                        <FaUser  className="align-middle" />{" "}
+                        <FaUser className="align-middle" />{" "}
                         <span className="align-middle">Absensi</span>
                       </Link>
                     </li>
@@ -272,7 +288,7 @@ const SidebarFarmer = () => {
                     )}
                     <li className={`sidebar-item ${location.pathname === "/sign-up" ? "active" : ""}`}>
                       <Link className="sidebar-link" to="/sign-up">
-                        <FaUser  className="align-middle" />{" "}
+                        <FaUser className="align-middle" />{" "}
                         <span className="align-middle">Sign Up</span>
                       </Link>
                     </li>

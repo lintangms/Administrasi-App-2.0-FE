@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   FaHome,
-  FaUser ,
+  FaUser,
   FaGamepad,
   FaBook,
   FaSquare,
@@ -50,8 +50,7 @@ const Header = ({ toggleSidebar, userName }) => {
         </button>
       </div>
       <div>
-        <h1 className="welcome-text" style={{ margin: 0 }}>
-        </h1>
+      
       </div>
       <div>
         <Link to="/direktur/profile" style={{ color: "#fff", textDecoration: "none" }}>
@@ -127,7 +126,7 @@ const SidebarDirektur = () => {
                 </li>
                 <li className={`sidebar-item ${location.pathname === "/direktur/jabatandivisi" ? "active" : ""}`}>
                   <Link className="sidebar-link" to="/direktur/jabatandivisi">
-                    <FaUser  className="align-middle" />{" "}
+                    <FaUser className="align-middle" />{" "}
                     <span className="align-middle">Jabatan & Divisi</span>
                   </Link>
                 </li>
@@ -139,7 +138,7 @@ const SidebarDirektur = () => {
                 </li>
                 <li className={`sidebar-item ${location.pathname === "/direktur/karyawan" ? "active" : ""}`}>
                   <Link className="sidebar-link" to="/direktur/karyawan">
-                    <FaUser  className="align-middle" />{" "}
+                    <FaUser className="align-middle" />{" "}
                     <span className="align-middle">Karyawan</span>
                   </Link>
                 </li>
@@ -149,17 +148,17 @@ const SidebarDirektur = () => {
                     <span className="align-middle">PerolehanFarming</span>
                   </Link>
                 </li>
-               
+
                 <li className={`sidebar-item ${location.pathname === "/direktur/perolehan_boosting" ? "active" : ""}`}>
                   <Link className="sidebar-link" to="/direktur/perolehan_boosting">
                     <FaMoneyBill className="align-middle" />{" "}
                     <span className="align-middle">PerolehanBoosting</span>
                   </Link>
                 </li>
-                <li className={`sidebar-item ${location.pathname === "/forms" ? "active" : ""}`}>
-                  <Link className="sidebar-link" to="/forms">
+                <li className={`sidebar-item ${location.pathname === "/direktur/akun" ? "active" : ""}`}>
+                  <Link className="sidebar-link" to="/direktur/akun">
                     <FaCheckSquare className="align-middle" />{" "}
-                    <span className="align-middle">Forms</span>
+                    <span className="align-middle">Akun</span>
                   </Link>
                 </li>
                 <li className="sidebar-header">Plugins & Addons</li>
@@ -170,10 +169,10 @@ const SidebarDirektur = () => {
                   </Link>
                 </li>
                 <li className="sidebar-item">
-                  <button className="sidebar-link" onClick={handleLogout}>
+                  <Link className="sidebar-link" to="#" onClick={handleLogout}>
                     <FaSignOutAlt className="align-middle" />{" "}
                     <span className="align-middle">Logout</span>
-                  </button>
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -223,7 +222,7 @@ const SidebarDirektur = () => {
                     </li>
                     <li className={`sidebar-item ${location.pathname === "/direktur/jabatandivisi" ? "active" : ""}`}>
                       <Link className="sidebar-link" to="/direktur/jabatandivisi">
-                        <FaUser  className="align-middle" />{" "}
+                        <FaUser className="align-middle" />{" "}
                         <span className="align-middle">Jabatan & Divisi</span>
                       </Link>
                     </li>
@@ -235,7 +234,7 @@ const SidebarDirektur = () => {
                     </li>
                     <li className={`sidebar-item ${location.pathname === "/sign-up" ? "active" : ""}`}>
                       <Link className="sidebar-link" to="/sign-up">
-                        <FaUser  className="align-middle" />{" "}
+                        <FaUser className="align-middle" />{" "}
                         <span className="align-middle">Sign Up</span>
                       </Link>
                     </li>

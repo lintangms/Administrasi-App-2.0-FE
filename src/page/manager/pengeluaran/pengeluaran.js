@@ -1,97 +1,108 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaPen, FaTrash, FaInfoCircle } from 'react-icons/fa'; 
-import { Link } from 'react-router-dom'; 
-import ModalAddInventaris from './modaladdinventaris'; // Modal untuk menambah Inventaris
-import ModalUpdateInventaris from './modalupdateinventaris'; // Modal untuk memperbarui Inventaris
+import ModalAddPengeluaran from './modaladdpengeluaran'; // Modal untuk menambah Pengeluaran
+import ModalUpdatePengeluaran from './modalupdatepengeluaran'; // Modal untuk memperbarui Pengeluaran
 import { toast } from 'react-toastify'; // Import toast dari react-toastify
 
-const Inventaris = () => {
-  const [inventarisList, setInventarisList] = useState([]); // State untuk Inventaris
+const Pengeluaran = () => {
+  const [pengeluaranList, setPengeluaranList] = useState([]); // State untuk Pengeluaran
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [selectedInventaris, setSelectedInventaris] = useState(null); // State untuk Inventaris yang dipilih
-  const [showAddInventarisModal, setShowAddInventarisModal] = useState(false);
-  const [showUpdateInventarisModal, setShowUpdateInventarisModal] = useState(false);
+  const [selectedPengeluaran, setSelectedPengeluaran] = useState(null); // State untuk Pengeluaran yang dipilih
+  const [showAddPengeluaranModal, setShowAddPengeluaranModal] = useState(false);
+  const [showUpdatePengeluaranModal, setShowUpdatePengeluaranModal] = useState(false);
 
   const token = localStorage.getItem('token');
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL; // Ambil URL dari .env
 
-  // Fetch Inventaris data
+  // Fetch Pengeluaran data
   useEffect(() => {
-    const fetchInventaris = async () => {
+    const fetchPengeluaran = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`${BACKEND_URL}/api/inventaris/get`, {
+        const response = await axios.get(`${BACKEND_URL}/api/pengeluaran/get`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (response.data && response.data.data) {
-          setInventarisList(response.data.data);
+          setPengeluaranList(response.data.data);
         } else {
-          setInventarisList([]);
+          setPengeluaranList([]);
         }
       } catch (err) {
-        console.error('Error saat mengambil data inventaris:', err);
-        setError('Gagal mengambil data inventaris');
-        setInventarisList([]);
+        console.error('Error saat mengambil data pengeluaran:', err);
+        setError('Gagal mengambil data pengeluaran');
+        setPengeluaranList([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchInventaris();
+    fetchPengeluaran();
   }, [token]);
 
-  // Handle Edit action for Inventaris
-  const handleEditInventaris = (inventaris) => {
-    setSelectedInventaris(inventaris);
-    setShowUpdateInventarisModal(true); // Show Update Modal
+  // Handle Edit action for Pengeluaran
+  const handleEditPengeluaran = (pengeluaran) => {
+    setSelectedPengeluaran(pengeluaran);
+    setShowUpdatePengeluaranModal(true); // Show Update Modal
   };
 
-  // Handle Delete action for Inventaris
-  const handleDeleteInventaris = async (id) => {
+  // Handle Delete action for Pengeluaran
+  const handleDeletePengeluaran = async (id) => {
     if (!id) {
       console.error('ID tidak valid:', id);
       return;
     }
     try {
-      const response = await axios.delete(`${BACKEND_URL}/api/inventaris/delete/${id}`, {
+      const response = await axios.delete(`${BACKEND_URL}/api/pengeluaran/delete/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.status === 200) {
-        setInventarisList(inventarisList.filter((inventaris) => inventaris.id_inventaris !== id));
-        toast.success('Inventaris berhasil dihapus!'); // Notifikasi sukses
+        setPengeluaranList(pengeluaranList.filter((pengeluaran) => pengeluaran.id_pengeluaran !== id));
+        toast.success('Pengeluaran berhasil dihapus!'); // Notifikasi sukses
       }
     } catch (err) {
-      console.error('Error saat menghapus data inventaris:', err);
-      toast.error('Gagal menghapus inventaris.'); // Notifikasi gagal
+      console.error('Error saat menghapus data pengeluaran:', err);
+      toast.error('Gagal menghapus pengeluaran.'); // Notifikasi gagal
     }
   };
 
-  // Callback untuk menambahkan inventaris baru
-  const handleAddInventaris = (newInventaris) => {
-    setInventarisList((prevList) => [newInventaris, ...prevList]); // Tambahkan di atas
-    toast.success('Inventaris berhasil ditambahkan!'); // Notifikasi sukses
+  // Callback untuk menambahkan pengeluaran baru
+  const handleAddPengeluaran = (newPengeluaran) => {
+    setPengeluaranList((prevList) => [newPengeluaran, ...prevList]); // Tambahkan di atas
+    toast.success('Pengeluaran berhasil ditambahkan!'); // Notifikasi sukses
+  };
+
+  // Callback untuk memperbarui pengeluaran
+  const handleUpdatePengeluaran = (updatedPengeluaran) => {
+    setPengeluaranList((prevList) =>
+      prevList.map((pengeluaran) =>
+        pengeluaran.id_pengeluaran === updatedPengeluaran.id_pengeluaran
+          ? updatedPengeluaran
+          : pengeluaran
+      )
+    );
+    toast.success('Pengeluaran berhasil diperbarui!'); // Notifikasi sukses
   };
 
   return (
-    <div className="inventaris-container">
+    <div className="pengeluaran-container">
       {error && <p className="error-message">{error}</p>}
 
       {loading ? (
         <p>Loading...</p>
       ) : (
         <>
-          {/* Tabel Inventaris */}
+          {/* Tabel Pengeluaran */}
           <div className="card my-4">
             <div className="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
               <div className="bg-gradient-dark shadow-dark border-radius-lg pt-4 pb-3 d-flex justify-content-between align-items-center">
-                <h6 className="text-white text-capitalize ps-3">Inventaris Table</h6>
+                <h6 className="text-white text-capitalize ps-3">Pengeluaran Table</h6>
                 <button
                   className="btn btn-success me-3"
                   onClick={() => {
-                    setShowAddInventarisModal(true);
-                    toast.info('Silakan isi form untuk menambahkan inventaris.'); // Notifikasi info
+                    setShowAddPengeluaranModal(true);
+                    toast.info('Silakan isi form untuk menambahkan pengeluaran.'); // Notifikasi info
                   }}
                 >
                   + Add
@@ -107,16 +118,16 @@ const Inventaris = () => {
                         No
                       </th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                        Nama Barang
+                        Tanggal Transaksi
                       </th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                        Tanggal Beli
+                        Uraian
                       </th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                        Harga
+                        Nominal
                       </th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                        Ket
+                        Keterangan
                       </th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                         Aksi
@@ -125,34 +136,34 @@ const Inventaris = () => {
                   </thead>
 
                   <tbody>
-                    {inventarisList && inventarisList.length > 0 ? (
-                      inventarisList.map((inventaris, index) => (
-                        <tr key={inventaris.id_inventaris}>
+                    {pengeluaranList && pengeluaranList.length > 0 ? (
+                      pengeluaranList.map((pengeluaran, index) => (
+                        <tr key={pengeluaran.id_pengeluaran}>
                           <td>{index + 1}</td> {/* Menampilkan nomor urut */}
-                          <td>{inventaris.nama_barang}</td>
-                          <td>{new Date(inventaris.tgl_beli).toLocaleDateString("id-ID")}</td>
-                          <td>{inventaris.harga}</td>
-                          <td>{inventaris.ket}</td>
+                          <td>{new Date(pengeluaran.tgl_transaksi).toLocaleDateString("id-ID")}</td>
+                          <td>{pengeluaran.uraian}</td>
+                          <td>{pengeluaran.nominal}</td>
+                          <td>{pengeluaran.ket}</td>
                           <td>
                             <button
                               className="btn btn-info btn-sm me-2 rounded" // Tambahkan kelas rounded
-                              onClick={() => handleEditInventaris(inventaris)}
+                              onClick={() => handleEditPengeluaran(pengeluaran)}
                             >
                               <FaPen />
                             </button>
                             <button
-                              onClick={() => handleDeleteInventaris(inventaris.id_inventaris)}
+                              onClick={() => handleDeletePengeluaran(pengeluaran.id_pengeluaran)}
                               className="btn btn-danger btn-sm me-2 rounded" // Tambahkan kelas rounded
                             >
                               <FaTrash />
                             </button>
-                            
+                          
                           </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="4">Tidak ada inventaris tersedia</td>
+                        <td colSpan="6">Tidak ada pengeluaran tersedia</td>
                       </tr>
                     )}
                   </tbody>
@@ -161,21 +172,20 @@ const Inventaris = () => {
             </div>
           </div>
 
-          {/* Add Inventaris Modal */}
-          <ModalAddInventaris
-            showModal={showAddInventarisModal}
-            setShowModal={setShowAddInventarisModal}
-            setInventarisList={setInventarisList} // Ganti dengan setInventarisList
+          {/* Add Pengeluaran Modal */}
+          <ModalAddPengeluaran
+            showModal={showAddPengeluaranModal}
+            setShowModal={setShowAddPengeluaranModal}
+            onAddSuccess={handleAddPengeluaran} // Callback untuk menambahkan pengeluaran baru
             token={token}
-            onAddSuccess={handleAddInventaris} // Callback untuk menambahkan inventaris baru
           />
 
-          {/* Update Inventaris Modal */}
-          <ModalUpdateInventaris
-            showModal={showUpdateInventarisModal}
-            setShowModal={setShowUpdateInventarisModal}
-            selectedInventaris={selectedInventaris} // Ganti dengan selectedInventaris
-            setInventarisList={setInventarisList} // Ganti dengan setInventarisList
+          {/* Update Pengeluaran Modal */}
+          <ModalUpdatePengeluaran
+            showModal={showUpdatePengeluaranModal}
+            setShowModal={setShowUpdatePengeluaranModal}
+            selectedPengeluaran={selectedPengeluaran} // Ganti dengan selectedPengeluaran
+            onUpdateSuccess={handleUpdatePengeluaran} // Callback untuk memperbarui pengeluaran
             token={token}
           />
         </>
@@ -229,4 +239,4 @@ const Inventaris = () => {
   );
 };
 
-export default Inventaris;
+export default Pengeluaran;

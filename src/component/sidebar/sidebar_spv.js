@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   FaHome,
-  FaUser ,
+  FaUser,
   FaGamepad,
   FaBook,
   FaSquare,
@@ -48,9 +48,6 @@ const Header = ({ toggleSidebar, userName }) => {
         </button>
       </div>
       <div>
-        <h1 className="welcome-text" style={{ margin: 0 }}>
-          
-        </h1>
       </div>
       <div>
         <Link to="/spv/profile" style={{ color: "#fff", textDecoration: "none" }}>
@@ -127,7 +124,7 @@ const SidebarSPV = () => {
                 </li>
                 <li className={`sidebar-item ${location.pathname === "/spv/jabatandivisi" ? "active" : ""}`}>
                   <Link className="sidebar-link" to="/spv/jabatandivisi">
-                    <FaUser  className="align-middle" />{" "}
+                    <FaUser className="align-middle" />{" "}
                     <span className="align-middle">Jabatan & Divisi</span>
                   </Link>
                 </li>
@@ -139,7 +136,7 @@ const SidebarSPV = () => {
                 </li>
                 <li className={`sidebar-item ${location.pathname === "/spv/karyawan" ? "active" : ""}`}>
                   <Link className="sidebar-link" to="/spv/karyawan">
-                    <FaUser  className="align-middle" />{" "}
+                    <FaUser className="align-middle" />{" "}
                     <span className="align-middle">Karyawan</span>
                   </Link>
                 </li>
@@ -170,10 +167,10 @@ const SidebarSPV = () => {
                   </Link>
                 </li>
                 <li className="sidebar-item">
-                  <button className="sidebar-link" onClick={handleLogout}>
+                  <Link className="sidebar-link" to="#" onClick={handleLogout}>
                     <FaSignOutAlt className="align-middle" />{" "}
                     <span className="align-middle">Logout</span>
-                  </button>
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -223,7 +220,7 @@ const SidebarSPV = () => {
                     </li>
                     <li className={`sidebar-item ${location.pathname === "/spv/jabatandivisi" ? "active" : ""}`}>
                       <Link className="sidebar-link" to="/spv/jabatandivisi">
-                        <FaUser  className="align-middle" />{" "}
+                        <FaUser className="align-middle" />{" "}
                         <span className="align-middle">Jabatan & Divisi</span>
                       </Link>
                     </li>
@@ -235,13 +232,13 @@ const SidebarSPV = () => {
                     </li>
                     <li className={`sidebar-item ${location.pathname === "/spv/karyawan" ? "active" : ""}`}>
                       <Link className="sidebar-link" to="/spv/karyawan">
-                        <FaUser  className="align-middle" />{" "}
+                        <FaUser className="align-middle" />{" "}
                         <span className="align-middle">Karyawan</span>
                       </Link>
                     </li>
                     <li className={`sidebar-item ${location.pathname === "/sign-up" ? "active" : ""}`}>
                       <Link className="sidebar-link" to="/sign-up">
-                        <FaUser  className="align-middle" />{" "}
+                        <FaUser className="align-middle" />{" "}
                         <span className="align-middle">Sign Up</span>
                       </Link>
                     </li>

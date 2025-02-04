@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   FaHome,
-  FaUser ,
+  FaUser,
   FaGamepad,
   FaBook,
   FaSquare,
@@ -10,7 +10,6 @@ import {
   FaCoffee,
   FaSignOutAlt,
   FaBars,
-  FaUserCircle, // Import ikon untuk profil
 } from "react-icons/fa";
 
 // Komponen Header
@@ -48,9 +47,8 @@ const Header = ({ toggleSidebar, userName }) => {
         </button>
       </div>
       <div>
-        <h1 className="welcome-text" style={{ margin: 0 }}>
-          
-        </h1>
+
+
       </div>
       <div>
         <Link to="/manager/profile" style={{ color: "#fff", textDecoration: "none" }}>
@@ -63,7 +61,7 @@ const Header = ({ toggleSidebar, userName }) => {
               fontSize: "18px",
             }}
           >
-            <FaUser Circle />
+            <FaUser />
           </button>
         </Link>
       </div>
@@ -81,6 +79,7 @@ const SidebarManager = () => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("jabatan");
+
     navigate("/login");
   };
 
@@ -127,7 +126,7 @@ const SidebarManager = () => {
                 </li>
                 <li className={`sidebar-item ${location.pathname === "/manager/jabatandivisi" ? "active" : ""}`}>
                   <Link className="sidebar-link" to="/manager/jabatandivisi">
-                    <FaUser  className="align-middle" />{" "}
+                    <FaUser className="align-middle" />{" "}
                     <span className="align-middle">Jabatan & Divisi</span>
                   </Link>
                 </li>
@@ -139,7 +138,7 @@ const SidebarManager = () => {
                 </li>
                 <li className={`sidebar-item ${location.pathname === "/manager/karyawan" ? "active" : ""}`}>
                   <Link className="sidebar-link" to="/manager/karyawan">
-                    <FaUser  className="align-middle" />{" "}
+                    <FaUser className="align-middle" />{" "}
                     <span className="align-middle">Karyawan</span>
                   </Link>
                 </li>
@@ -155,25 +154,25 @@ const SidebarManager = () => {
                     <span className="align-middle">Scan</span>
                   </Link>
                 </li>
-                <li className={`sidebar-item ${location.pathname === "/forms" ? "active" : ""}`}>
-                  <Link className="sidebar-link" to="/forms">
+                <li className={`sidebar-item ${location.pathname === "/manager/akun" ? "active" : ""}`}>
+                  <Link className="sidebar-link" to="/manager/akun">
                     <FaCheckSquare className="align-middle" />{" "}
-                    <span className="align-middle">Forms</span>
+                    <span className="align-middle">Akun</span>
                   </Link>
                 </li>
-                <li className="sidebar-header">Plugins & Addons</li>
-                <li className={`sidebar-item ${location.pathname === "/charts" ? "active" : ""}`}>
-                  <Link className="sidebar-link" to="/charts">
+                <li className={`sidebar-item ${location.pathname === "/manager/pengeluaran" ? "active" : ""}`}>
+                  <Link className="sidebar-link" to="/manager/pengeluaran">
                     <FaCoffee className="align-middle" />{" "}
-                    <span className="align-middle">Charts</span>
+                    <span className="align-middle">Pengeluaran</span>
                   </Link>
                 </li>
                 <li className="sidebar-item">
-                  <button className="sidebar-link" onClick={handleLogout}>
+                  <button className="sidebar-link" onClick={handleLogout} style={{ background: "none", border: "none", width: "100%", textAlign: "left" }}>
                     <FaSignOutAlt className="align-middle" />{" "}
                     <span className="align-middle">Logout</span>
                   </button>
                 </li>
+
               </ul>
             </div>
           </nav>
@@ -222,7 +221,7 @@ const SidebarManager = () => {
                     </li>
                     <li className={`sidebar-item ${location.pathname === "/manager/jabatandivisi" ? "active" : ""}`}>
                       <Link className="sidebar-link" to="/manager/jabatandivisi">
-                        <FaUser  className="align-middle" />{" "}
+                        <FaUser className="align-middle" />{" "}
                         <span className="align-middle">Jabatan & Divisi</span>
                       </Link>
                     </li>
@@ -234,13 +233,13 @@ const SidebarManager = () => {
                     </li>
                     <li className={`sidebar-item ${location.pathname === "/manager/karyawan" ? "active" : ""}`}>
                       <Link className="sidebar-link" to="/manager/karyawan">
-                        <FaUser  className="align-middle" />{" "}
+                        <FaUser className="align-middle" />{" "}
                         <span className="align-middle">Karyawan</span>
                       </Link>
                     </li>
                     <li className={`sidebar-item ${location.pathname === "/sign-up" ? "active" : ""}`}>
                       <Link className="sidebar-link" to="/sign-up">
-                        <FaUser  className="align-middle" />{" "}
+                        <FaUser className="align-middle" />{" "}
                         <span className="align-middle">Sign Up</span>
                       </Link>
                     </li>
@@ -271,10 +270,10 @@ const SidebarManager = () => {
                       </Link>
                     </li>
                     <li className="sidebar-item">
-                      <button className="sidebar-link" onClick={handleLogout}>
+                      <Link className="sidebar-link" to="#" onClick={handleLogout}>
                         <FaSignOutAlt className="align-middle" />{" "}
                         <span className="align-middle">Logout</span>
-                      </button>
+                      </Link>
                     </li>
                   </ul>
                 </div>
