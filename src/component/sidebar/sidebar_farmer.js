@@ -12,6 +12,7 @@ import {
   FaBars,
   FaUserCircle,
   FaMoneyBill,
+  FaHistory,
 } from "react-icons/fa";
 
 // Komponen Header
@@ -148,6 +149,14 @@ const SidebarFarmer = () => {
                     </Link>
                   </li>
                 )}
+                 {userRole === "farmer" && (
+                  <li className={`sidebar-item ${location.pathname === "/farmer/riwayatperolehan" ? "active" : ""}`}>
+                    <Link className="sidebar-link" to="/farmer/riwayatperolehan">
+                      <FaHistory className="align-middle" />{" "}
+                      <span className="align-middle">Riwayat Perolehan</span>
+                    </Link>
+                  </li>
+                )}
                 {userRole === "booster" && (
                   <li className={`sidebar-item ${location.pathname === "/booster/dashboard" ? "active" : ""}`}>
                     <Link className="sidebar-link" to="/booster/dashboard">
@@ -177,6 +186,14 @@ const SidebarFarmer = () => {
                     <Link className="sidebar-link" to="/booster/kasbon">
                       <FaMoneyBill className="align-middle" />{" "}
                       <span className="align-middle">Kasbon</span>
+                    </Link>
+                  </li>
+                )}
+                 {userRole === "booster" && (
+                  <li className={`sidebar-item ${location.pathname === "/booster/riwayatperolehan" ? "active" : ""}`}>
+                    <Link className="sidebar-link" to="/booster/riwayatperolehan">
+                      <FaMoneyBill className="align-middle" />{" "}
+                      <span className="align-middle">Riwayat Perolehan</span>
                     </Link>
                   </li>
                 )}

@@ -31,6 +31,9 @@ import Akun_Direktur from "./page/direktur/akun/akun";
 import Pengeluaran from "./page/manager/pengeluaran/pengeluaran";
 import Pengeluaran_Direktur from "./page/direktur/pengeluaran/pengeluaran";
 import Kasbon from "./page/farmer/kasbon/kasbon";
+import RiwayatFarming from "./page/farmer/riwayat/riwayatperolehan";
+import RiwayatBoosting from "./page/booster/riwayatperolehan/riwayatbooster";
+import AbsensiScan from "./page/manager/scan/absensiscan";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -46,10 +49,13 @@ function App() {
     const token = localStorage.getItem("token");
     const storedJabatan = localStorage.getItem("jabatan");
 
-    if (token && storedJabatan) {
-      setIsLoggedIn(true);
-      setJabatan(storedJabatan);
-    } else if (location.pathname !== "/login" && location.pathname !== "/scan_absensi") {
+    // Pengecualian untuk halaman scan dan absensi scan
+    if ((location.pathname === "/scan" || location.pathname === "/scan_absensi") || (token && storedJabatan)) {
+      if (token && storedJabatan) {
+        setIsLoggedIn(true);
+        setJabatan(storedJabatan);
+      }
+    } else if (location.pathname !== "/login" && location.pathname !== "/scan_absensi" && location.pathname !== "/scan") {
       navigate("/login");
     }
   }, [navigate, location.pathname]);
@@ -137,7 +143,8 @@ function App() {
         }}
       >
         <Routes>
-          <Route path="/scan_absensi" element={<ScanQR />} />
+          <Route path="/scan" element={<ScanQR />} />
+          <Route path="/scan_absensi" element={<AbsensiScan />} />
           <Route
             path="/login"
             element={<Login onLoginSuccess={handleLoginSuccess} />}
@@ -164,12 +171,14 @@ function App() {
           <Route path="/farmer/perolehan" element={<PerolehanFarming />} />
           <Route path="/farmer/profile" element={<Profile />} />
           <Route path="/farmer/kasbon" element={<Kasbon />} />
+          <Route path="/farmer/riwayatperolehan" element={<RiwayatFarming />} />
 
           <Route path="/booster/dashboard" element={<DashboardBooster />} />
           <Route path="/booster/absensi" element={<AbsensiBooster />} />
           <Route path="/booster/perolehan" element={<PerolehanBoosting />} />
           <Route path="/booster/profile" element={<Profile />} />
           <Route path="/booster/kasbon" element={<Kasbon />} />
+          <Route path="/booster/riwayatperolehan" element={<RiwayatBoosting />} />
 
           <Route path="/direktur/dashboard" element={<DashboardDirektur />} />
           <Route path="/direktur/jabatandivisi" element={<Jabatan_Divisi_Direktur />} />
