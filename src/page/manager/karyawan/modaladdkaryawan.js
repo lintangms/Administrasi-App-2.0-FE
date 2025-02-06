@@ -12,70 +12,42 @@ const ModalAddKaryawan = ({ showModal, setShowModal, setKaryawanList, token }) =
     pendidikan: '',
     status: '',
     mulai_bekerja: '',
-    nama_jabatan: '', // Ubah id_jabatan menjadi nama_jabatan
-    nama_divisi: '',  // Ubah id_divisi menjadi nama_divisi
-    nama_shift: '',   // Tambahkan nama_shift
-    nama_game: '',    // Tambahkan nama_game
-    akun: '',         // Tambahkan akun
+    nama_jabatan: '', // Ubah ke nama_jabatan
+    nama_divisi: '',  // Ubah ke nama_divisi
+    nama_shift: '',   // Tambah nama_shift untuk tampilan
+    nama_game: '',    // Tambah nama_game untuk tampilan
+    username_akun: '', // Tambah username_akun untuk tampilan
     username: '',
     password: '',
     ket: '',
-    gambar: null, // Tambahkan state untuk gambar
+    gambar: null,
   });
 
   const [jabatanList, setJabatanList] = useState([]);
   const [divisiList, setDivisiList] = useState([]);
-  const [shiftList, setShiftList] = useState([]); // State untuk shift
-  const [gameList, setGameList] = useState([]);   // State untuk game
-  const [akunList, setAkunList] = useState([]);   // State untuk akun
+  const [shiftList, setShiftList] = useState([]);
+  const [gameList, setGameList] = useState([]);
+  const [akunList, setAkunList] = useState([]);
 
   useEffect(() => {
-    // Ambil data jabatan, divisi, shift, game, dan akun saat komponen dimuat
     const fetchData = async () => {
       try {
-        const jabatanResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/jabatan/get`);
-        const divisiResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/divisi/get`);
-        const shiftResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/shift/get`); // Ambil data shift
-        const gameResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/game/get`);   // Ambil data game
-        const akunResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/akun/get`);   // Ambil data akun
+        const [jabatanRes, divisiRes, shiftRes, gameRes, akunRes] = await Promise.all([
+          axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/jabatan/get`),
+          axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/divisi/get`),
+          axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/shift/get`),
+          axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/game/get`),
+          axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/akun/get`)
+        ]);
 
-        // Ambil data dari properti 'data' dalam respons
-        if (Array.isArray(jabatanResponse.data.data)) {
-          setJabatanList(jabatanResponse.data.data);
-        } else {
-          console.error('Data jabatan tidak dalam format array:', jabatanResponse.data);
-          setJabatanList([]);
-        }
-
-        if (Array.isArray(divisiResponse.data.data)) {
-          setDivisiList(divisiResponse.data.data);
-        } else {
-          console.error('Data divisi tidak dalam format array:', divisiResponse.data);
-          setDivisiList([]);
-        }
-
-        if (Array.isArray(shiftResponse.data.data)) {
-          setShiftList(shiftResponse.data.data);
-        } else {
-          console.error('Data shift tidak dalam format array:', shiftResponse.data);
-          setShiftList([]);
-        }
-
-        if (Array.isArray(gameResponse.data.data)) {
-          setGameList(gameResponse.data.data);
-        } else {
-          console.error('Data game tidak dalam format array:', gameResponse.data);
-          setGameList([]);
-        }
-
-        if (Array.isArray(akunResponse.data.data)) {
-          setAkunList(akunResponse.data.data);
-        } else {
-          console.error('Data akun tidak dalam format array:', akunResponse.data);
-          setAkunList([]);
-        }
+        setJabatanList(jabatanRes.data.data || []);
+        setDivisiList(divisiRes.data.data || []);
+        setShiftList(shiftRes.data.data || []);
+        setGameList(gameRes.data.data || []);
+        setAkunList(akunRes.data.data || []);
       } catch (error) {
         console.error('Error fetching data:', error);
+        toast.error('Gagal mengambil data referensi');
       }
     };
     fetchData();
@@ -87,282 +59,276 @@ const ModalAddKaryawan = ({ showModal, setShowModal, setKaryawanList, token }) =
   };
 
   const handleFileChange = (e) => {
-    setFormData({ ...formData, gambar: e.target.files[0] }); // Simpan file gambar
+    setFormData({ ...formData, gambar: e.target.files[0] });
   };
 
   const handleSave = async () => {
     const formDataToSend = new FormData();
-    for (const key in formData) {
-      formDataToSend.append(key, formData[key]);
-    }
+    
+    // Append semua data ke FormData
+    Object.keys(formData).forEach(key => {
+      if (formData[key] !== null && formData[key] !== undefined) {
+        formDataToSend.append(key, formData[key]);
+      }
+    });
 
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/api/karyawan/add`,
         formDataToSend,
-        { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' } }
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
+          }
+        }
       );
 
       if (response.status === 201) {
-        setKaryawanList((prevList) => [response.data.karyawanId, ...prevList]);
         toast.success('Karyawan berhasil ditambahkan!');
         setShowModal(false);
-        setFormData({}); // Reset form
+        setFormData({});
+        // Refresh karyawan list if needed
+        setKaryawanList(prev => [response.data.karyawanId, ...prev]);
       }
     } catch (error) {
-      console.error('Error saat menambahkan karyawan:', error);
-      toast.error('Gagal menambahkan karyawan.');
+      console.error('Error:', error);
+      toast.error(error.response?.data?.message || 'Gagal menambahkan karyawan');
     }
   };
 
   return (
     <>
-      {/* Modal Form */}
       {showModal && (
         <div className="modal-overlay">
           <div className="modal-container">
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">Tambah Karyawan</h5>
-                <button
-                  type="button"
-                  className="close"
-                  onClick={() => setShowModal(false)}
-                >
+                <button type="button" className="close" onClick={() => setShowModal(false)}>
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
               <div className="modal-body">
                 <form>
+                  {/* Basic Info Fields */}
                   <div className="form-group">
-                    <label htmlFor="NIP" className="col-form-label">NIP:</label>
+                    <label>NIP:</label>
                     <input
                       type="text"
                       className="form-control"
-                      id="NIP"
                       name="NIP"
                       value={formData.NIP}
                       onChange={handleChange}
-                      placeholder="Masukkan NIP"
                       required
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="nama" className="col-form-label">Nama:</label>
+                    <label>Nama:</label>
                     <input
                       type="text"
                       className="form-control"
-                      id="nama"
                       name="nama"
                       value={formData.nama}
                       onChange={handleChange}
-                      placeholder="Masukkan nama"
                       required
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="alamat" className="col-form-label">Alamat:</label>
+                    <label>Alamat:</label>
                     <input
                       type="text"
                       className="form-control"
-                      id="alamat"
                       name="alamat"
                       value={formData.alamat}
                       onChange={handleChange}
-                      placeholder="Masukkan alamat"
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="telp" className="col-form-label">Telepon:</label>
+                    <label>Telepon:</label>
                     <input
                       type="text"
                       className="form-control"
-                      id="telp"
                       name="telp"
                       value={formData.telp}
                       onChange={handleChange}
-                      placeholder="Masukkan telepon"
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="ttl" className="col-form-label">Tanggal Lahir:</label>
+                    <label>Tanggal Lahir:</label>
                     <input
                       type="date"
                       className="form-control"
-                      id="ttl"
                       name="ttl"
                       value={formData.ttl}
                       onChange={handleChange}
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="pendidikan" className="col-form-label">Pendidikan:</label>
+                    <label>Pendidikan:</label>
                     <input
                       type="text"
                       className="form-control"
-                      id="pendidikan"
                       name="pendidikan"
                       value={formData.pendidikan}
                       onChange={handleChange}
-                      placeholder="Masukkan pendidikan"
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="status" className="col-form-label">Status:</label>
-                    <input
-                      type="text"
+                    <label>Status:</label>
+                    <select
                       className="form-control"
-                      id="status"
                       name="status"
                       value={formData.status}
                       onChange={handleChange}
-                      placeholder="Masukkan status"
-                    />
+                      required
+                    >
+                      <option value="">Pilih Status Karyawan</option>
+                      <option value="baru">Baru</option>
+                      <option value="lama">Lama</option>
+                    </select>
                   </div>
                   <div className="form-group">
-                    <label htmlFor="mulai_bekerja" className="col-form-label">Mulai Bekerja:</label>
+                    <label>Mulai Bekerja:</label>
                     <input
                       type="date"
                       className="form-control"
-                      id="mulai_bekerja"
                       name="mulai_bekerja"
                       value={formData.mulai_bekerja}
                       onChange={handleChange}
                     />
                   </div>
+
+                  {/* Dropdown Selections */}
                   <div className="form-group">
-                    <label htmlFor="jabatan" className="col-form-label">Jabatan:</label>
+                    <label>Jabatan:</label>
                     <select
                       className="form-control"
-                      id="jabatan"
                       name="nama_jabatan"
                       value={formData.nama_jabatan}
                       onChange={handleChange}
                       required
                     >
                       <option value="">Pilih Jabatan</option>
-                      {Array.isArray(jabatanList) && jabatanList.map((jabatan) => (
-                        <option key={jabatan.id} value={jabatan.nama_jabatan}>
+                      {jabatanList.map((jabatan) => (
+                        <option key={jabatan.id_jabatan} value={jabatan.nama_jabatan}>
                           {jabatan.nama_jabatan}
                         </option>
                       ))}
                     </select>
                   </div>
                   <div className="form-group">
-                    <label htmlFor="divisi" className="col-form-label">Divisi:</label>
+                    <label>Divisi:</label>
                     <select
                       className="form-control"
-                      id="divisi"
                       name="nama_divisi"
                       value={formData.nama_divisi}
                       onChange={handleChange}
                       required
                     >
                       <option value="">Pilih Divisi</option>
-                      {Array.isArray(divisiList) && divisiList.map((divisi) => (
-                        <option key={divisi.id} value={divisi.nama_divisi}>
+                      {divisiList.map((divisi) => (
+                        <option key={divisi.id_divisi} value={divisi.nama_divisi}>
                           {divisi.nama_divisi}
                         </option>
                       ))}
                     </select>
                   </div>
                   <div className="form-group">
-                    <label htmlFor="shift" className="col-form-label">Shift:</label>
+                    <label>Shift:</label>
                     <select
                       className="form-control"
-                      id="shift"
                       name="nama_shift"
                       value={formData.nama_shift}
                       onChange={handleChange}
                       required
                     >
                       <option value="">Pilih Shift</option>
-                      {Array.isArray(shiftList) && shiftList.map((shift) => (
-                        <option key={shift.id} value={shift.nama_shift}>
+                      {shiftList.map((shift) => (
+                        <option key={shift.id_shift} value={shift.nama_shift}>
                           {shift.nama_shift}
                         </option>
                       ))}
                     </select>
                   </div>
                   <div className="form-group">
-                    <label htmlFor="game" className="col-form-label">Game:</label>
+                    <label>Game:</label>
                     <select
                       className="form-control"
-                      id="game"
                       name="nama_game"
                       value={formData.nama_game}
                       onChange={handleChange}
                       required
                     >
                       <option value="">Pilih Game</option>
-                      {Array.isArray(gameList) && gameList.map((game) => (
-                        <option key={game.id} value={game.nama_game}>
+                      {gameList.map((game) => (
+                        <option key={game.id_game} value={game.nama_game}>
                           {game.nama_game}
                         </option>
                       ))}
                     </select>
                   </div>
                   <div className="form-group">
-                    <label htmlFor="akun" className="col-form-label">Akun:</label>
+                    <label>Akun:</label>
                     <select
                       className="form-control"
-                      id="akun"
-                      name="akun"
-                      value={formData.akun}
+                      name="username_akun"
+                      value={formData.username_akun}
                       onChange={handleChange}
                       required
                     >
                       <option value="">Pilih Akun</option>
-                      {Array.isArray(akunList) && akunList.map((akun) => (
-                        <option key={akun.id} value={akun.nama_akun}>
-                          {akun.nama_akun}
+                      {akunList.map((akun) => (
+                        <option key={akun.id_akun} value={akun.username}>
+                          {akun.username}
                         </option>
                       ))}
                     </select>
                   </div>
+
+                  {/* Login Info */}
                   <div className="form-group">
-                    <label htmlFor="username" className="col-form-label">Username:</label>
+                    <label>Username:</label>
                     <input
                       type="text"
                       className="form-control"
-                      id="username"
                       name="username"
                       value={formData.username}
                       onChange={handleChange}
-                      placeholder="Masukkan username"
                       required
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="password" className="col-form-label">Password:</label>
+                    <label>Password:</label>
                     <input
                       type="password"
                       className="form-control"
-                      id="password"
                       name="password"
                       value={formData.password}
                       onChange={handleChange}
-                      placeholder="Masukkan password"
                       required
                     />
                   </div>
+
+                  {/* File Upload */}
                   <div className="form-group">
-                    <label htmlFor="gambar" className="col-form-label">Gambar:</label>
+                    <label>Gambar:</label>
                     <input
                       type="file"
                       className="form-control"
-                      id="gambar"
                       name="gambar"
                       onChange={handleFileChange}
                       accept="image/*"
+                      required
                     />
                   </div>
+
+                  {/* Additional Info */}
                   <div className="form-group">
-                    <label htmlFor="ket" className="col-form-label">Keterangan:</label>
+                    <label>Keterangan:</label>
                     <input
                       type="text"
                       className="form-control"
-                      id="ket"
                       name="ket"
                       value={formData.ket}
                       onChange={handleChange}
@@ -371,18 +337,10 @@ const ModalAddKaryawan = ({ showModal, setShowModal, setKaryawanList, token }) =
                 </form>
               </div>
               <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setShowModal(false)}
-                >
+                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>
                   Tutup
                 </button>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={handleSave}
-                >
+                <button type="button" className="btn btn-primary" onClick={handleSave}>
                   Simpan
                 </button>
               </div>
@@ -391,7 +349,6 @@ const ModalAddKaryawan = ({ showModal, setShowModal, setKaryawanList, token }) =
         </div>
       )}
 
-      {/* Inline CSS */}
       <style>{`
         .modal-overlay {
           position: fixed;
@@ -410,15 +367,14 @@ const ModalAddKaryawan = ({ showModal, setShowModal, setKaryawanList, token }) =
           background: #fff;
           border-radius: 10px;
           box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-          overflow: hidden;
           width: 500px;
           max-width: 90%;
-          max-height: 80%; /* Batasi tinggi modal */
-          overflow-y: auto; /* Tambahkan scroll jika konten melebihi tinggi */
+          max-height: 90vh;
+          overflow-y: auto;
         }
 
         .modal-header {
-          padding: 15px;
+          padding: 1rem;
           border-bottom: 1px solid #dee2e6;
           display: flex;
           justify-content: space-between;
@@ -426,34 +382,33 @@ const ModalAddKaryawan = ({ showModal, setShowModal, setKaryawanList, token }) =
         }
 
         .modal-body {
-          padding: 15px;
+          padding: 1rem;
         }
 
         .modal-footer {
-          padding: 15px;
+          padding: 1rem;
           border-top: 1px solid #dee2e6;
           display: flex;
           justify-content: flex-end;
-          gap: 10px;
+          gap: 0.5rem;
         }
 
-        .modal-content {
-          border: none;
+        .form-group {
+          margin-bottom: 1rem;
+        }
+
+        .form-control {
+          width: 100%;
+          padding: 0.375rem 0.75rem;
+          border: 1px solid #ced4da;
+          border-radius: 0.25rem;
         }
 
         .close {
           background: none;
           border: none;
           font-size: 1.5rem;
-          line-height: 1;
-          color: #000;
-          opacity: 0.7;
           cursor: pointer;
-        }
-
-        .close:hover {
-          color: #000;
-          opacity: 1;
         }
       `}</style>
     </>

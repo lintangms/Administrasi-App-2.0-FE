@@ -68,8 +68,8 @@ const Login = ({ onLoginSuccess }) => {
         <div className="row">
           <div className="col-sm-10 col-md-8 col-lg-6 col-xl-5 mx-auto">
             <div className="text-center mt-4">
-              <h1 className="h2">Welcome back!</h1>
-              <p className="lead">Sign in to your account to continue</p>
+              <h1 className="h2">Selamat Datang!</h1>
+              <p className="lead">Silahkan Masukkan Username dan Password Anda!</p>
             </div>
 
             <div className="card">
@@ -77,12 +77,12 @@ const Login = ({ onLoginSuccess }) => {
                 <div className="m-sm-3">
                   <form onSubmit={handleLogin}>
                     <div className="mb-3">
-                      <label className="form-label">Email</label>
+                      <label className="form-label">Username</label>
                       <input
                         className="form-control form-control-lg"
                         type="text"
                         name="username"
-                        placeholder="Enter your email"
+                        placeholder="Masukkan Username Kamu"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         required
@@ -94,7 +94,7 @@ const Login = ({ onLoginSuccess }) => {
                         className="form-control form-control-lg"
                         type="password"
                         name="password"
-                        placeholder="Enter your password"
+                        placeholder="Masukkan Password Kamu"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
@@ -113,16 +113,13 @@ const Login = ({ onLoginSuccess }) => {
                             aria-hidden="true"
                           ></span>
                         ) : (
-                          "Sign in"
+                          "Login"
                         )}
                       </button>
                     </div>
                   </form>
                 </div>
               </div>
-            </div>
-            <div className="text-center mt-3">
-              Don't have an account? <a href="/register">Sign up</a>
             </div>
           </div>
         </div>
