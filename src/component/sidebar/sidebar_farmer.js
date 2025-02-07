@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   FaHome,
-  FaUser,
+  FaUser ,
   FaGamepad,
   FaBook,
   FaSquare,
@@ -10,13 +10,12 @@ import {
   FaCoffee,
   FaSignOutAlt,
   FaBars,
-  FaUserCircle,
   FaMoneyBill,
   FaHistory,
 } from "react-icons/fa";
 
 // Komponen Header
-const Header = ({ toggleSidebar, userName, userRole }) => {
+const Header = ({ toggleSidebar, userName }) => {
   return (
     <header
       className="header"
@@ -49,9 +48,9 @@ const Header = ({ toggleSidebar, userName, userRole }) => {
           <FaBars />
         </button>
       </div>
-
+      <div></div>
       <div>
-        <Link to={userRole === "farmer" ? "/farmer/profile" : "/booster/profile"} style={{ color: "#fff", textDecoration: "none" }}>
+        <Link to="/farmer/profile" style={{ color: "#fff", textDecoration: "none" }}>
           <button
             className="btn btn-outline-light"
             style={{
@@ -61,7 +60,7 @@ const Header = ({ toggleSidebar, userName, userRole }) => {
               fontSize: "18px",
             }}
           >
-            <FaUser Circle />
+            <FaUser  />
           </button>
         </Link>
       </div>
@@ -73,7 +72,7 @@ const SidebarFarmer = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [userName, setUserName] = useState("");
+  const [userName, setUserName] = useState("Admin");
   const [userRole, setUserRole] = useState(localStorage.getItem("jabatan"));
 
   const handleLogout = () => {
@@ -88,19 +87,125 @@ const SidebarFarmer = () => {
 
   const isMobile = window.innerWidth <= 768;
 
+  const sidebarContent = (
+    <div className="sidebar-content" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <div>
+        <a className="sidebar-brand" href="/">
+          <span className="align-middle">HarvestSync</span>
+        </a>
+        <ul className="sidebar-nav" style={{ padding: 0, listStyle: 'none' }}>
+          <li className="sidebar-header">Pages</li>
+          {userRole === "farmer" && (
+            <>
+              <li className={`sidebar-item ${location.pathname === "/farmer/dashboard" ? "active" : ""}`}>
+                <Link className="sidebar-link" to="/farmer/dashboard">
+                  <FaGamepad className="align-middle" />{" "}
+                  <span className="align-middle">Dashboard</span>
+                </Link>
+              </li>
+              <li className={`sidebar-item ${location.pathname === "/farmer/perolehan" ? "active" : ""}`}>
+                <Link className="sidebar-link" to="/farmer/perolehan">
+                  <FaGamepad className="align-middle" />{" "}
+                  <span className="align-middle">Farmer</span>
+                </Link>
+              </li>
+              <li className={`sidebar-item ${location.pathname === "/farmer/absensi" ? "active" : ""}`}>
+                <Link className="sidebar-link" to="/farmer/absensi">
+                  <FaGamepad className="align-middle" />{" "}
+                  <span className="align-middle">Absensi</span>
+                </Link>
+              </li>
+              <li className={`sidebar-item ${location.pathname === "/farmer/kasbon" ? "active" : ""}`}>
+                <Link className="sidebar-link" to="/farmer/kasbon">
+                  <FaGamepad className="align-middle" />{" "}
+                  <span className="align-middle">Kasbon</span>
+                </Link>
+              </li>
+              <li className={`sidebar-item ${location.pathname === "/farmer/riwayatperolehan" ? "active" : ""}`}>
+                <Link className="sidebar-link" to="/farmer/riwayatperolehan">
+                  <FaHistory className="align-middle" />{" "}
+                  <span className="align-middle">Riwayat Perolehan</span>
+                </Link>
+              </li>
+            </>
+          )}
+          {userRole === "booster" && (
+            <>
+              <li className={`sidebar-item ${location.pathname === "/booster/dashboard" ? "active" : ""}`}>
+                <Link className="sidebar-link" to="/booster/dashboard">
+                  <FaHome className="align-middle" />{" "}
+                  <span className="align-middle">Dashboard</span>
+                </Link>
+              </li>
+              <li className={`sidebar-item ${location.pathname === "/booster/absensi" ? "active" : ""}`}>
+                <Link className="sidebar-link" to="/booster/absensi">
+                  <FaGamepad className="align-middle" />{" "}
+                  <span className="align-middle">Absensi</span>
+                </Link>
+              </li>
+              <li className={`sidebar-item ${location.pathname === "/booster/perolehan" ? "active" : ""}`}>
+                <Link className="sidebar-link" to="/booster/perolehan">
+                  <FaMoneyBill className="align-middle" />{" "}
+                  <span className="align-middle">Perolehan Booster</span>
+                </Link>
+              </li>
+              <li className={`sidebar-item ${location.pathname === "/booster/kasbon" ? "active" : ""}`}>
+                <Link className="sidebar-link" to="/booster/kasbon">
+                  <FaMoneyBill className="align-middle" />{" "}
+                  <span className="align-middle">Kasbon</span>
+                </Link>
+              </li>
+              <li className={`sidebar-item ${location.pathname === "/booster/riwayatperolehan" ? "active" : ""}`}>
+                <Link className="sidebar-link" to="/booster/riwayatperolehan">
+                  <FaMoneyBill className="align-middle" />{" "}
+                  <span className="align-middle">Riwayat Perolehan</span>
+                </Link>
+              </li>
+            </>
+          )}
+        </ul>
+      </div>
+      {/* Logout button container */}
+      <div style={{ 
+        marginTop: 'auto', 
+        borderTop: '1px solid rgba(255,255,255,0.1)',
+        padding: '15px 0'
+      }}>
+        <button 
+          className="sidebar-link" 
+          onClick={handleLogout} 
+          style={{ 
+            background: 'none', 
+            border: 'none', 
+            width: '100%', 
+            textAlign: 'left',
+            color: '#fff',
+            padding: '10px 15px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px'
+          }}
+        >
+          <FaSignOutAlt className="align-middle" />
+          <span className="align-middle">Logout</span>
+        </button>
+      </div>
+    </div>
+  );
+
   return (
     <div style={{ display: "flex", height: "100vh", flexDirection: "column" }}>
-      {/* Header */}
-      <Header toggleSidebar={toggleSidebar} userName={userName} userRole={userRole} />
+      <Header toggleSidebar={toggleSidebar} userName={userName} />
 
       <div style={{ display: "flex", flex: 1 }}>
-        {/* Sidebar for Desktop */}
+        {/* Desktop Sidebar */}
         {!isMobile && (
           <nav
             id="sidebar"
             className={`sidebar ${isSidebarOpen ? "" : "collapsed"}`}
             style={{
-              height: "100vh",
+              height: "calc(100vh - 50px)",
               overflowY: "auto",
               position: "fixed",
               top: "50px",
@@ -111,244 +216,45 @@ const SidebarFarmer = () => {
               zIndex: 1000,
             }}
           >
-            <div className="sidebar-content">
-              <a className="sidebar-brand" href="/">
-                <span className="align-middle">HarvestSync</span>
-              </a>
-              <ul className="sidebar-nav">
-                <li className="sidebar-header">Pages</li>
-                {userRole === "farmer" && (
-                  <li className={`sidebar-item ${location.pathname === "/farmer/dashboard" ? "active" : ""}`}>
-                    <Link className="sidebar-link" to="/farmer/dashboard">
-                      <FaGamepad className="align-middle" />{" "}
-                      <span className="align-middle">Dashboard</span>
-                    </Link>
-                  </li>
-                )}
-                {userRole === "farmer" && (
-                  <li className={`sidebar-item ${location.pathname === "/farmer/perolehan" ? "active" : ""}`}>
-                    <Link className="sidebar-link" to="/farmer/perolehan">
-                      <FaGamepad className="align-middle" />{" "}
-                      <span className="align-middle">Farmer</span>
-                    </Link>
-                  </li>
-                )}
-                {userRole === "farmer" && (
-                  <li className={`sidebar-item ${location.pathname === "/farmer/absensi" ? "active" : ""}`}>
-                    <Link className="sidebar-link" to="/farmer/absensi">
-                      <FaGamepad className="align-middle" />{" "}
-                      <span className="align-middle">Absensi</span>
-                    </Link>
-                  </li>
-                )}
-                  {userRole === "farmer" && (
-                  <li className={`sidebar-item ${location.pathname === "/farmer/kasbon" ? "active" : ""}`}>
-                    <Link className="sidebar-link" to="/farmer/kasbon">
-                      <FaGamepad className="align-middle" />{" "}
-                      <span className="align-middle">Kasbon</span>
-                    </Link>
-                  </li>
-                )}
-                 {userRole === "farmer" && (
-                  <li className={`sidebar-item ${location.pathname === "/farmer/riwayatperolehan" ? "active" : ""}`}>
-                    <Link className="sidebar-link" to="/farmer/riwayatperolehan">
-                      <FaHistory className="align-middle" />{" "}
-                      <span className="align-middle">Riwayat Perolehan</span>
-                    </Link>
-                  </li>
-                )}
-                {userRole === "booster" && (
-                  <li className={`sidebar-item ${location.pathname === "/booster/dashboard" ? "active" : ""}`}>
-                    <Link className="sidebar-link" to="/booster/dashboard">
-                      <FaHome className="align-middle" />{" "}
-                      <span className="align-middle">Dashboard</span>
-                    </Link>
-                  </li>
-                )}
-                {userRole === "booster" && (
-                  <li className={`sidebar-item ${location.pathname === "/booster/absensi" ? "active" : ""}`}>
-                    <Link className="sidebar-link" to="/booster/absensi">
-                      <FaGamepad className="align-middle" />{" "}
-                      <span className="align-middle">Absensi</span>
-                    </Link>
-                  </li>
-                )}
-                {userRole === "booster" && (
-                  <li className={`sidebar-item ${location.pathname === "/booster/perolehan" ? "active" : ""}`}>
-                    <Link className="sidebar-link" to="/booster/perolehan">
-                      <FaMoneyBill className="align-middle" />{" "}
-                      <span className="align-middle">Perolehan Booster</span>
-                    </Link>
-                  </li>
-                )}
-                 {userRole === "booster" && (
-                  <li className={`sidebar-item ${location.pathname === "/booster/kasbon" ? "active" : ""}`}>
-                    <Link className="sidebar-link" to="/booster/kasbon">
-                      <FaMoneyBill className="align-middle" />{" "}
-                      <span className="align-middle">Kasbon</span>
-                    </Link>
-                  </li>
-                )}
-                 {userRole === "booster" && (
-                  <li className={`sidebar-item ${location.pathname === "/booster/riwayatperolehan" ? "active" : ""}`}>
-                    <Link className="sidebar-link" to="/booster/riwayatperolehan">
-                      <FaMoneyBill className="align-middle" />{" "}
-                      <span className="align-middle">Riwayat Perolehan</span>
-                    </Link>
-                  </li>
-                )}
-                <li className={`sidebar-item ${location.pathname === "/sign-up" ? "active" : ""}`}>
-                  <Link className="sidebar-link" to="/sign-up">
-                    <FaUser className="align-middle" />{" "}
-                    <span className="align-middle">Sign Up</span>
-                  </Link>
-                </li>
-                <li className={`sidebar-item ${location.pathname === "/blank" ? "active" : ""}`}>
-                  <Link className="sidebar-link" to="/blank">
-                    <FaBook className="align-middle" />{" "}
-                    <span className="align-middle">Blank</span>
-                  </Link>
-                </li>
-                <li className="sidebar-header">Tools & Components</li>
-                <li className={`sidebar-item ${location.pathname === "/buttons" ? "active" : ""}`}>
-                  <Link className="sidebar-link" to="/buttons">
-                    <FaSquare className="align-middle" />{" "}
-                    <span className="align-middle">Buttons</span>
-                  </Link>
-                </li>
-                <li className={`sidebar-item ${location.pathname === "/forms" ? "active" : ""}`}>
-                  <Link className="sidebar-link" to="/forms">
-                    <FaCheckSquare className="align-middle" />{" "}
-                    <span className="align-middle">Forms</span>
-                  </Link>
-                </li>
-                <li className="sidebar-header">Plugins & Addons</li>
-                <li className={`sidebar-item ${location.pathname === "/charts" ? "active" : ""}`}>
-                  <Link className="sidebar-link" to="/charts">
-                    <FaCoffee className="align-middle" />{" "}
-                    <span className="align-middle">Charts</span>
-                  </Link>
-                </li>
-                <li className="sidebar-item">
-                  <Link className="sidebar-link" to="#" onClick={handleLogout}>
-                    <FaSignOutAlt className="align-middle" />{" "}
-                    <span className="align-middle">Logout</span>
-                  </Link>
-                </li>
-              </ul>
-            </div>
+            {sidebarContent}
           </nav>
         )}
 
-        {/* Sidebar for Mobile */}
+        {/* Mobile Sidebar */}
         {isMobile && (
-          <>
-            <div
-              className="mobile-sidebar"
+          <div
+            className="mobile-sidebar"
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              background: "rgba(0, 0, 0, 0.7)",
+              zIndex: 999,
+              display: isSidebarOpen ? "block" : "none",
+            }}
+            onClick={toggleSidebar}
+          >
+            <nav
               style={{
-                position: "fixed",
+                background: "#34a40",
+                width: "250px",
+                height: "100%",
+                position: "absolute",
                 top: 0,
                 left: 0,
-                width: "100%",
-                height: "100%",
-                background: "rgba(0, 0, 0, 0.7)",
-                zIndex: 999,
-                display: isSidebarOpen ? "block" : "none",
+                transition: "transform 0.3s ease",
+                transform: isSidebarOpen ? "translateX(0)" : "translateX(-100%)",
               }}
-              onClick={toggleSidebar}
+              onClick={(e) => e.stopPropagation()}
             >
-              <nav
-                style={{
-                  background: "#34a40",
-                  width: "250px",
-                  height: "100%",
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  transition: "transform 0.3s ease",
-                  transform: isSidebarOpen ? "translateX(0)" : "translateX(-100%)",
-                }}
-              >
-                <div className="sidebar-content">
-                  <a className="sidebar-brand" href="/">
-                    <span className="align-middle">HarvestSync</span>
-                  </a>
-                  <ul className="sidebar-nav">
-                    <li className="sidebar-header">Pages</li>
-                    <li className={`sidebar-item ${location.pathname === "/farmer/dashboard" ? "active" : ""}`}>
-                      <Link className="sidebar-link" to="/farmer/dashboard">
-                        <FaHome className="align-middle" />{" "}
-                        <span className="align-middle">Dashboard</span>
-                      </Link>
-                    </li>
-                    <li className={`sidebar-item ${location.pathname === "/farmer/absensi" ? "active" : ""}`}>
-                      <Link className="sidebar-link" to="/farmer/absensi">
-                        <FaUser className="align-middle" />{" "}
-                        <span className="align-middle">Absensi</span>
-                      </Link>
-                    </li>
-                    {userRole === "booster" && (
-                      <li className={`sidebar-item ${location.pathname === "/farmer/booster" ? "active" : ""}`}>
-                        <Link className="sidebar-link" to="/farmer/booster">
-                          <FaGamepad className="align-middle" />{" "}
-                          <span className="align-middle">Booster</span>
-                        </Link>
-                      </li>
-                    )}
-                    {userRole === "farmer" && (
-                      <li className={`sidebar-item ${location.pathname === "/farmer/farmer" ? "active" : ""}`}>
-                        <Link className="sidebar-link" to="/farmer/farmer">
-                          <FaGamepad className="align-middle" />{" "}
-                          <span className="align-middle">Farmer</span>
-                        </Link>
-                      </li>
-                    )}
-                    <li className={`sidebar-item ${location.pathname === "/sign-up" ? "active" : ""}`}>
-                      <Link className="sidebar-link" to="/sign-up">
-                        <FaUser className="align-middle" />{" "}
-                        <span className="align-middle">Sign Up</span>
-                      </Link>
-                    </li>
-                    <li className={`sidebar-item ${location.pathname === "/blank" ? "active" : ""}`}>
-                      <Link className="sidebar-link" to="/blank">
-                        <FaBook className="align-middle" />{" "}
-                        <span className="align-middle">Blank</span>
-                      </Link>
-                    </li>
-                    <li className="sidebar-header">Tools & Components</li>
-                    <li className={`sidebar-item ${location.pathname === "/buttons" ? "active" : ""}`}>
-                      <Link className="sidebar-link" to="/buttons">
-                        <FaSquare className="align-middle" />{" "}
-                        <span className="align-middle">Buttons</span>
-                      </Link>
-                    </li>
-                    <li className={`sidebar-item ${location.pathname === "/forms" ? "active" : ""}`}>
-                      <Link className="sidebar-link" to="/forms">
-                        <FaCheckSquare className="align-middle" />{" "}
-                        <span className="align-middle">Forms</span>
-                      </Link>
-                    </li>
-                    <li className="sidebar-header">Plugins & Addons</li>
-                    <li className={`sidebar-item ${location.pathname === "/charts" ? "active" : ""}`}>
-                      <Link className="sidebar-link" to="/charts">
-                        <FaCoffee className="align-middle" />{" "}
-                        <span className="align-middle">Charts</span>
-                      </Link>
-                    </li>
-                    <li className="sidebar-item">
-                      <button className="sidebar-link" onClick={handleLogout}>
-                        <FaSignOutAlt className="align-middle" />{" "}
-                        <span className="align-middle">Logout</span>
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-              </nav>
-            </div>
-          </>
+              {sidebarContent}
+            </nav>
+          </div>
         )}
 
-        {/* Konten Utama */}
+        {/* Main Content */}
         <div
           style={{
             marginLeft: isSidebarOpen && !isMobile ? "250px" : "0px",

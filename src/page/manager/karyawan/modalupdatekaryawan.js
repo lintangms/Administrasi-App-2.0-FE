@@ -55,7 +55,6 @@ const ModalUpdateKaryawan = ({ showModal, setShowModal, selectedKaryawan, setKar
     if (selectedKaryawan) {
       setFormData({
         ...selectedKaryawan,
-        username_akun: selectedKaryawan.username_akun,
       });
     }
   }, [selectedKaryawan]);
@@ -66,67 +65,49 @@ const ModalUpdateKaryawan = ({ showModal, setShowModal, selectedKaryawan, setKar
   };
 
   const handleSave = async () => {
-    const formDataToSend = new FormData();
-    for (const key in formData) {
-      formDataToSend.append(key, formData[key]);
-    }
-
     try {
-      const { nama_jabatan, nama_divisi, username_akun, nama_game, nama_shift } = formData;
-
-      const [jabatanRes, divisiRes, akunRes, gameRes, shiftRes] = await Promise.all([
-        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/jabatan/get`, { params: { nama_jabatan } }),
-        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/divisi/get`, { params: { nama_divisi } }),
-        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/akun/get`, { params: { username: username_akun } }),
-        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/game/get`, { params: { nama_game } }),
-        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/shift/get`, { params: { nama_shift } }),
-      ]);
-
-      if (!jabatanRes.data.data.length) {
-        return toast.error('Jabatan tidak ditemukan');
-      }
-      if (!divisiRes.data.data.length) {
-        return toast.error('Divisi tidak ditemukan');
-      }
-      if (!akunRes.data.data.length) {
-        return toast.error('Akun tidak ditemukan');
-      }
-      if (!gameRes.data.data.length) {
-        return toast.error('Game tidak ditemukan');
-      }
-      if (!shiftRes.data.data.length) {
-        return toast.error('Shift tidak ditemukan');
-      }
-
-      const id_jabatan = jabatanRes.data.data[0].id_jabatan;
-      const id_divisi = divisiRes.data.data[0].id_divisi;
-      const id_akun = akunRes.data.data[0].id_akun;
-      const id_game = gameRes.data.data[0].id_game;
-      const id_shift = shiftRes.data.data[0].id_shift;
-
-      formDataToSend.append('id_jabatan', id_jabatan);
-      formDataToSend.append('id_divisi', id_divisi);
-      formDataToSend.append('id_akun', id_akun);
-      formDataToSend.append('id_game', id_game);
-      formDataToSend.append('id_shift', id_shift);
-
       const response = await axios.put(
         `${process.env.REACT_APP_BACKEND_URL}/api/karyawan/update/${selectedKaryawan.id_karyawan}`,
-        formDataToSend,
-        { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' } }
+        {
+          NIP: formData.NIP,
+          nama: formData.nama,
+          alamat: formData.alamat,
+          telp: formData.telp,
+          ttl: formData.ttl,
+          pendidikan: formData.pendidikan,
+          status: formData.status,
+          mulai_bekerja: formData.mulai_bekerja,
+          nama_jabatan: formData.nama_jabatan,
+          nama_divisi: formData.nama_divisi,
+          nama_shift: formData.nama_shift,
+          nama_game: formData.nama_game,
+          username_akun: formData.username_akun,
+          username: formData.username,
+          password: formData.password || undefined, // Only send if changed
+          ket: formData.ket
+        },
+        { 
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          } 
+        }
       );
 
       if (response.status === 200) {
         setKaryawanList((prevList) =>
-          prevList.map((karyawan) => (karyawan.id_karyawan === selectedKaryawan.id_karyawan ? formData : karyawan))
+          prevList.map((karyawan) => 
+            karyawan.id_karyawan === selectedKaryawan.id_karyawan ? 
+            { ...karyawan, ...formData } : 
+            karyawan
+          )
         );
         toast.success('Karyawan berhasil diperbarui!');
         setShowModal(false);
-        setFormData({}); // Reset form
       }
     } catch (error) {
       console.error('Error saat memperbarui karyawan:', error);
-      toast.error('Gagal memperbarui karyawan.');
+      toast.error(error.response?.data?.message || 'Gagal memperbarui karyawan');
     }
   };
 
@@ -226,7 +207,7 @@ const ModalUpdateKaryawan = ({ showModal, setShowModal, selectedKaryawan, setKar
                       type="date"
                       className="form-control"
                       name="mulai_bekerja"
-                      value={formData.mulai_bekerja}
+                      value={formData.mulai_bekerja?.split('T')[0]}
                       onChange={handleChange}
                     />
                   </div>
@@ -334,6 +315,7 @@ const ModalUpdateKaryawan = ({ showModal, setShowModal, selectedKaryawan, setKar
                       name="password"
                       value={formData.password}
                       onChange={handleChange}
+                      placeholder="Kosongkan jika tidak ingin mengubah password"
                     />
                   </div>
                   <div className="form-group">
