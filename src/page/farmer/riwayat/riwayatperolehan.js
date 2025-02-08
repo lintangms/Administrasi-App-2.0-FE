@@ -30,13 +30,13 @@ const RiwayatFarming = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (response.data && response.data.data) {
-          setFarmingList([response.data.data]); // Ambil data dari response dan simpan dalam array
+          setFarmingList(response.data.data); // Ambil data dari response dan simpan dalam array
         } else {
           setFarmingList([]);
         }
       } catch (err) {
         console.error('Error saat mengambil data riwayat farming:', err);
-        setError('Gagal mengambil data riwayat farming');
+        setError('Tidak ada data riwayat farming');
         setFarmingList([]);
       } finally {
         setLoading(false);
@@ -66,26 +66,16 @@ const RiwayatFarming = () => {
                 <table className="table align-items-center mb-0">
                   <thead>
                     <tr>
-                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                        No
-                      </th>
-                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                        NIP
-                      </th>
-                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                        Koin
-                      </th>
-                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                        Periode
-                      </th>
-                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                        Aksi
-                      </th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">No</th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">NIP</th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Koin</th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Periode</th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Aksi</th>
                     </tr>
                   </thead>
 
                   <tbody>
-                    {farmingList && farmingList.length > 0 ? (
+                    {farmingList.length > 0 ? (
                       farmingList.map((farming, index) => (
                         <tr key={farming.id_farming}>
                           <td>{index + 1}</td> {/* Menampilkan nomor urut */}
@@ -111,6 +101,51 @@ const RiwayatFarming = () => {
           </div>
         </>
       )}
+
+      {/* Inline CSS */}
+      <style>{`
+        .table {
+          width: 100%;
+          margin-bottom: 1rem;
+          color: #212529;
+        }
+
+        .table th,
+        .table td {
+          padding: 0.75rem;
+          vertical-align: top;
+          border-top: 1px solid #dee2e6;
+        }
+
+        .table thead th {
+          vertical-align: bottom;
+          border-bottom: 2px solid #dee2e6;
+        }
+
+        .text-uppercase {
+          text-transform: uppercase;
+        }
+
+        .text-secondary {
+          color: #6c757d;
+        }
+
+        .text-xxs {
+          font-size: 0.75rem;
+        }
+
+        .font-weight-bolder {
+          font-weight: bolder;
+        }
+
+        .bg-gradient-dark {
+          background: linear-gradient(180deg, #1a1a1a 0%, #343a40 100%);
+        }
+
+        .border-radius-lg {
+          border-radius: 0.5rem;
+        }
+      `}</style>
     </div>
   );
 };

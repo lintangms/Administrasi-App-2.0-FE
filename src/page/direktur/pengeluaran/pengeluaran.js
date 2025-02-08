@@ -25,7 +25,7 @@ const Pengeluaran_Direktur = () => {
         }
       } catch (err) {
         console.error('Error saat mengambil data pengeluaran:', err);
-        setError('Gagal mengambil data pengeluaran');
+        setError('Tidak ada data pengeluaran');
         setPengeluaranList([]);
       } finally {
         setLoading(false);

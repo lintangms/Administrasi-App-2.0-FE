@@ -10,6 +10,20 @@ import {
   FaCoffee,
   FaSignOutAlt,
   FaBars,
+  FaPeopleArrows,
+  FaPeopleCarry,
+  FaUsers,
+  FaSprayCan,
+  FaIdCard,
+  FaMoneyCheck,
+  FaMoneyBillWave,
+  FaMoneyBillAlt,
+  FaIdCardAlt,
+  FaCheckCircle,
+  FaCoins,
+  FaSellcast,
+  FaMoneyCheckAlt,
+  FaDatabase,
 } from "react-icons/fa";
 
 // Komponen Header
@@ -89,7 +103,7 @@ const SidebarDirektur = () => {
     <div className="sidebar-content" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <div>
         <a className="sidebar-brand" href="/">
-          <span className="align-middle">HarvestSync</span>
+          <span className="align-middle">Harvest</span>
         </a>
         <ul className="sidebar-nav" style={{ padding: 0, listStyle: 'none' }}>
           <li className="sidebar-header">Pages</li>
@@ -97,6 +111,24 @@ const SidebarDirektur = () => {
             <Link className="sidebar-link" to="/direktur/dashboard">
               <FaHome className="align-middle" />{" "}
               <span className="align-middle">Dashboard</span>
+            </Link>
+          </li>
+          <li className={`sidebar-item ${location.pathname === "/direktur/data_absensi" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/direktur/data_absensi">
+              <FaCheckCircle className="align-middle" />{" "}
+              <span className="align-middle">Data Absensi</span>
+            </Link>
+          </li>
+          <li className={`sidebar-item ${location.pathname === "/direktur/perolehan_farming" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/direktur/perolehan_farming">
+              <FaCoins className="align-middle" />{" "}
+              <span className="align-middle">Perolehan Farming</span>
+            </Link>
+          </li>
+          <li className={`sidebar-item ${location.pathname === "/direktur/perolehan_boosting" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/direktur/perolehan_boosting">
+              <FaDatabase className="align-middle" />{" "}
+              <span className="align-middle">Perolehan Boosting</span>
             </Link>
           </li>
           <li className={`sidebar-item ${location.pathname === "/direktur/jabatandivisi" ? "active" : ""}`}>
@@ -113,7 +145,7 @@ const SidebarDirektur = () => {
           </li>
           <li className={`sidebar-item ${location.pathname === "/direktur/karyawan" ? "active" : ""}`}>
             <Link className="sidebar-link" to="/direktur/karyawan">
-              <FaUser className="align-middle" />{" "}
+              <FaUsers className="align-middle" />{" "}
               <span className="align-middle">Karyawan</span>
             </Link>
           </li>
@@ -123,39 +155,57 @@ const SidebarDirektur = () => {
               <span className="align-middle">Inventaris</span>
             </Link>
           </li>
-          <li className={`sidebar-item ${location.pathname === "/direktur/scan_absensi" ? "active" : ""}`}>
-            <Link className="sidebar-link" to="/direktur/scan_absensi">
-              <FaSquare className="align-middle" />{" "}
-              <span className="align-middle">Scan</span>
-            </Link>
-          </li>
           <li className={`sidebar-item ${location.pathname === "/direktur/akun" ? "active" : ""}`}>
             <Link className="sidebar-link" to="/direktur/akun">
-              <FaCheckSquare className="align-middle" />{" "}
+              <FaUser className="align-middle" />{" "}
               <span className="align-middle">Akun</span>
             </Link>
           </li>
           <li className={`sidebar-item ${location.pathname === "/direktur/pengeluaran" ? "active" : ""}`}>
             <Link className="sidebar-link" to="/direktur/pengeluaran">
-              <FaCoffee className="align-middle" />{" "}
+              <FaMoneyBillWave className="align-middle" />{" "}
               <span className="align-middle">Pengeluaran</span>
+            </Link>
+          </li>
+          <li className={`sidebar-item ${location.pathname === "/direktur/kasbon" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/direktur/kasbon">
+              <FaMoneyBillAlt className="align-middle" />{" "}
+              <span className="align-middle">Kasbon</span>
+            </Link>
+          </li>
+          <li className={`sidebar-item ${location.pathname === "/direktur/data_penjualan" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/direktur/data_penjualan">
+              <FaSellcast className="align-middle" />{" "}
+              <span className="align-middle">Data Penjualan</span>
+            </Link>
+          </li>
+          <li className={`sidebar-item ${location.pathname === "/direktur/data_gaji" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/direktur/data_gaji">
+              <FaMoneyCheckAlt className="align-middle" />{" "}
+              <span className="align-middle">Data Gaji</span>
+            </Link>
+          </li>
+          <li className={`sidebar-item ${location.pathname === "/direktur/data_unsold" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/direktur/data_unsold">
+              <FaMoneyBillWave className="align-middle" />{" "}
+              <span className="align-middle">Data Unsold</span>
             </Link>
           </li>
         </ul>
       </div>
       {/* Logout button container */}
-      <div style={{ 
-        marginTop: 'auto', 
+      <div style={{
+        marginTop: 'auto',
         borderTop: '1px solid rgba(255,255,255,0.1)',
         padding: '15px 0'
       }}>
-        <button 
-          className="sidebar-link" 
-          onClick={handleLogout} 
-          style={{ 
-            background: 'none', 
-            border: 'none', 
-            width: '100%', 
+        <button
+          className="sidebar-link"
+          onClick={handleLogout}
+          style={{
+            background: 'none',
+            border: 'none',
+            width: '100%',
             textAlign: 'left',
             color: '#fff',
             padding: '10px 15px',

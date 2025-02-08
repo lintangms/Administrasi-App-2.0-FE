@@ -10,6 +10,20 @@ import {
   FaCoffee,
   FaSignOutAlt,
   FaBars,
+  FaPeopleArrows,
+  FaPeopleCarry,
+  FaUsers,
+  FaSprayCan,
+  FaIdCard,
+  FaMoneyCheck,
+  FaMoneyBillWave,
+  FaMoneyBillAlt,
+  FaIdCardAlt,
+  FaCheckCircle,
+  FaCoins,
+  FaSellcast,
+  FaMoneyCheckAlt,
+  FaDatabase,
 } from "react-icons/fa";
 
 // Komponen Header
@@ -89,7 +103,7 @@ const SidebarSPV = () => {
     <div className="sidebar-content" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <div>
         <a className="sidebar-brand" href="/">
-          <span className="align-middle">HarvestSync</span>
+          <span className="align-middle">Harvest</span>
         </a>
         <ul className="sidebar-nav" style={{ padding: 0, listStyle: 'none' }}>
           <li className="sidebar-header">Pages</li>
@@ -97,6 +111,18 @@ const SidebarSPV = () => {
             <Link className="sidebar-link" to="/spv/dashboard">
               <FaHome className="align-middle" />{" "}
               <span className="align-middle">Dashboard</span>
+            </Link>
+          </li>
+          <li className={`sidebar-item ${location.pathname === "/spv/perolehan_farming" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/spv/perolehan_farming">
+              <FaCoins className="align-middle" />{" "}
+              <span className="align-middle">Perolehan Farming</span>
+            </Link>
+          </li>
+          <li className={`sidebar-item ${location.pathname === "/spv/perolehan_boosting" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/spv/perolehan_boosting">
+              <FaDatabase className="align-middle" />{" "}
+              <span className="align-middle">Perolehan Boosting</span>
             </Link>
           </li>
           <li className={`sidebar-item ${location.pathname === "/spv/jabatandivisi" ? "active" : ""}`}>
@@ -113,7 +139,7 @@ const SidebarSPV = () => {
           </li>
           <li className={`sidebar-item ${location.pathname === "/spv/karyawan" ? "active" : ""}`}>
             <Link className="sidebar-link" to="/spv/karyawan">
-              <FaUser className="align-middle" />{" "}
+              <FaUsers className="align-middle" />{" "}
               <span className="align-middle">Karyawan</span>
             </Link>
           </li>
@@ -123,39 +149,57 @@ const SidebarSPV = () => {
               <span className="align-middle">Inventaris</span>
             </Link>
           </li>
-          <li className={`sidebar-item ${location.pathname === "/spv/scan_absensi" ? "active" : ""}`}>
-            <Link className="sidebar-link" to="/spv/scan_absensi">
-              <FaSquare className="align-middle" />{" "}
-              <span className="align-middle">Scan</span>
-            </Link>
-          </li>
           <li className={`sidebar-item ${location.pathname === "/spv/akun" ? "active" : ""}`}>
             <Link className="sidebar-link" to="/spv/akun">
-              <FaCheckSquare className="align-middle" />{" "}
+              <FaUser className="align-middle" />{" "}
               <span className="align-middle">Akun</span>
             </Link>
           </li>
           <li className={`sidebar-item ${location.pathname === "/spv/pengeluaran" ? "active" : ""}`}>
             <Link className="sidebar-link" to="/spv/pengeluaran">
-              <FaCoffee className="align-middle" />{" "}
+              <FaMoneyBillWave className="align-middle" />{" "}
               <span className="align-middle">Pengeluaran</span>
+            </Link>
+          </li>
+          <li className={`sidebar-item ${location.pathname === "/spv/kasbon" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/spv/kasbon">
+              <FaMoneyBillAlt className="align-middle" />{" "}
+              <span className="align-middle">Kasbon</span>
+            </Link>
+          </li>
+          <li className={`sidebar-item ${location.pathname === "/spv/data_penjualan" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/spv/data_penjualan">
+              <FaSellcast className="align-middle" />{" "}
+              <span className="align-middle">Data Penjualan</span>
+            </Link>
+          </li>
+          <li className={`sidebar-item ${location.pathname === "/spv/data_gaji" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/spv/data_gaji">
+              <FaMoneyCheckAlt className="align-middle" />{" "}
+              <span className="align-middle">Data Gaji</span>
+            </Link>
+          </li>
+          <li className={`sidebar-item ${location.pathname === "/spv/data_unsold" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/spv/data_unsold">
+              <FaMoneyBillWave className="align-middle" />{" "}
+              <span className="align-middle">Data Unsold</span>
             </Link>
           </li>
         </ul>
       </div>
       {/* Logout button container */}
-      <div style={{ 
-        marginTop: 'auto', 
+      <div style={{
+        marginTop: 'auto',
         borderTop: '1px solid rgba(255,255,255,0.1)',
         padding: '15px 0'
       }}>
-        <button 
-          className="sidebar-link" 
-          onClick={handleLogout} 
-          style={{ 
-            background: 'none', 
-            border: 'none', 
-            width: '100%', 
+        <button
+          className="sidebar-link"
+          onClick={handleLogout}
+          style={{
+            background: 'none',
+            border: 'none',
+            width: '100%',
             textAlign: 'left',
             color: '#fff',
             padding: '10px 15px',

@@ -7,6 +7,8 @@ const PerolehanFarming = () => {
   const [NIP, setNIP] = useState("");
   const [koin, setKoin] = useState("");
   const [ket, setKet] = useState("");
+  const [namaGame, setNamaGame] = useState(""); // State untuk nama game
+  const [games, setGames] = useState([]); // State untuk daftar game
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const backendUrl = process.env.REACT_APP_BACKEND_URL;
@@ -22,7 +24,26 @@ const PerolehanFarming = () => {
       toast.error("NIP tidak ditemukan di localStorage.");
       navigate("/");
     }
-  }, [navigate]);
+
+    // Fetch daftar game dari backend
+    const fetchGames = async () => {
+      try {
+        const response = await fetch(`${backendUrl}/api/game/get`);
+        const data = await response.json();
+        
+        // Pastikan data adalah array
+        if (Array.isArray(data.data)) { // Akses data dari objek
+          setGames(data.data); // Set daftar game
+        } else {
+          toast.error("Data game tidak valid.");
+        }
+      } catch (error) {
+        toast.error("Terjadi kesalahan saat menghubungi server. Coba lagi nanti.");
+      }
+    };
+
+    fetchGames();
+  }, [navigate, backendUrl]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,7 +55,7 @@ const PerolehanFarming = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ NIP, koin, ket }),
+        body: JSON.stringify({ NIP, koin, ket, nama_game: namaGame }), // Mengirim nama_game
       });
 
       const data = await response.json();
@@ -42,7 +63,8 @@ const PerolehanFarming = () => {
       if (response.ok) {
         toast.success(data.message);
         setKoin("");
-        setKet("");
+        setKet(""); // Reset keterangan
+        setNamaGame(""); // Reset nama game
       } else {
         toast.error(data.message || "Gagal menambahkan data farming.");
       }
@@ -89,8 +111,24 @@ const PerolehanFarming = () => {
                       className="form-control"
                       value={ket}
                       onChange={(e) => setKet(e.target.value)}
-                      required
+                      // Menghapus atribut required
                     />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Nama Game</label>
+                    <select
+                      className="form-control"
+                      value={namaGame}
+                      onChange={(e) => setNamaGame(e.target.value)}
+                      required
+                    >
+                      <option value="">Pilih Nama Game</option>
+                      {games.map((game) => (
+                        <option key={game.id_game} value={game.nama_game}>
+                          {game.nama_game}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <div className="d-grid gap-2 mt-3">
                     <button type="submit" className="btn btn-lg btn-primary" disabled={isLoading}>

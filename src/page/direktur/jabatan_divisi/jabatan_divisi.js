@@ -25,7 +25,7 @@ const Jabatan_Divisi_Direktur = () => {
         }
       } catch (err) {
         console.error('Error saat mengambil data divisi:', err);
-        setError('Gagal mengambil data divisi');
+        setError('Tidak ada data divisi');
         setDivisiList([]);
       } finally {
         setLoading(false);
@@ -45,7 +45,7 @@ const Jabatan_Divisi_Direktur = () => {
         }
       } catch (err) {
         console.error('Error saat mengambil data jabatan:', err);
-        setError('Gagal mengambil data jabatan');
+        setError('Tidak ada data jabatan');
         setJabatanList([]);
       } finally {
         setLoading(false);

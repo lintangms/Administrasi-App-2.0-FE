@@ -32,7 +32,7 @@ const Karyawan = () => {
         }
       } catch (err) {
         console.error('Error saat mengambil data karyawan:', err);
-        setError('Gagal mengambil data karyawan');
+        setError('Tidak ada data karyawan');
         setKaryawanList([]);
       } finally {
         setLoading(false);

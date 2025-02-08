@@ -27,7 +27,7 @@ const Boosting = () => {
         }
       } catch (err) {
         console.error('Error saat mengambil data boosting:', err);
-        setError('Gagal mengambil data boosting');
+        setError('Tidak ada data boosting');
         setBoostingList([]);
       } finally {
         setLoading(false);

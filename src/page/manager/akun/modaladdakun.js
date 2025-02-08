@@ -68,15 +68,18 @@ const ModalAddAkun = ({ showModal, setShowModal, setAkunList, token, onAddSucces
                     <label htmlFor="jenis" className="col-form-label">
                       Jenis:
                     </label>
-                    <input
-                      type="text"
+                    <select
                       className="form-control"
                       id="jenis"
                       value={jenis}
                       onChange={(e) => setJenis(e.target.value)}
-                      placeholder="Masukkan jenis"
-                    />
+                    >
+                      <option value="">Pilih jenis</option>
+                      <option value="steam">Steam</option>
+                      <option value="gmail">Gmail</option>
+                    </select>
                   </div>
+
                   <div className="form-group">
                     <label htmlFor="no-pemulihan" className="col-form-label">
                       No Pemulihan:

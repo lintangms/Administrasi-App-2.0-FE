@@ -1,55 +1,64 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaInfoCircle } from 'react-icons/fa'; 
-import { Link } from 'react-router-dom'; 
+import { Link, useNavigate } from 'react-router-dom'; 
 import { toast } from 'react-toastify'; // Import toast dari react-toastify
 
-const Karyawan_Direktur = () => {
-  const [karyawanList, setKaryawanList] = useState([]); // State untuk Karyawan
+const RiwayatFarming = () => {
+  const [farmingList, setFarmingList] = useState([]); // State untuk Riwayat Farming
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const token = localStorage.getItem('token');
+  const NIP = localStorage.getItem('NIP'); // Ambil NIP dari localStorage
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL; // Ambil URL dari .env
+  const navigate = useNavigate();
 
-  // Fetch Karyawan data
+  // Fetch Riwayat Farming data
   useEffect(() => {
-    const fetchKaryawan = async () => {
+    if (!NIP) {
+      // Jika NIP tidak ada, arahkan ke halaman login
+      toast.error('NIP tidak ditemukan. Silakan login kembali.');
+      navigate('/login');
+      return;
+    }
+
+    const fetchFarming = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`${BACKEND_URL}/api/karyawan/get`, {
+        const response = await axios.get(`${BACKEND_URL}/api/farming/get/${NIP}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (response.data) {
-          setKaryawanList(response.data);
+        if (response.data && response.data.data) {
+          setFarmingList(response.data.data); // Ambil data dari response dan simpan dalam array
         } else {
-          setKaryawanList([]);
+          setFarmingList([]);
         }
       } catch (err) {
-        console.error('Error saat mengambil data karyawan:', err);
-        setError('Gagal mengambil data karyawan');
-        setKaryawanList([]);
+        console.error('Error saat mengambil data riwayat farming:', err);
+        setError('Tidak ada data riwayat farming');
+        setFarmingList([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchKaryawan();
-  }, [token]);
+    fetchFarming();
+  }, [token, NIP, navigate]);
 
   return (
-    <div className="karyawan-container">
+    <div className="farming-container">
       {error && <p className="error-message">{error}</p>}
 
       {loading ? (
         <p>Loading...</p>
       ) : (
         <>
-          {/* Tabel Karyawan */}
+          {/* Tabel Riwayat Farming */}
           <div className="card my-4">
             <div className="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
               <div className="bg-gradient-dark shadow-dark border-radius-lg pt-4 pb-3 d-flex justify-content-between align-items-center">
-                <h6 className="text-white text-capitalize ps-3">Karyawan Table</h6>
+                <h6 className="text-white text-capitalize ps-3">Riwayat Farming</h6>
               </div>
             </div>
             <div className="card-body px-0 pb-2">
@@ -57,30 +66,24 @@ const Karyawan_Direktur = () => {
                 <table className="table align-items-center mb-0">
                   <thead>
                     <tr>
-                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                        No
-                      </th>
-                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                        NIP
-                      </th>
-                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                        Nama
-                      </th>
-                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                        Aksi
-                      </th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">No</th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">NIP</th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Koin</th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Periode</th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Aksi</th>
                     </tr>
                   </thead>
 
                   <tbody>
-                    {karyawanList && karyawanList.length > 0 ? (
-                      karyawanList.map((karyawan, index) => (
-                        <tr key={karyawan.id_karyawan}>
+                    {farmingList.length > 0 ? (
+                      farmingList.map((farming, index) => (
+                        <tr key={farming.id_farming}>
                           <td>{index + 1}</td> {/* Menampilkan nomor urut */}
-                          <td>{karyawan.NIP}</td>
-                          <td>{karyawan.nama}</td>
+                          <td>{farming.NIP}</td>
+                          <td>{farming.koin}</td>
+                          <td>{new Date(farming.periode).toLocaleDateString()}</td> {/* Format tanggal */}
                           <td>
-                            <Link to={`/direktur/detail_karyawan/${karyawan.id_karyawan}`} className="btn btn-primary btn-sm rounded">
+                            <Link to={`/farmer/detail_farming/${farming.id_farming}`} className="btn btn-primary btn-sm rounded">
                               <FaInfoCircle />
                             </Link>
                           </td>
@@ -88,7 +91,7 @@ const Karyawan_Direktur = () => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="4">Tidak ada karyawan tersedia</td>
+                        <td colSpan="5">Tidak ada data untuk ditampilkan.</td>
                       </tr>
                     )}
                   </tbody>
@@ -147,4 +150,4 @@ const Karyawan_Direktur = () => {
   );
 };
 
-export default Karyawan_Direktur;
+export default RiwayatFarming;

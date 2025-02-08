@@ -27,7 +27,7 @@ const Inventaris = () => {
         }
       } catch (err) {
         console.error('Error saat mengambil data inventaris:', err);
-        setError('Gagal mengambil data inventaris');
+        setError('Tidak ada data inventaris');
         setInventarisList([]);
       } finally {
         setLoading(false);

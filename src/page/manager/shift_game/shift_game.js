@@ -37,7 +37,7 @@ const Shift_Game = () => {
         }
       } catch (err) {
         console.error('Error saat mengambil data shift:', err);
-        setError('Gagal mengambil data shift');
+        setError('Tidak ada data shift');
         setShiftList([]);
       } finally {
         setLoading(false);
@@ -57,7 +57,7 @@ const Shift_Game = () => {
         }
       } catch (err) {
         console.error('Error saat mengambil data game:', err);
-        setError('Gagal mengambil data game');
+        setError('Tidak ada data game');
         setGameList([]);
       } finally {
         setLoading(false);

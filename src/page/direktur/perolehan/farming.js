@@ -27,7 +27,7 @@ const Farming = () => {
         }
       } catch (err) {
         console.error('Error saat mengambil data farming:', err);
-        setError('Gagal mengambil data farming');
+        setError('Tidak ada data farming');
         setFarmingList([]);
       } finally {
         setLoading(false);

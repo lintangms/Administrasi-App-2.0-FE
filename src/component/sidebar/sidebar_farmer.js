@@ -12,6 +12,16 @@ import {
   FaBars,
   FaMoneyBill,
   FaHistory,
+  FaCoins,
+  FaBookDead,
+  FaBookOpen,
+  FaMoneyBillAlt,
+  FaUncharted,
+  FaUnderline,
+  FaNotEqual,
+  FaBitcoin,
+  FaViacoin,
+  FaMoneyBillWave,
 } from "react-icons/fa";
 
 // Komponen Header
@@ -91,7 +101,7 @@ const SidebarFarmer = () => {
     <div className="sidebar-content" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <div>
         <a className="sidebar-brand" href="/">
-          <span className="align-middle">HarvestSync</span>
+          <span className="align-middle">Harvest</span>
         </a>
         <ul className="sidebar-nav" style={{ padding: 0, listStyle: 'none' }}>
           <li className="sidebar-header">Pages</li>
@@ -99,32 +109,50 @@ const SidebarFarmer = () => {
             <>
               <li className={`sidebar-item ${location.pathname === "/farmer/dashboard" ? "active" : ""}`}>
                 <Link className="sidebar-link" to="/farmer/dashboard">
-                  <FaGamepad className="align-middle" />{" "}
+                  <FaHome className="align-middle" />{" "}
                   <span className="align-middle">Dashboard</span>
-                </Link>
-              </li>
-              <li className={`sidebar-item ${location.pathname === "/farmer/perolehan" ? "active" : ""}`}>
-                <Link className="sidebar-link" to="/farmer/perolehan">
-                  <FaGamepad className="align-middle" />{" "}
-                  <span className="align-middle">Farmer</span>
                 </Link>
               </li>
               <li className={`sidebar-item ${location.pathname === "/farmer/absensi" ? "active" : ""}`}>
                 <Link className="sidebar-link" to="/farmer/absensi">
-                  <FaGamepad className="align-middle" />{" "}
+                  <FaBook className="align-middle" />{" "}
                   <span className="align-middle">Absensi</span>
+                </Link>
+              </li>
+              <li className={`sidebar-item ${location.pathname === "/farmer/perolehan" ? "active" : ""}`}>
+                <Link className="sidebar-link" to="/farmer/perolehan">
+                  <FaCoins className="align-middle" />{" "}
+                  <span className="align-middle">Perolehan Farmer</span>
+                </Link>
+              </li>
+              <li className={`sidebar-item ${location.pathname === "/farmer/unsold" ? "active" : ""}`}>
+                <Link className="sidebar-link" to="/farmer/unsold">
+                  <FaMoneyBillWave className="align-middle" />{" "}
+                  <span className="align-middle">Unsold</span>
                 </Link>
               </li>
               <li className={`sidebar-item ${location.pathname === "/farmer/kasbon" ? "active" : ""}`}>
                 <Link className="sidebar-link" to="/farmer/kasbon">
-                  <FaGamepad className="align-middle" />{" "}
+                  <FaMoneyBillAlt className="align-middle" />{" "}
                   <span className="align-middle">Kasbon</span>
+                </Link>
+              </li>
+              <li className={`sidebar-item ${location.pathname === "/farmer/riwayatabsen" ? "active" : ""}`}>
+                <Link className="sidebar-link" to="/farmer/riwayatabsen">
+                  <FaHistory className="align-middle" />{" "}
+                  <span className="align-middle">Riwayat Absensi</span>
                 </Link>
               </li>
               <li className={`sidebar-item ${location.pathname === "/farmer/riwayatperolehan" ? "active" : ""}`}>
                 <Link className="sidebar-link" to="/farmer/riwayatperolehan">
                   <FaHistory className="align-middle" />{" "}
                   <span className="align-middle">Riwayat Perolehan</span>
+                </Link>
+              </li>
+              <li className={`sidebar-item ${location.pathname === "/farmer/riwayatkasbon" ? "active" : ""}`}>
+                <Link className="sidebar-link" to="/farmer/riwayatkasbon">
+                  <FaHistory className="align-middle" />{" "}
+                  <span className="align-middle">Riwayat Kasbon</span>
                 </Link>
               </li>
             </>
@@ -139,26 +167,44 @@ const SidebarFarmer = () => {
               </li>
               <li className={`sidebar-item ${location.pathname === "/booster/absensi" ? "active" : ""}`}>
                 <Link className="sidebar-link" to="/booster/absensi">
-                  <FaGamepad className="align-middle" />{" "}
+                  <FaBook className="align-middle" />{" "}
                   <span className="align-middle">Absensi</span>
                 </Link>
               </li>
               <li className={`sidebar-item ${location.pathname === "/booster/perolehan" ? "active" : ""}`}>
                 <Link className="sidebar-link" to="/booster/perolehan">
-                  <FaMoneyBill className="align-middle" />{" "}
-                  <span className="align-middle">Perolehan Booster</span>
+                  <FaCoins className="align-middle" />{" "}
+                  <span className="align-middle">Perolehan booster</span>
+                </Link>
+              </li>
+              <li className={`sidebar-item ${location.pathname === "/booster/unsold" ? "active" : ""}`}>
+                <Link className="sidebar-link" to="/booster/unsold">
+                  <FaMoneyBillWave className="align-middle" />{" "}
+                  <span className="align-middle">Unsold</span>
                 </Link>
               </li>
               <li className={`sidebar-item ${location.pathname === "/booster/kasbon" ? "active" : ""}`}>
                 <Link className="sidebar-link" to="/booster/kasbon">
-                  <FaMoneyBill className="align-middle" />{" "}
+                  <FaMoneyBillAlt className="align-middle" />{" "}
                   <span className="align-middle">Kasbon</span>
+                </Link>
+              </li>
+              <li className={`sidebar-item ${location.pathname === "/booster/riwayatabsen" ? "active" : ""}`}>
+                <Link className="sidebar-link" to="/booster/riwayatabsen">
+                  <FaHistory className="align-middle" />{" "}
+                  <span className="align-middle">Riwayat Absensi</span>
                 </Link>
               </li>
               <li className={`sidebar-item ${location.pathname === "/booster/riwayatperolehan" ? "active" : ""}`}>
                 <Link className="sidebar-link" to="/booster/riwayatperolehan">
-                  <FaMoneyBill className="align-middle" />{" "}
+                  <FaHistory className="align-middle" />{" "}
                   <span className="align-middle">Riwayat Perolehan</span>
+                </Link>
+              </li>
+              <li className={`sidebar-item ${location.pathname === "/booster/riwayatkasbon" ? "active" : ""}`}>
+                <Link className="sidebar-link" to="/booster/riwayatkasbon">
+                  <FaHistory className="align-middle" />{" "}
+                  <span className="align-middle">Riwayat Kasbon</span>
                 </Link>
               </li>
             </>

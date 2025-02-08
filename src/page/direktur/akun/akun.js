@@ -25,7 +25,7 @@ const Akun_Direktur = () => {
         }
       } catch (err) {
         console.error('Error saat mengambil data akun:', err);
-        setError('Gagal mengambil data akun');
+        setError('Tidak ada data akun');
         setAkunList([]);
       } finally {
         setLoading(false);

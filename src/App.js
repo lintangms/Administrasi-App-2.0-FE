@@ -34,6 +34,8 @@ import Kasbon from "./page/farmer/kasbon/kasbon";
 import RiwayatFarming from "./page/farmer/riwayat/riwayatperolehan";
 import RiwayatBoosting from "./page/booster/riwayatperolehan/riwayatbooster";
 import AbsensiScan from "./page/manager/scan/absensiscan";
+import RiwayatAbsen from "./page/farmer/riwayatabsen/riwayatabsensi";
+import RiwayatKasbon from "./page/farmer/riwayatkasbon/riwayatkasbon";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -158,6 +160,8 @@ function App() {
           <Route path="/manager/inventaris" element={<Inventaris />} />
           <Route path="/manager/akun" element={<Akun />} />
           <Route path="/manager/pengeluaran" element={<Pengeluaran />} />
+          <Route path="/manager/perolehan_farming" element={<Farming />} />
+          <Route path="/manager/perolehan_boosting" element={<Boosting />} />
 
           <Route path="/spv/dashboard" element={<DashboardSPV />} />
           <Route path="/spv/jabatandivisi" element={<Jabatan_Divisi />} />
@@ -165,6 +169,12 @@ function App() {
           <Route path="/spv/karyawan" element={<Karyawan />} />
           <Route path="/spv/detail_karyawan/:id" element={<DetailKaryawan />} />
           <Route path="/spv/profile" element={<Profile />} />
+          <Route path="/spv/inventaris" element={<Inventaris />} />
+          <Route path="/spv/akun" element={<Akun />} />
+          <Route path="/spv/pengeluaran" element={<Pengeluaran />} />
+          <Route path="/spv/perolehan_farming" element={<Farming />} />
+          <Route path="/spv/perolehan_boosting" element={<Boosting />} />
+
 
           <Route path="/farmer/dashboard" element={<DashboardFarmer />} />
           <Route path="/farmer/absensi" element={<AbsensiFarmer />} />
@@ -172,6 +182,8 @@ function App() {
           <Route path="/farmer/profile" element={<Profile />} />
           <Route path="/farmer/kasbon" element={<Kasbon />} />
           <Route path="/farmer/riwayatperolehan" element={<RiwayatFarming />} />
+          <Route path="/farmer/riwayatabsen" element={<RiwayatAbsen />} />
+          <Route path="/farmer/riwayatkasbon" element={<RiwayatKasbon />} />
 
           <Route path="/booster/dashboard" element={<DashboardBooster />} />
           <Route path="/booster/absensi" element={<AbsensiBooster />} />
@@ -179,6 +191,8 @@ function App() {
           <Route path="/booster/profile" element={<Profile />} />
           <Route path="/booster/kasbon" element={<Kasbon />} />
           <Route path="/booster/riwayatperolehan" element={<RiwayatBoosting />} />
+          <Route path="/booster/riwayatabsen" element={<RiwayatAbsen />} />
+          <Route path="/booster/riwayatkasbon" element={<RiwayatKasbon />} />
 
           <Route path="/direktur/dashboard" element={<DashboardDirektur />} />
           <Route path="/direktur/jabatandivisi" element={<Jabatan_Divisi_Direktur />} />
