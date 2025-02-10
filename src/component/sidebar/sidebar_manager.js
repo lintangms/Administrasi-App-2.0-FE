@@ -113,8 +113,8 @@ const SidebarManager = () => {
               <span className="align-middle">Dashboard</span>
             </Link>
           </li>
-          <li className={`sidebar-item ${location.pathname === "/manager/scan_absensi" ? "active" : ""}`}>
-            <Link className="sidebar-link" to="/manager/scan_absensi">
+          <li className={`sidebar-item ${location.pathname === "/manager/scan" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/manager/scan">
               <FaIdCardAlt className="align-middle" />{" "}
               <span className="align-middle">Scan Absensi</span>
             </Link>

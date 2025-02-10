@@ -279,8 +279,8 @@ const ModalAddKaryawan = ({ showModal, setShowModal, setKaryawanList, token }) =
                     >
                       <option value="">Pilih Akun</option>
                       {akunList.map((akun) => (
-                        <option key={akun.id_akun} value={akun.username}>
-                          {akun.username}
+                        <option key={akun.id_akun} value={akun.username_steam}>
+                          {akun.username_steam}
                         </option>
                       ))}
                     </select>

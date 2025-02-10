@@ -3,14 +3,16 @@ import axios from 'axios';
 import { toast } from 'react-toastify'; // Import toast dari react-toastify
 
 const ModalAddAkun = ({ showModal, setShowModal, setAkunList, token, onAddSuccess }) => {
-  const [username, setUsername] = useState('');
-  const [jenis, setJenis] = useState('');
+  const [usernameSteam, setUsernameSteam] = useState('');
+  const [passwordSteam, setPasswordSteam] = useState('');
+  const [gmail, setGmail] = useState('');
+  const [passwordGmail, setPasswordGmail] = useState('');
   const [noPemulihan, setNoPemulihan] = useState('');
   const [emailPemulihan, setEmailPemulihan] = useState('');
   const [ket, setKet] = useState('');
 
   const handleSave = async () => {
-    if (username.trim() === '' || jenis.trim() === '' || noPemulihan.trim() === '' || emailPemulihan.trim() === '' || ket.trim() === '') {
+    if (usernameSteam.trim() === '' || passwordSteam.trim() === '' || gmail.trim() === '' || passwordGmail.trim() === '' || noPemulihan.trim() === '' || emailPemulihan.trim() === '' || ket.trim() === '') {
       toast.error('Semua field harus diisi'); // Notifikasi error
       return;
     }
@@ -18,7 +20,15 @@ const ModalAddAkun = ({ showModal, setShowModal, setAkunList, token, onAddSucces
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/api/akun/add`, // Menggunakan URL dari .env
-        { username, jenis, no_pemulihan: noPemulihan, email_pemulihan: emailPemulihan, ket },
+        { 
+          username_steam: usernameSteam, 
+          password_steam: passwordSteam, 
+          gmail, 
+          password_gmail: passwordGmail, 
+          no_pemulihan: noPemulihan, 
+          email_pemulihan: emailPemulihan, 
+          ket 
+        },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -52,34 +62,57 @@ const ModalAddAkun = ({ showModal, setShowModal, setAkunList, token, onAddSucces
               <div className="modal-body">
                 <form>
                   <div className="form-group">
-                    <label htmlFor="username" className="col-form-label">
-                      Username:
+                    <label htmlFor="username_steam" className="col-form-label">
+                      Username Steam:
                     </label>
                     <input
                       type="text"
                       className="form-control"
-                      id="username"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      placeholder="Masukkan username"
+                      id="username_steam"
+                      value={usernameSteam}
+                      onChange={(e) => setUsernameSteam(e.target.value)}
+                      placeholder="Masukkan username steam"
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="jenis" className="col-form-label">
-                      Jenis:
+                    <label htmlFor="password_steam" className="col-form-label">
+                      Password Steam:
                     </label>
-                    <select
+                    <input
+                      type="password"
                       className="form-control"
-                      id="jenis"
-                      value={jenis}
-                      onChange={(e) => setJenis(e.target.value)}
-                    >
-                      <option value="">Pilih jenis</option>
-                      <option value="steam">Steam</option>
-                      <option value="gmail">Gmail</option>
-                    </select>
+                      id="password_steam"
+                      value={passwordSteam}
+                      onChange={(e) => setPasswordSteam(e.target.value)}
+                      placeholder="Masukkan password steam"
+                    />
                   </div>
-
+                  <div className="form-group">
+                    <label htmlFor="gmail" className="col-form-label">
+                      Gmail:
+                    </label>
+                    <input
+                      type="email"
+                      className="form-control"
+                      id="gmail"
+                      value={gmail}
+                      onChange={(e) => setGmail(e.target.value)}
+                      placeholder="Masukkan gmail"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="password_gmail" className="col-form-label">
+                      Password Gmail:
+                    </label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      id="password_gmail"
+                      value={passwordGmail}
+                      onChange={(e) => setPasswordGmail(e.target.value)}
+                      placeholder="Masukkan password gmail"
+                    />
+                  </div>
                   <div className="form-group">
                     <label htmlFor="no-pemulihan" className="col-form-label">
                       No Pemulihan:

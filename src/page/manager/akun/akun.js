@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaPen, FaTrash, FaInfoCircle } from 'react-icons/fa'; 
+import { FaPen, FaTrash } from 'react-icons/fa'; 
 import { Link } from 'react-router-dom'; 
 import ModalAddAkun from './modaladdakun'; // Modal untuk menambah Akun
 import ModalUpdateAkun from './modalupdateakun'; // Modal untuk memperbarui Akun
@@ -59,7 +59,7 @@ const Akun = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.status === 200) {
-        setAkunList(akunList.filter((akun) => akun.id_akun !== id));
+        setAkunList(akunList.filter((akun) => akun.id !== id));
         toast.success('Akun berhasil dihapus!'); // Notifikasi sukses
       }
     } catch (err) {
@@ -107,10 +107,16 @@ const Akun = () => {
                         No
                       </th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                        Username
+                        Username Steam
                       </th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                        Jenis
+                        Password Steam
+                      </th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                        Gmail
+                      </th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                        Password Gmail
                       </th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                         No Pemulihan
@@ -130,10 +136,12 @@ const Akun = () => {
                   <tbody>
                     {akunList && akunList.length > 0 ? (
                       akunList.map((akun, index) => (
-                        <tr key={akun.id_akun}>
+                        <tr key={akun.id}>
                           <td>{index + 1}</td> {/* Menampilkan nomor urut */}
-                          <td>{akun.username}</td>
-                          <td>{akun.jenis}</td>
+                          <td>{akun.username_steam}</td>
+                          <td>{akun.password_steam}</td>
+                          <td>{akun.gmail}</td>
+                          <td>{akun.password_gmail}</td>
                           <td>{akun.no_pemulihan}</td>
                           <td>{akun.email_pemulihan}</td>
                           <td>{akun.ket}</td>
@@ -145,18 +153,17 @@ const Akun = () => {
                               <FaPen />
                             </button>
                             <button
-                              onClick={() => handleDeleteAkun(akun.id_akun)}
+                              onClick={() => handleDeleteAkun(akun.id)}
                               className="btn btn-danger btn-sm me-2 rounded" // Tambahkan kelas rounded
                             >
                               <FaTrash />
                             </button>
-                           
                           </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="7">Tidak ada akun tersedia</td>
+                        <td colSpan="9">Tidak ada akun tersedia</td>
                       </tr>
                     )}
                   </tbody>

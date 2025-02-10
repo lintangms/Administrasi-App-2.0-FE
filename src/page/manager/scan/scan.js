@@ -1,133 +1,85 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
-import { useNavigate } from 'react-router-dom'; // Ganti useHistory dengan useNavigate
 
 const ScanQR = () => {
-  const [message, setMessage] = useState('');
+  const [scanResult, setScanResult] = useState('');
   const [isScanning, setIsScanning] = useState(true);
-  const [logs, setLogs] = useState([]);
-  const [karyawanData, setKaryawanData] = useState(null); // Menyimpan data karyawan
-  const [absensiStatus, setAbsensiStatus] = useState(''); // Menyimpan status absensi
-  const navigate = useNavigate(); // Inisialisasi useNavigate
+  const scannerRef = useRef(null);
 
-  const addLog = (text) => {
-    setLogs(prevLogs => {
-      const newLogs = [`${new Date().toLocaleTimeString()} - ${text}`, ...prevLogs.slice(0, 9)];
-      return newLogs;
-    });
+  const isValidUrl = (string) => {
+    try {
+      new URL(string);
+      return true;
+    } catch (_) {
+      return false;
+    }
   };
 
   useEffect(() => {
-    addLog('Scanner diinisialisasi');
-    
-    const qrCodeScanner = new Html5QrcodeScanner(
-      "qr-reader", 
-      {
-        fps: 10,
-        qrbox: 250,
-        aspectRatio: 1.0
-      },
-      true
-    );
+    // Initialize QR Scanner
+    if (!scannerRef.current) {
+      const qrScanner = new Html5QrcodeScanner(
+        "qr-reader",
+        {
+          fps: 10,
+          qrbox: 250,
+          aspectRatio: 1.0,
+          showTorchButtonIfSupported: true,
+          rememberLastUsedCamera: true,
+        },
+        false
+      );
+      scannerRef.current = qrScanner;
+    }
 
-    async function onScanSuccess(decodedText) {
-      try {
-        // Hapus karakter non-numerik jika ada
-        const cleanNIP = decodedText.replace(/\D/g, '');
-        addLog(`QR Code terdeteksi: ${cleanNIP}`);
-        
-        setIsScanning(false);
-        qrCodeScanner.pause();  // Pause scanner sementara
+    // Function to handle successful scan
+    const onScanSuccess = (decodedText) => {
+      setScanResult(decodedText);
+      setIsScanning(false);
+      if (scannerRef.current) {
+        scannerRef.current.clear();
+      }
 
-        // Gunakan endpoint untuk mengambil data karyawan
-        const url = `https://absensi.harvestdigital.id/api/absensi/scanqr/${cleanNIP}`;
-        addLog(`Mencoba akses: ${url}`);
-
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json'
-          },
-        });
-
-        addLog(`Status response: ${response.status}`);
-
-        const data = await response.json();
-        addLog(`Response data: ${JSON.stringify(data)}`);
-
-        if (!response.ok) {
-          throw new Error(data.message || 'Terjadi kesalahan pada server');
-        }
-
-        if (data && data.NIP && data.nama && data.id_jabatan) {
-          setKaryawanData(data); // Simpan data karyawan
-          setMessage(`NIP: ${data.NIP}, Nama: ${data.nama}, Jabatan: ${data.id_jabatan}`);
-          alert(`NIP: ${data.NIP}, Nama: ${data.nama}, Jabatan: ${data.id_jabatan}`);
-
-          // Simpan NIP, nama, dan id_jabatan di localStorage
-          localStorage.setItem("NIP", data.NIP);
-          localStorage.setItem("nama", data.nama);
-          localStorage.setItem("id_jabatan", data.id_jabatan);
-
-          // Jika id_absensi ada, artinya absensi dapat diupdate, jika tidak, absensi sudah selesai
-          if (data.id_absensi) {
-            setAbsensiStatus('Absensi belum selesai, jam pulang belum tercatat.');
-            // Arahkan ke halaman AbsensiScan
-            navigate('/scan_absensi'); // Ganti dengan path yang sesuai
-          } else {
-            setAbsensiStatus('Absensi sudah selesai, jam pulang sudah tercatat.');
-          }
-
-          // Berhentikan scanner saat pindah halaman
-          qrCodeScanner.stop();
-          addLog('Scanner dihentikan setelah pindah halaman.');
-        }
-
-      } catch (error) {
-        addLog(`Error: ${error.message}`);
-        
-        let errorMessage = error.message;
-        if (error.name === 'TypeError') {
-          errorMessage = 'Gagal terhubung ke server. Periksa koneksi internet Anda.';
-        }
-        
-        setMessage(`Error: ${errorMessage}`);
-        alert(`Gagal mencatat absensi: ${errorMessage}`);
-      } finally {
+      if (isValidUrl(decodedText)) {
+        window.location.href = decodedText; // Redirect to the URL scanned
+      } else {
+        // If not a valid URL, reset scanning state
         setTimeout(() => {
+          setScanResult('');
           setIsScanning(true);
-          qrCodeScanner.resume();
-          addLog('Scanner dilanjutkan');
+          if (scannerRef.current) {
+            scannerRef.current.render(onScanSuccess, onScanError);
+          }
         }, 3000);
       }
-    }
+    };
 
-    function onScanError(error) {
-      // Hanya log error yang bukan "NotFound" untuk mengurangi spam log
+    // Function to handle scanning errors
+    const onScanError = (error) => {
       if (!error.includes('NotFound')) {
-        addLog(`Scanner error: ${error}`);
-      }
-    }
-
-    qrCodeScanner.render(onScanSuccess, onScanError);
-
-    // Cleanup function to stop and clear the scanner properly
-    return () => {
-      addLog('Scanner dibersihkan');
-      qrCodeScanner.clear();  // Attempt to clear the scanner first
-      // Attempting to stop if 'stop' method is available
-      if (qrCodeScanner.stop) {
-        qrCodeScanner.stop().catch((error) => {
-          addLog(`Error during cleanup: ${error.message}`);
-        });
+        console.error('QR Scan error:', error);
       }
     };
-  }, [navigate]);
+
+    // Start rendering the scanner
+    if (scannerRef.current) {
+      scannerRef.current.render(onScanSuccess, onScanError);
+    }
+
+    // Clean up scanner when component unmounts
+    return () => {
+      if (scannerRef.current) {
+        scannerRef.current.clear();
+        scannerRef.current = null;
+      }
+    };
+  }, []);
 
   return (
     <div className="container mx-auto p-4">
       <div className="text-center">
-        <h3 className="text-xl font-bold mb-4">Scan QR Code Absensi</h3>
+        <h3 className="text-xl font-bold mb-4">QR Code Scanner</h3>
+        
         <div 
           id="qr-reader" 
           style={{ 
@@ -140,45 +92,23 @@ const ScanQR = () => {
           }}
         />
         
-        {message && (
-          <div className={`mt-4 p-3 rounded ${
-            message.includes('Error') 
-              ? 'bg-red-100 text-red-800' 
-              : 'bg-green-100 text-green-800'
-          }`}>
-            <p className="font-semibold">{message}</p>
+        {scanResult && !isValidUrl(scanResult) && (
+          <div className="mt-4 p-3 bg-yellow-100 text-yellow-800 rounded">
+            <p className="font-semibold">Scanned content is not a valid URL:</p>
+            <p className="break-all">{scanResult}</p>
           </div>
         )}
         
         {!isScanning && (
           <p className="mt-2 text-gray-600">
-            Memproses... Scanner akan aktif kembali dalam beberapa detik.
+            {isValidUrl(scanResult) 
+              ? "Redirecting to scanned URL..." 
+              : "Scanner will resume in a few seconds..."}
           </p>
-        )}
-
-        <div className="mt-4 p-2 bg-gray-100 rounded text-left">
-          <p className="font-bold mb-2">Debug Log:</p>
-          <div className="text-xs font-mono" style={{ maxHeight: '200px', overflow: 'auto' }}>
-            {logs.map((log, index) => (
-              <div key={index} className="border-b border-gray-200 py-1">
-                {log}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {karyawanData && (
-          <div className="mt-4 p-3 bg-blue-100 text-blue-800 rounded">
-            <p className="font-semibold">Data Karyawan:</p>
-            <p>NIP: {karyawanData.NIP}</p>
-            <p>Nama: {karyawanData.nama}</p>
-            <p>Jabatan: {karyawanData.id_jabatan}</p>
-            <p>Status Absensi: {absensiStatus}</p>
-          </div>
         )}
       </div>
     </div>
-  );  
+  );
 };
 
 export default ScanQR;

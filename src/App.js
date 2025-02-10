@@ -77,7 +77,7 @@ function App() {
     <div
       className="App"
       style={{
-        display : "flex",
+        display: "flex",
         height: "100vh",
         flexDirection: "row",
       }}
@@ -145,12 +145,13 @@ function App() {
         }}
       >
         <Routes>
-          <Route path="/scan" element={<ScanQR />} />
-          <Route path="/scan_absensi" element={<AbsensiScan />} />
+
           <Route
             path="/login"
             element={<Login onLoginSuccess={handleLoginSuccess} />}
           />
+          <Route path="/manager/scan" element={<ScanQR />} />
+          <Route path="/manager/scan_absensi" element={<AbsensiScan />} />
           <Route path="/manager/dashboard" element={<DashboardManager />} />
           <Route path="/manager/jabatandivisi" element={<Jabatan_Divisi />} />
           <Route path="/manager/shiftgame" element={<Shift_Game />} />
@@ -164,6 +165,8 @@ function App() {
           <Route path="/manager/perolehan_boosting" element={<Boosting />} />
 
           <Route path="/spv/dashboard" element={<DashboardSPV />} />
+          <Route path="/spv/scan" element={<ScanQR />} />
+          <Route path="/spv/scan_absensi" element={<AbsensiScan />} />
           <Route path="/spv/jabatandivisi" element={<Jabatan_Divisi />} />
           <Route path="/spv/shiftgame" element={<Shift_Game />} />
           <Route path="/spv/karyawan" element={<Karyawan />} />

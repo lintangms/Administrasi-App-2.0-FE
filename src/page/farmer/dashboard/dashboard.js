@@ -37,7 +37,7 @@ const DashboardFarming = () => {
             <div style={{ overflowX: 'auto', width: '100%' }}>
                 <div style={{ minWidth: farmingData.length * 100, height: 300 }}>
                     <ResponsiveContainer width="100%" height="100%">
-                        <BarChart 
+                        <BarChart
                             data={farmingData}
                             margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                         >
