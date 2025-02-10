@@ -145,7 +145,6 @@ function App() {
         }}
       >
         <Routes>
-        <Route path="/scan" element={<ScanQR />} />
         <Route path="/scan_absensi" element={<AbsensiScan />} />
           <Route
           
@@ -153,6 +152,7 @@ function App() {
             element={<Login onLoginSuccess={handleLoginSuccess} />}
           />
           <Route path="/manager/dashboard" element={<DashboardManager />} />
+          <Route path="/manager/scan" element={<ScanQR />} />
           <Route path="/manager/jabatandivisi" element={<Jabatan_Divisi />} />
           <Route path="/manager/shiftgame" element={<Shift_Game />} />
           <Route path="/manager/karyawan" element={<Karyawan />} />
@@ -166,7 +166,6 @@ function App() {
 
           <Route path="/spv/dashboard" element={<DashboardSPV />} />
           <Route path="/spv/scan" element={<ScanQR />} />
-          <Route path="/spv/scan_absensi" element={<AbsensiScan />} />
           <Route path="/spv/jabatandivisi" element={<Jabatan_Divisi />} />
           <Route path="/spv/shiftgame" element={<Shift_Game />} />
           <Route path="/spv/karyawan" element={<Karyawan />} />
