@@ -145,13 +145,13 @@ function App() {
         }}
       >
         <Routes>
-
+        <Route path="/scan" element={<ScanQR />} />
+        <Route path="/scan_absensi" element={<AbsensiScan />} />
           <Route
+          
             path="/login"
             element={<Login onLoginSuccess={handleLoginSuccess} />}
           />
-          <Route path="/manager/scan" element={<ScanQR />} />
-          <Route path="/manager/scan_absensi" element={<AbsensiScan />} />
           <Route path="/manager/dashboard" element={<DashboardManager />} />
           <Route path="/manager/jabatandivisi" element={<Jabatan_Divisi />} />
           <Route path="/manager/shiftgame" element={<Shift_Game />} />
