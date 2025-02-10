@@ -52,6 +52,11 @@ function App() {
     const storedJabatan = localStorage.getItem("jabatan");
 
     // Pengecualian untuk halaman scan dan absensi scan
+    if (location.pathname === "/scan_absensi" && storedJabatan !== "manager" && storedJabatan !== "spv") {
+      navigate("/login");
+      return;
+    }
+
     if ((location.pathname === "/scan" || location.pathname === "/scan_absensi") || (token && storedJabatan)) {
       if (token && storedJabatan) {
         setIsLoggedIn(true);
@@ -145,9 +150,8 @@ function App() {
         }}
       >
         <Routes>
-        <Route path="/scan_absensi" element={<AbsensiScan />} />
+          <Route path="/scan_absensi" element={<AbsensiScan />} />
           <Route
-          
             path="/login"
             element={<Login onLoginSuccess={handleLoginSuccess} />}
           />
@@ -176,7 +180,6 @@ function App() {
           <Route path="/spv/pengeluaran" element={<Pengeluaran />} />
           <Route path="/spv/perolehan_farming" element={<Farming />} />
           <Route path="/spv/perolehan_boosting" element={<Boosting />} />
-
 
           <Route path="/farmer/dashboard" element={<DashboardFarmer />} />
           <Route path="/farmer/absensi" element={<AbsensiFarmer />} />
