@@ -113,6 +113,18 @@ const SidebarSPV = () => {
               <span className="align-middle">Dashboard</span>
             </Link>
           </li>
+          <li className={`sidebar-item ${location.pathname === "/spv/scan" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/spv/scan">
+              <FaIdCardAlt className="align-middle" />{" "}
+              <span className="align-middle">Scan Absensi</span>
+            </Link>
+          </li>
+          <li className={`sidebar-item ${location.pathname === "/spv/data_absensi" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/spv/data_absensi">
+              <FaCheckCircle className="align-middle" />{" "}
+              <span className="align-middle">Data Absensi</span>
+            </Link>
+          </li>
           <li className={`sidebar-item ${location.pathname === "/spv/perolehan_farming" ? "active" : ""}`}>
             <Link className="sidebar-link" to="/spv/perolehan_farming">
               <FaCoins className="align-middle" />{" "}

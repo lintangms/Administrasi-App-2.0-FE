@@ -36,6 +36,7 @@ import RiwayatBoosting from "./page/booster/riwayatperolehan/riwayatbooster";
 import AbsensiScan from "./page/manager/scan/absensiscan";
 import RiwayatAbsen from "./page/farmer/riwayatabsen/riwayatabsensi";
 import RiwayatKasbon from "./page/farmer/riwayatkasbon/riwayatkasbon";
+import DataAbsensi from "./page/manager/absensi/data_absensi";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -167,6 +168,7 @@ function App() {
           <Route path="/manager/pengeluaran" element={<Pengeluaran />} />
           <Route path="/manager/perolehan_farming" element={<Farming />} />
           <Route path="/manager/perolehan_boosting" element={<Boosting />} />
+          <Route path="/manager/data_absensi" element={<DataAbsensi />} />
 
           <Route path="/spv/dashboard" element={<DashboardSPV />} />
           <Route path="/spv/scan" element={<ScanQR />} />
@@ -180,6 +182,7 @@ function App() {
           <Route path="/spv/pengeluaran" element={<Pengeluaran />} />
           <Route path="/spv/perolehan_farming" element={<Farming />} />
           <Route path="/spv/perolehan_boosting" element={<Boosting />} />
+          <Route path="/spv/data_absensi" element={<DataAbsensi />} />
 
           <Route path="/farmer/dashboard" element={<DashboardFarmer />} />
           <Route path="/farmer/absensi" element={<AbsensiFarmer />} />
