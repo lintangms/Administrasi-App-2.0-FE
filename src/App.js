@@ -212,6 +212,7 @@ function App() {
           <Route path="/direktur/perolehan_boosting" element={<Boosting />} />
           <Route path="/direktur/akun" element={<Akun_Direktur />} />
           <Route path="/direktur/pengeluaran" element={<Pengeluaran_Direktur />} />
+          <Route path="/direktur/data_absensi" element={<DataAbsensi />} />
 
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
