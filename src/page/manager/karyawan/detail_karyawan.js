@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import axios from "axios";
-import { FaUser , FaMapMarkerAlt, FaPhone, FaCalendarAlt, FaGraduationCap, FaCoins, FaInfoCircle, FaLock, FaBuilding } from "react-icons/fa";
+import { FaUser , FaMapMarkerAlt, FaPhone, FaCalendarAlt, FaGraduationCap, FaCoins, FaInfoCircle, FaLock, FaBuilding, FaSteam, FaClipboardCheck, FaBriefcase, FaGamepad, FaClock } from "react-icons/fa";
 
 const DetailKaryawan = () => {
     const { nip } = useParams();
@@ -108,16 +108,16 @@ const DetailKaryawan = () => {
                                         <FaLock className="text-danger me-2" /> <strong>Password:</strong> {karyawan.password}
                                     </li>
                                     <li className="list-group-item">
-                                        <strong>Status:</strong> {karyawan.status}
+                                        <FaClipboardCheck className="text-info me-2" /> <strong>Status:</strong> {karyawan.status}
                                     </li>
                                     <li className="list-group-item">
-                                        <strong>Nama Jabatan:</strong> {karyawan.nama_jabatan}
+                                        <FaGamepad className="text-success me-2" /> <strong>Nama Game:</strong> {karyawan.nama_game || "Tidak ada"}
                                     </li>
                                     <li className="list-group-item">
-                                        <strong>Nama Game:</strong> {karyawan.nama_game || "Tidak ada"}
+                                        <FaClock className="text-warning me-2" /> <strong>Nama Shift:</strong> {karyawan.nama_shift || "Tidak ada"}
                                     </li>
                                     <li className="list-group-item">
-                                        <strong>Nama Shift:</strong> {karyawan.nama_shift || "Tidak ada"}
+                                        <FaSteam className="text-success me-2" /> <strong>Username Steam:</strong> {karyawan.username_steam || "Tidak ada"}
                                     </li>
                                 </ul>
                             </div>

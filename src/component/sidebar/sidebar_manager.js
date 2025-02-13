@@ -26,7 +26,7 @@ import {
   FaDatabase,
 } from "react-icons/fa";
 
-// Komponen Header
+// Komponen Header remains the same
 const Header = ({ toggleSidebar, userName }) => {
   return (
     <header
@@ -100,12 +100,20 @@ const SidebarManager = () => {
   const isMobile = window.innerWidth <= 768;
 
   const sidebarContent = (
-    <div className="sidebar-content" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <div>
+    <div className="sidebar-content" style={{ 
+      display: 'flex', 
+      flexDirection: 'column',
+      height: '100%',
+      overflowY: 'auto',
+      position: 'relative',
+      paddingBottom: '70px' // Increased padding to account for logout button
+    }}>
+      <div style={{ flex: '1 0 auto' }}>
         <a className="sidebar-brand" href="/">
           <span className="align-middle">Harvest</span>
         </a>
         <ul className="sidebar-nav" style={{ padding: 0, listStyle: 'none' }}>
+          {/* All list items remain the same */}
           <li className="sidebar-header">Pages</li>
           <li className={`sidebar-item ${location.pathname === "/manager/dashboard" ? "active" : ""}`}>
             <Link className="sidebar-link" to="/manager/dashboard">
@@ -199,22 +207,29 @@ const SidebarManager = () => {
           </li>
         </ul>
       </div>
-      {/* Logout button container */}
+      {/* Updated Logout button container */}
       <div style={{
-        marginTop: 'auto',
+        position: 'fixed',
+        bottom: 0,
+        width: '250px',
+        background: '#34a40',
         borderTop: '1px solid rgba(255,255,255,0.1)',
-        padding: '15px 0'
+        height: '60px', // Fixed height
+        display: 'flex',
+        alignItems: 'center',
+        zIndex: 1002,
       }}>
         <button
           className="sidebar-link"
           onClick={handleLogout}
           style={{
-            background: 'none',
+            background: '#34a40',
             border: 'none',
-            width: '100%',
+            width: '230px',
+            height: '100%',
             textAlign: 'left',
             color: '#fff',
-            padding: '10px 15px',
+            padding: '0 20px',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -240,7 +255,6 @@ const SidebarManager = () => {
             className={`sidebar ${isSidebarOpen ? "" : "collapsed"}`}
             style={{
               height: "calc(100vh - 50px)",
-              overflowY: "auto",
               position: "fixed",
               top: "50px",
               left: isSidebarOpen ? 0 : "-250px",
@@ -280,6 +294,8 @@ const SidebarManager = () => {
                 left: 0,
                 transition: "transform 0.3s ease",
                 transform: isSidebarOpen ? "translateX(0)" : "translateX(-100%)",
+                display: 'flex',
+                flexDirection: 'column'
               }}
               onClick={(e) => e.stopPropagation()}
             >

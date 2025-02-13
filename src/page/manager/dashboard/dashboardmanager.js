@@ -17,10 +17,10 @@ const Dashboard = () => {
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [selectedGame, setSelectedGame] = useState(null);
-    const [games, setGames] = useState([]); // Initialize as an empty array
+    const [games, setGames] = useState([]);
     const [isDropdownOpen, setIsDropdownOpen] = useState({ month: false, year: false, game: false });
 
-    const years = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
+    const years = Array.from({ length: 2027 - new Date().getFullYear() + 1 }, (_, i) => new Date().getFullYear() + i);
     const months = [
         'January', 'February', 'March', 'April', 'May', 'June', 
         'July', 'August', 'September', 'October', 'November', 'December'
@@ -37,9 +37,9 @@ const Dashboard = () => {
 
     const fetchGames = async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/game/get`); // Adjust the endpoint as necessary
-            if (Array.isArray(response.data)) {
-                setGames(response.data);
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/game/get`);
+            if (response.data && response.data.data && Array.isArray(response.data.data)) {
+                setGames(response.data.data); // Extract the `data` array from the response
             } else {
                 console.error("Expected an array of games, but got:", response.data);
             }
@@ -222,8 +222,8 @@ const Dashboard = () => {
         scrollContainer: {
             overflowX: 'auto',
             width: '100%',
-            WebkitOverflowScrolling: 'touch', // For smooth scrolling on iOS
-            msOverflowStyle: '-ms-autohiding-scrollbar', // For IE/Edge
+            WebkitOverflowScrolling: 'touch',
+            msOverflowStyle: '-ms-autohiding-scrollbar',
         },
         lineChartsContainer: {
             display: 'flex',
@@ -346,9 +346,23 @@ const Dashboard = () => {
                         </button>
                         {isDropdownOpen.game && (
                             <div style={styles.dropdownContent}>
+                                <div 
+                                    style={{
+                                        ...styles.dropdownItem,
+                                        backgroundColor: selectedGame === null ? '#e7f1f7' : 'white',
+                                    }}
+                                    onClick={() => {
+                                        setSelectedGame(null); // Reset filter when "Select Game" is clicked
+                                        setIsDropdownOpen(prev => ({ ...prev, game: false }));
+                                        fetchPerformanceData(); // Fetch performance data when game changes
+                                        fetchYearlyData(); // Fetch yearly data when game changes
+                                    }}
+                                >
+                                    Select Game
+                                </div>
                                 {games.map(game => (
                                     <div 
-                                        key={game.id} // Assuming each game has a unique id
+                                        key={game.id_game} // Use `id_game` as the unique key
                                         style={{
                                             ...styles.dropdownItem,
                                             backgroundColor: selectedGame === game.nama_game ? '#e7f1f7' : 'white',

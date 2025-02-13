@@ -2,28 +2,21 @@ import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   FaHome,
-  FaUser,
+  FaUser ,
   FaGamepad,
   FaBook,
-  FaSquare,
-  FaCheckSquare,
-  FaCoffee,
+  FaCheckCircle,
   FaSignOutAlt,
   FaBars,
-  FaPeopleArrows,
-  FaPeopleCarry,
-  FaUsers,
-  FaSprayCan,
-  FaIdCard,
-  FaMoneyCheck,
-  FaMoneyBillWave,
-  FaMoneyBillAlt,
-  FaIdCardAlt,
-  FaCheckCircle,
   FaCoins,
   FaSellcast,
   FaMoneyCheckAlt,
+  FaMoneyBillWave,
+  FaMoneyBillAlt,
+  FaIdCardAlt,
   FaDatabase,
+  FaUsers,
+  FaListAlt,
 } from "react-icons/fa";
 
 // Komponen Header
@@ -72,7 +65,7 @@ const Header = ({ toggleSidebar, userName }) => {
               fontSize: "18px",
             }}
           >
-            <FaUser />
+            <FaUser  />
           </button>
         </Link>
       </div>
@@ -100,8 +93,8 @@ const SidebarSPV = () => {
   const isMobile = window.innerWidth <= 768;
 
   const sidebarContent = (
-    <div className="sidebar-content" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <div>
+    <div className="sidebar-content" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto', position: 'relative', paddingBottom: '70px' }}>
+      <div style={{ flex: '1 0 auto' }}>
         <a className="sidebar-brand" href="/">
           <span className="align-middle">Harvest</span>
         </a>
@@ -137,9 +130,15 @@ const SidebarSPV = () => {
               <span className="align-middle">Perolehan Boosting</span>
             </Link>
           </li>
+          <li className={`sidebar-item ${location.pathname === "/spv/tugas" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/spv/tugas">
+              <FaListAlt className="align-middle" />{" "}
+              <span className="align-middle">Tugas Boosting</span>
+            </Link>
+          </li>
           <li className={`sidebar-item ${location.pathname === "/spv/jabatandivisi" ? "active" : ""}`}>
             <Link className="sidebar-link" to="/spv/jabatandivisi">
-              <FaUser className="align-middle" />{" "}
+              <FaUser  className="align-middle" />{" "}
               <span className="align-middle">Jabatan & Divisi</span>
             </Link>
           </li>
@@ -163,7 +162,7 @@ const SidebarSPV = () => {
           </li>
           <li className={`sidebar-item ${location.pathname === "/spv/akun" ? "active" : ""}`}>
             <Link className="sidebar-link" to="/spv/akun">
-              <FaUser className="align-middle" />{" "}
+              <FaUser  className="align-middle" />{" "}
               <span className="align-middle">Akun</span>
             </Link>
           </li>
@@ -199,22 +198,29 @@ const SidebarSPV = () => {
           </li>
         </ul>
       </div>
-      {/* Logout button container */}
+      {/* Updated Logout button container */}
       <div style={{
-        marginTop: 'auto',
+        position: 'fixed',
+        bottom: 0,
+        width: '250px',
+        background: '#34a40',
         borderTop: '1px solid rgba(255,255,255,0.1)',
-        padding: '15px 0'
+        height: '60px', // Fixed height
+        display: 'flex',
+        alignItems: 'center',
+        zIndex: 1002,
       }}>
         <button
           className="sidebar-link"
           onClick={handleLogout}
           style={{
-            background: 'none',
+            background: '#34a40',
             border: 'none',
-            width: '100%',
+            width: '230px',
+            height: '100%',
             textAlign: 'left',
             color: '#fff',
-            padding: '10px 15px',
+            padding: '0 20px',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -240,7 +246,6 @@ const SidebarSPV = () => {
             className={`sidebar ${isSidebarOpen ? "" : "collapsed"}`}
             style={{
               height: "calc(100vh - 50px)",
-              overflowY: "auto",
               position: "fixed",
               top: "50px",
               left: isSidebarOpen ? 0 : "-250px",
@@ -280,6 +285,8 @@ const SidebarSPV = () => {
                 left: 0,
                 transition: "transform 0.3s ease",
                 transform: isSidebarOpen ? "translateX(0)" : "translateX(-100%)",
+                display: 'flex',
+                flexDirection: 'column'
               }}
               onClick={(e) => e.stopPropagation()}
             >

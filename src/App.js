@@ -37,6 +37,8 @@ import AbsensiScan from "./page/manager/scan/absensiscan";
 import RiwayatAbsen from "./page/farmer/riwayatabsen/riwayatabsensi";
 import RiwayatKasbon from "./page/farmer/riwayatkasbon/riwayatkasbon";
 import DataAbsensi from "./page/manager/absensi/data_absensi";
+import TugasForm from "./page/spv/tugas/tugas";
+import DaftarTugas from "./page/booster/tugas/daftar_tugas";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -183,6 +185,7 @@ function App() {
           <Route path="/spv/perolehan_farming" element={<Farming />} />
           <Route path="/spv/perolehan_boosting" element={<Boosting />} />
           <Route path="/spv/data_absensi" element={<DataAbsensi />} />
+          <Route path="/spv/tugas" element={<TugasForm />} />
 
           <Route path="/farmer/dashboard" element={<DashboardFarmer />} />
           <Route path="/farmer/absensi" element={<AbsensiFarmer />} />
@@ -201,6 +204,7 @@ function App() {
           <Route path="/booster/riwayatperolehan" element={<RiwayatBoosting />} />
           <Route path="/booster/riwayatabsen" element={<RiwayatAbsen />} />
           <Route path="/booster/riwayatkasbon" element={<RiwayatKasbon />} />
+          <Route path="/booster/daftar_tugas" element={<DaftarTugas />} />
 
           <Route path="/direktur/dashboard" element={<DashboardDirektur />} />
           <Route path="/direktur/jabatandivisi" element={<Jabatan_Divisi_Direktur />} />

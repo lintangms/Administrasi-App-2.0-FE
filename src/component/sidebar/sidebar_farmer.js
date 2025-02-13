@@ -22,6 +22,7 @@ import {
   FaBitcoin,
   FaViacoin,
   FaMoneyBillWave,
+  FaListAlt,
 } from "react-icons/fa";
 
 // Komponen Header
@@ -169,6 +170,12 @@ const SidebarFarmer = () => {
                 <Link className="sidebar-link" to="/booster/absensi">
                   <FaBook className="align-middle" />{" "}
                   <span className="align-middle">Absensi</span>
+                </Link>
+              </li>
+              <li className={`sidebar-item ${location.pathname === "/booster/daftar_tugas" ? "active" : ""}`}>
+                <Link className="sidebar-link" to="/booster/daftar_tugas">
+                  <FaListAlt className="align-middle" />{" "}
+                  <span className="align-middle">Daftar Tugas</span>
                 </Link>
               </li>
               <li className={`sidebar-item ${location.pathname === "/booster/perolehan" ? "active" : ""}`}>

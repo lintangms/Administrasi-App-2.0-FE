@@ -4,8 +4,8 @@ import { FaInfoCircle } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-const RiwayatKasbon = () => {
-  const [kasbonList, setKasbonList] = useState([]);
+const DaftarTugas = () => {
+  const [tugasList, setTugasList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -21,42 +21,42 @@ const RiwayatKasbon = () => {
       return;
     }
 
-    const fetchKasbon = async () => {
+    const fetchTugas = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`${BACKEND_URL}/api/kasbon/get/${NIP}`, {
+        const response = await axios.get(`${BACKEND_URL}/api/tugas/getnip/${NIP}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (response.data && response.data.data) {
-          setKasbonList(response.data.data);
+          setTugasList(response.data.data);
         } else {
-          setKasbonList([]);
+          setTugasList([]);
         }
       } catch (err) {
-        console.error('Error saat mengambil data riwayat kasbon:', err);
-        setError('Tidak ada data riwayat kasbon');
-        setKasbonList([]);
+        console.error('Error saat mengambil data riwayat tugas:', err);
+        setError('Tidak ada data riwayat tugas');
+        setTugasList([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchKasbon();
+    fetchTugas();
   }, [token, NIP, navigate]);
 
   return (
-    <div className="kasbon-container">
+    <div className="tugas-container">
       {error && <p className="error-message">{error}</p>}
 
       {loading ? (
         <p>Loading...</p>
       ) : (
         <>
-          {/* Tabel Riwayat Kasbon */}
+          {/* Tabel Daftar Tugas */}
           <div className="card my-4">
             <div className="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
               <div className="bg-gradient-dark shadow-dark border-radius-lg pt-4 pb-3 d-flex justify-content-between align-items-center">
-                <h6 className="text-white text-capitalize ps-3">Riwayat Kasbon</h6>
+                <h6 className="text-white text-capitalize ps-3">Daftar Tugas</h6>
               </div>
             </div>
             <div className="card-body px-0 pb-2">
@@ -65,31 +65,27 @@ const RiwayatKasbon = () => {
                   <thead>
                     <tr>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">No</th>
-                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">NIP</th>
-                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Jumlah</th>
-                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tanggal</th>
-                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Aksi</th>
+                      {/* <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">NIP</th> */}
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Deskripsi</th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tanggal Mulai</th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tanggal Tenggat</th>
+                      {/* <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Aksi</th> */}
                     </tr>
                   </thead>
-
                   <tbody>
-                    {kasbonList.length > 0 ? (
-                      kasbonList.map((kasbon, index) => (
-                        <tr key={kasbon.id_kasbon}>
+                    {tugasList.length > 0 ? (
+                      tugasList.map((tugas, index) => (
+                        <tr key={tugas.id_tugas}>
                           <td>{index + 1}</td>
-                          <td>{kasbon.NIP}</td>
-                          <td>{kasbon.jumlah}</td>
-                          <td>{new Date(kasbon.tanggal).toLocaleDateString()}</td>
-                          <td>
-                            <Link to={`/kasbon/detail/${kasbon.id_kasbon}`} className="btn btn-primary btn-sm rounded">
-                              <FaInfoCircle />
-                            </Link>
-                          </td>
+                          {/* <td>{tugas.NIP}</td> */}
+                          <td>{tugas.deskripsi}</td>
+                          <td>{new Date(tugas.tanggal_mulai).toLocaleDateString()}</td>
+                          <td>{new Date(tugas.tanggal_tenggat).toLocaleDateString()}</td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="5">Tidak ada data untuk ditampilkan.</td>
+                        <td colSpan="6">Tidak ada data untuk ditampilkan.</td>
                       </tr>
                     )}
                   </tbody>
@@ -148,4 +144,4 @@ const RiwayatKasbon = () => {
   );
 };
 
-export default RiwayatKasbon;
+export default DaftarTugas;
