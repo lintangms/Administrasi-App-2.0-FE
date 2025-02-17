@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify"; // Import toast dari react-toastify
 import { FaUser , FaMapMarkerAlt, FaPhone, FaCalendarAlt, FaGraduationCap, FaCoins, FaInfoCircle, FaLock, FaBuilding, FaSteam, FaClipboardCheck, FaBriefcase, FaGamepad, FaClock } from "react-icons/fa";
 
 const DetailKaryawan = () => {
@@ -9,8 +10,11 @@ const DetailKaryawan = () => {
     const [karyawan, setKaryawan] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [file, setFile] = useState(null); // State untuk file gambar baru
+    const [uploading, setUploading] = useState(false); // State untuk status upload
     const token = localStorage.getItem("token");
     const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+    const fileInputRef = useRef(null); // Ref untuk input file
 
     // Get NIP either from URL params or location state
     const karyawanNIP = nip || (location.state && location.state.karyawanNIP);
@@ -27,7 +31,7 @@ const DetailKaryawan = () => {
                 const response = await axios.get(`${BACKEND_URL}/api/karyawan/NIP/${encodeURIComponent(karyawanNIP)}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                
+
                 if (response.data) {
                     setKaryawan(response.data);
                 } else {
@@ -43,6 +47,49 @@ const DetailKaryawan = () => {
 
         fetchKaryawanDetail();
     }, [karyawanNIP, token, BACKEND_URL]);
+
+    // Fungsi untuk handle upload gambar
+    const handleFileChange = (e) => {
+        const selectedFile = e.target.files[0];
+        if (selectedFile) {
+            setFile(selectedFile);
+            handleUpload(selectedFile); // Upload langsung setelah memilih file
+        }
+    };
+
+    const handleUpload = async (selectedFile) => {
+        const formData = new FormData();
+        formData.append("gambar", selectedFile); // Field name harus "gambar" sesuai dengan Multer
+
+        setUploading(true);
+
+        try {
+            const response = await axios.put(`${BACKEND_URL}/api/karyawan/gambar/${karyawanNIP}`, formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            if (response.data.message) {
+                toast.success("Gambar berhasil diperbarui!");
+                // Refresh data karyawan setelah gambar diupdate
+                const updatedResponse = await axios.get(`${BACKEND_URL}/api/karyawan/NIP/${encodeURIComponent(karyawanNIP)}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setKaryawan(updatedResponse.data);
+            }
+        } catch (err) {
+            console.error("Error uploading gambar:", err);
+            toast.error("Gagal mengupload gambar");
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const handleButtonClick = () => {
+        fileInputRef.current.click(); // Trigger click pada input file
+    };
 
     if (loading) return <p className="text-center mt-4">Loading...</p>;
     if (error) return <p className="text-center text-danger">{error}</p>;
@@ -66,6 +113,24 @@ const DetailKaryawan = () => {
 
                             <h3 className="mt-3">{karyawan.nama}</h3>
                             <span className="badge bg-primary px-3 py-2">{karyawan.nama_jabatan}</span>
+
+                            {/* Form untuk upload gambar baru */}
+                            <div className="mt-3">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleFileChange}
+                                    className="d-none" // Sembunyikan input file
+                                    ref={fileInputRef} // Assign ref ke input file
+                                />
+                                <button
+                                    onClick={handleButtonClick}
+                                    className="btn btn-primary mt-2"
+                                    disabled={uploading}
+                                >
+                                    {uploading ? "Mengupload..." : "Update Gambar"}
+                                </button>
+                            </div>
                         </div>
                     </div>
 

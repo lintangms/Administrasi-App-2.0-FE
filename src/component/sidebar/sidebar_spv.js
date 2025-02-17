@@ -178,8 +178,8 @@ const SidebarSPV = () => {
               <span className="align-middle">Kasbon</span>
             </Link>
           </li>
-          <li className={`sidebar-item ${location.pathname === "/spv/data_penjualan" ? "active" : ""}`}>
-            <Link className="sidebar-link" to="/spv/data_penjualan">
+          <li className={`sidebar-item ${location.pathname === "/spv/penjualan" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/spv/penjualan">
               <FaSellcast className="align-middle" />{" "}
               <span className="align-middle">Data Penjualan</span>
             </Link>

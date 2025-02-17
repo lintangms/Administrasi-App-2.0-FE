@@ -1,30 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaInfoCircle } from 'react-icons/fa';
-import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
 
-const RiwayatKasbon = () => {
+const DaftarKasbon = () => {
   const [kasbonList, setKasbonList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const token = localStorage.getItem('token');
-  const NIP = localStorage.getItem('NIP');
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-  const navigate = useNavigate();
 
   useEffect(() => {
-    if (!NIP) {
-      toast.error('NIP tidak ditemukan. Silakan login kembali.');
-      navigate('/login');
-      return;
-    }
-
     const fetchKasbon = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`${BACKEND_URL}/api/kasbon/get/${NIP}`, {
+        const response = await axios.get(`${BACKEND_URL}/api/kasbon/get`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (response.data && response.data.data) {
@@ -33,8 +25,8 @@ const RiwayatKasbon = () => {
           setKasbonList([]);
         }
       } catch (err) {
-        console.error('Error saat mengambil data riwayat kasbon:', err);
-        setError('Tidak ada data riwayat kasbon');
+        console.error('Error saat mengambil data kasbon:', err);
+        setError('Tidak ada data kasbon');
         setKasbonList([]);
       } finally {
         setLoading(false);
@@ -42,7 +34,25 @@ const RiwayatKasbon = () => {
     };
 
     fetchKasbon();
-  }, [token, NIP, navigate]);
+  }, [token]);
+
+  const updateStatus = async (id_kasbon, newStatus) => {
+    try {
+      const response = await axios.put(`${BACKEND_URL}/api/kasbon/update/${id_kasbon}`, { status: newStatus }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success(response.data.message);
+      // Refresh the list after updating status
+      setKasbonList((prevList) =>
+        prevList.map((kasbon) =>
+          kasbon.id_kasbon === id_kasbon ? { ...kasbon, status: newStatus } : kasbon
+        )
+      );
+    } catch (err) {
+      console.error('Error saat memperbarui status kasbon:', err);
+      toast.error(err.response?.data?.message || 'Gagal memperbarui status kasbon.');
+    }
+  };
 
   return (
     <div className="kasbon-container">
@@ -52,11 +62,11 @@ const RiwayatKasbon = () => {
         <p>Loading...</p>
       ) : (
         <>
-          {/* Tabel Riwayat Kasbon */}
+          {/* Tabel Daftar Kasbon */}
           <div className="card my-4">
             <div className="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
               <div className="bg-gradient-dark shadow-dark border-radius-lg pt-4 pb-3 d-flex justify-content-between align-items-center">
-                <h6 className="text-white text-capitalize ps-3">Riwayat Kasbon</h6>
+                <h6 className="text-white text-capitalize ps-3">Daftar Kasbon</h6>
               </div>
             </div>
             <div className="card-body px-0 pb-2">
@@ -65,12 +75,14 @@ const RiwayatKasbon = () => {
                   <thead>
                     <tr>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">No</th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">NIP</th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nominal</th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Keperluan</th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tanggal</th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Dari</th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Keterangan</th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Status</th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Aksi</th>
                     </tr>
                   </thead>
 
@@ -79,13 +91,28 @@ const RiwayatKasbon = () => {
                       kasbonList.map((kasbon, index) => (
                         <tr key={kasbon.id_kasbon}>
                           <td>{index + 1}</td>
+                          <td>{kasbon.NIP}</td>
                           <td>{kasbon.nominal}</td>
                           <td>{kasbon.keperluan}</td>
                           <td>{new Date(kasbon.tanggal).toLocaleDateString()}</td>
                           <td>{kasbon.dari}</td>
                           <td>{kasbon.ket}</td>
                           <td>{kasbon.status}</td>
-                          
+                          <td>
+                           
+                            <button
+                              className="btn btn-success btn-sm rounded ms-2"
+                              onClick={() => updateStatus(kasbon.id_kasbon, 'lunas')}
+                            >
+                              Tandai Lunas
+                            </button>
+                            {/* <button
+                              className="btn btn-warning btn-sm rounded ms-2"
+                              onClick={() => updateStatus(kasbon.id_kasbon, 'belum_lunas')}
+                            >
+                              Tandai Belum Lunas
+                            </button> */}
+                          </td>
                         </tr>
                       ))
                     ) : (
@@ -149,4 +176,4 @@ const RiwayatKasbon = () => {
   );
 };
 
-export default RiwayatKasbon;
+export default DaftarKasbon;

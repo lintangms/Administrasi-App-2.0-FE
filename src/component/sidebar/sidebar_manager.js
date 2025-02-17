@@ -181,8 +181,8 @@ const SidebarManager = () => {
               <span className="align-middle">Pengeluaran</span>
             </Link>
           </li>
-          <li className={`sidebar-item ${location.pathname === "/manager/kasbon" ? "active" : ""}`}>
-            <Link className="sidebar-link" to="/manager/kasbon">
+          <li className={`sidebar-item ${location.pathname === "/manager/data_kasbon" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/manager/data_kasbon">
               <FaMoneyBillAlt className="align-middle" />{" "}
               <span className="align-middle">Kasbon</span>
             </Link>
