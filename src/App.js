@@ -46,6 +46,8 @@ import DataGaji from "./page/spv/gaji/data_gaji";
 import PerolehanUnsold from "./page/farmer/unsold/unsold";
 import RiwayatUnsold from "./page/farmer/unsold/riwayatunsold";
 import Unsold from "./page/spv/unsold/unsold";
+import DataGaji_Direktur from "./page/direktur/gaji/gaji";
+import Unsold_Direktur from "./page/direktur/unsold/unsold";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -236,7 +238,9 @@ function App() {
           <Route path="/direktur/akun" element={<Akun_Direktur />} />
           <Route path="/direktur/pengeluaran" element={<Pengeluaran_Direktur />} />
           <Route path="/direktur/data_absensi" element={<DataAbsensi />} />
-          <Route path="/direktur/data_unsold" element={<Unsold />} />
+          <Route path="/direktur/data_unsold" element={<Unsold_Direktur />} />
+          <Route path="/direktur/data_penjualan" element={<Penjualan />} />
+          <Route path="/direktur/data_gaji" element={<DataGaji_Direktur />} />
 
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
