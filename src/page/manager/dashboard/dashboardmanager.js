@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, Legend } from 'recharts';
 import { FaUsers, FaDollarSign, FaChartLine, FaBox, FaCalendarAlt } from 'react-icons/fa';
 
 const Dashboard = () => {
@@ -19,6 +19,9 @@ const Dashboard = () => {
     const [selectedGame, setSelectedGame] = useState(null);
     const [games, setGames] = useState([]);
     const [isDropdownOpen, setIsDropdownOpen] = useState({ month: false, year: false, game: false });
+    const [coinData, setCoinData] = useState([]);
+    const [boostingDataAvailable, setBoostingDataAvailable] = useState(false);
+    const [coinDataAvailable, setCoinDataAvailable] = useState(false);
 
     const years = Array.from({ length: 2027 - new Date().getFullYear() + 1 }, (_, i) => new Date().getFullYear() + i);
     const months = [
@@ -39,7 +42,7 @@ const Dashboard = () => {
         try {
             const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/game/get`);
             if (response.data && response.data.data && Array.isArray(response.data.data)) {
-                setGames(response.data.data); // Extract the `data` array from the response
+                setGames(response.data.data);
             } else {
                 console.error("Expected an array of games, but got:", response.data);
             }
@@ -50,34 +53,53 @@ const Dashboard = () => {
 
     const fetchPerformanceData = async () => {
         try {
-            const farmingResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/statistik/farming`, {
-                params: { bulan: selectedMonth, tahun: selectedYear, nama_game: selectedGame }
+            const formattedMonth = String(selectedMonth).padStart(2, '0'); // Ensure month is two digits
+            const coinResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/farming/getall`, {
+                params: { bulan: formattedMonth, tahun: selectedYear, nama_game: selectedGame }
             });
+
+            if (coinResponse.data && coinResponse.data.data) {
+                const coinChartData = coinResponse.data.data
+                    .map(item => ({
+                        name: item.nama,
+                        saldo_koin: parseInt(item.saldo_koin),
+                        koin_dijual: parseInt(item.total_dijual) || 0,
+                    }))
+                    .sort((a, b) => b.saldo_koin - a.saldo_koin)
+                    .slice(0, 100);
+
+                setCoinData(coinChartData);
+                setCoinDataAvailable(coinChartData.length > 0);
+            } else {
+                setCoinData([]);
+                setCoinDataAvailable(false);
+            }
 
             const boostingResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/statistik/boosting`, {
-                params: { bulan: selectedMonth, tahun: selectedYear, nama_game: selectedGame }
+                params: { bulan: formattedMonth, tahun: selectedYear, nama_game: selectedGame }
             });
 
-            const farmingChartData = farmingResponse.data
-                .sort((a, b) => b.total_farming - a.total_farming)
-                .slice(0, 100)
-                .map(item => ({
-                    name: item.nama,
-                    koin: item.total_farming,
-                }));
+            if (boostingResponse.data) {
+                const boostingChartData = boostingResponse.data
+                    .sort((a, b) => b.total_boosting - a.total_boosting)
+                    .slice(0, 100)
+                    .map(item => ({
+                        name: item.nama,
+                        nominal: item.total_boosting,
+                    }));
 
-            const boostingChartData = boostingResponse.data
-                .sort((a, b) => b.total_boosting - a.total_boosting)
-                .slice(0, 100)
-                .map(item => ({
-                    name: item.nama,
-                    nominal: item.total_boosting,
-                }));
-
-            setFarmingData(farmingChartData);
-            setBoostingData(boostingChartData);
+                setBoostingData(boostingChartData);
+                setBoostingDataAvailable(boostingChartData.length > 0);
+            } else {
+                setBoostingData([]);
+                setBoostingDataAvailable(false);
+            }
         } catch (error) {
             console.error("Error fetching performance data:", error);
+            setCoinData([]);
+            setBoostingData([]);
+            setCoinDataAvailable(false);
+            setBoostingDataAvailable(false);
         }
     };
 
@@ -109,7 +131,7 @@ const Dashboard = () => {
         container: {
             fontFamily: 'Arial, sans-serif',
             backgroundColor: '#f4f6f9',
-            padding: '10px',
+            padding: '20px',
             borderRadius: '8px',
             width: '100%',
             boxSizing: 'border-box',
@@ -144,7 +166,7 @@ const Dashboard = () => {
         statValue: {
             margin: 0,
             color: '#2c3e50',
-            fontSize: '1.2rem',
+            fontSize: '1.5rem',
             fontWeight: 'bold',
         },
         header: {
@@ -165,7 +187,7 @@ const Dashboard = () => {
         title: {
             margin: 0,
             color: '#2c3e50',
-            fontSize: '1.3rem',
+            fontSize: '1.5rem',
             fontWeight: 'bold',
         },
         filterContainer: {
@@ -325,7 +347,7 @@ const Dashboard = () => {
                                         onClick={() => {
                                             setSelectedYear(year);
                                             setIsDropdownOpen(prev => ({ ...prev, year: false }));
-                                            fetchYearlyData(); // Fetch yearly data when year changes
+                                            fetchYearlyData();
                                         }}
                                     >
                                         {year}
@@ -335,7 +357,6 @@ const Dashboard = () => {
                         )}
                     </div>
 
-                    {/* Dropdown for Game Filtering */}
                     <div style={styles.dropdown}>
                         <button 
                             style={styles.dropdownTrigger}
@@ -352,17 +373,17 @@ const Dashboard = () => {
                                         backgroundColor: selectedGame === null ? '#e7f1f7' : 'white',
                                     }}
                                     onClick={() => {
-                                        setSelectedGame(null); // Reset filter when "Select Game" is clicked
+                                        setSelectedGame(null);
                                         setIsDropdownOpen(prev => ({ ...prev, game: false }));
-                                        fetchPerformanceData(); // Fetch performance data when game changes
-                                        fetchYearlyData(); // Fetch yearly data when game changes
+                                        fetchPerformanceData();
+                                        fetchYearlyData();
                                     }}
                                 >
                                     Select Game
                                 </div>
                                 {games.map(game => (
                                     <div 
-                                        key={game.id_game} // Use `id_game` as the unique key
+                                        key={game.id_game}
                                         style={{
                                             ...styles.dropdownItem,
                                             backgroundColor: selectedGame === game.nama_game ? '#e7f1f7' : 'white',
@@ -370,8 +391,8 @@ const Dashboard = () => {
                                         onClick={() => {
                                             setSelectedGame(game.nama_game);
                                             setIsDropdownOpen(prev => ({ ...prev, game: false }));
-                                            fetchPerformanceData(); // Fetch performance data when game changes
-                                            fetchYearlyData(); // Fetch yearly data when game changes
+                                            fetchPerformanceData();
+                                            fetchYearlyData();
                                         }}
                                     >
                                         {game.nama_game}
@@ -383,9 +404,7 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            {/* Line Charts Container */}
             <div style={styles.lineChartsContainer}>
-                {/* Line Chart for Farming */}
                 <div style={styles.lineChart}>
                     <div style={styles.chartCard}>
                         <div style={styles.chartHeader}>
@@ -396,13 +415,12 @@ const Dashboard = () => {
                                 <XAxis dataKey="bulan" />
                                 <YAxis />
                                 <Tooltip />
-                                <Line type="monotone" dataKey="total_farming" stroke="#3498db" strokeWidth={3} />
+                                <Line type="monotone" dataKey="total_farming" stroke="#3498db" strokeWidth={3} dot={{ stroke: '#3498db', strokeWidth: 2 }} />
                             </LineChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
 
-                {/* Line Chart for Boosting */}
                 <div style={styles.lineChartLast}>
                     <div style={styles.chartCard}>
                         <div style={styles.chartHeader}>
@@ -413,56 +431,68 @@ const Dashboard = () => {
                                 <XAxis dataKey="bulan" />
                                 <YAxis />
                                 <Tooltip />
-                                <Line type="monotone" dataKey="total_boosting" stroke="#2ecc71" strokeWidth={3} />
+                                <Line type="monotone" dataKey="total_boosting" stroke="#2ecc71" strokeWidth={3} dot={{ stroke: '#2ecc71', strokeWidth: 2 }} />
                             </LineChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
             </div>
 
-            {/* Bar Chart for Farming */}
-            <div style={styles.chartCard}>
-                <div style={styles.chartHeader}>
-                    <h3 style={styles.title}>Data Perolehan Farming</h3>
-                </div>
-                <div style={styles.scrollContainer}>
-                    <div style={{ minWidth: farmingData.length * 100, height: 300 }}>
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart 
-                                data={farmingData}
-                                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                            >
-                                <XAxis dataKey="name" />
-                                <YAxis />
-                                <Tooltip />
-                                <Bar dataKey="koin" fill="#3498db" barSize={30} />
-                            </BarChart>
-                        </ResponsiveContainer>
+            {coinDataAvailable ? (
+                <div style={styles.chartCard}>
+                    <div style={styles.chartHeader}>
+                        <h3 style={styles.title}>Data Perolehan Koin</h3>
+                    </div>
+                    <div style={styles.scrollContainer}>
+                        <div style={{ minWidth: coinData.length * 100, height: 300 }}>
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart 
+                                    data={coinData}
+                                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                                >
+                                    <XAxis dataKey="name" />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Legend />
+                                    <Bar dataKey="saldo_koin" name="Saldo Koin" fill="#3498db" barSize={30} />
+                                    <Bar dataKey="koin_dijual" name="Koin Dijual" fill="#2ecc71" barSize={30} />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
                     </div>
                 </div>
-            </div>
+            ) : (
+                <div style={styles.chartCard}>
+                    <h3 style={styles.title}>Data Perolehan Koin Tidak Tersedia</h3>
+                </div>
+            )}
 
-            {/* Bar Chart for Boosting */}
-            <div style={styles.chartCard}>
-                <div style={styles.chartHeader}>
-                    <h3 style={styles.title}>Data Perolehan Boosting</h3>
-                </div>
-                <div style={styles.scrollContainer}>
-                    <div style={{ minWidth: boostingData.length * 100, height: 300 }}>
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart 
-                                data={boostingData}
-                                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                            >
-                                <XAxis dataKey="name" />
-                                <YAxis />
-                                <Tooltip />
-                                <Bar dataKey="nominal" fill="#2ecc71" barSize={30} />
-                            </BarChart>
-                        </ResponsiveContainer>
+            {boostingDataAvailable ? (
+                <div style={styles.chartCard}>
+                    <div style={styles.chartHeader}>
+                        <h3 style={styles.title}>Data Perolehan Boosting</h3>
+                    </div>
+                    <div style={styles.scrollContainer}>
+                        <div style={{ minWidth: boostingData.length * 100, height: 300 }}>
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart 
+                                    data={boostingData}
+                                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                                >
+                                    <XAxis dataKey="name" />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Bar dataKey="nominal" fill="#2ecc71" barSize={30} />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
                     </div>
                 </div>
-            </div>
+            ) : (
+                <div style={styles.chartCard}>
+                    <h3 style={styles.title}>Data Perolehan Boosting Tidak Tersedia</h3>
+                </div>
+            )}
         </div>
     );
 };

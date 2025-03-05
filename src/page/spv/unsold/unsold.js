@@ -1,50 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaCoins, FaChartLine, FaMoneyBillAlt } from 'react-icons/fa'; 
+import { FaCoins, FaChartLine } from 'react-icons/fa'; 
 import { toast } from 'react-toastify'; 
 import { useNavigate } from 'react-router-dom';
+import ModalAddUnsold from './modaladdunsold'; // Updated import name
 
-const Penjualan = () => {
-    const [penjualanList, setPenjualanList] = useState([]);
+const Unsold = () => {
+    const [unsoldList, setUnsoldList] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [filter, setFilter] = useState({
         bulan: new Date().getMonth() + 1,
         tahun: new Date().getFullYear(),
-        nama_game: ''
     });
     const [statsData, setStatsData] = useState({
-        total_koin_dijual: 0,
-        total_jumlah_uang: 0,
-        rata_rata_rate: 0,
+        total_koin: 0,
+        total_harga: 0,
     });
-    const [games, setGames] = useState([]);
+    const [showModalUpdate, setShowModalUpdate] = useState(false);
+    const [selectedUnsold, setSelectedUnsold] = useState(null);
 
     const token = localStorage.getItem('token');
     const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
     const navigate = useNavigate();
 
-    const fetchPenjualan = async () => {
+    const fetchUnsold = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`${BACKEND_URL}/api/penjualan/get`, {
+            const response = await axios.get(`${BACKEND_URL}/api/unsold/get`, {
                 headers: { Authorization: `Bearer ${token}` },
                 params: {
                     bulan: filter.bulan,
                     tahun: filter.tahun,
-                    nama_game: filter.nama_game // Menambahkan nama_game ke parameter
                 },
             });
             if (response.data && response.data.data) {
-                setPenjualanList(response.data.data);
+                setUnsoldList(response.data.data);
             } else {
-                setPenjualanList([]);
+                setUnsoldList([]);
             }
         } catch (err) {
-            console.error('Error saat mengambil data penjualan:', err);
-            setError('Gagal mengambil data penjualan');
-            setPenjualanList([]);
-            toast.error('Gagal memuat data penjualan');
+            console.error('Error saat mengambil data unsold:', err);
+            setError('Gagal mengambil data unsold');
+            setUnsoldList([]);
+            toast.error('Gagal memuat data unsold');
         } finally {
             setLoading(false);
         }
@@ -52,60 +51,18 @@ const Penjualan = () => {
 
     const fetchStats = async () => {
         try {
-            const response = await axios.get(`${BACKEND_URL}/api/penjualan/total`, {
+            const response = await axios.get(`${BACKEND_URL}/api/unsold/total`, {
                 headers: { Authorization: `Bearer ${token}` },
                 params: {
                     bulan: filter.bulan,
                     tahun: filter.tahun,
-                    nama_game: filter.nama_game // Menambahkan nama_game ke parameter
                 },
             });
-            if (response.data && response.data.total_koin_dijual !== undefined) {
-                setStatsData(prevStats => ({
-                    ...prevStats,
-                    total_koin_dijual: response.data.total_koin_dijual,
-                    total_jumlah_uang: response.data.total_jumlah_uang,
-                }));
+            if (response.data) {
+                setStatsData(response.data.data);
             }
         } catch (err) {
-            console.error('Error fetching total koin dijual:', err);
-        }
-    };
-
-    const fetchAverageRate = async () => {
-        try {
-            const response = await axios.get(`${BACKEND_URL}/api/penjualan/rate`, {
-                headers: { Authorization: `Bearer ${token}` },
-                params: {
-                    bulan: filter.bulan,
-                    tahun: filter.tahun,
-                    nama_game: filter.nama_game // Menambahkan nama_game ke parameter
-                },
-            });
-            if (response.data && response.data.rata_rata_rate !== undefined) {
-                setStatsData(prevStats => ({
-                    ...prevStats,
-                    rata_rata_rate: response.data.rata_rata_rate,
-                }));
-            }
-        } catch (err) {
-            console.error('Error fetching average rate:', err);
-        }
-    };
-
-    const fetchGames = async () => {
-        try {
-            const response = await axios.get(`${BACKEND_URL}/api/game/get`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            if (response.data && response.data.data) {
-                setGames(response.data.data); // Mengambil data dari response.data.data
-            } else {
-                setGames([]); // Mengatur games menjadi array kosong jika tidak ada data
-            }
-        } catch (err) {
-            console.error('Error fetching games:', err);
-            toast.error('Gagal memuat data game');
+            console.error('Error fetching total unsold stats:', err);
         }
     };
 
@@ -115,10 +72,8 @@ const Penjualan = () => {
             navigate('/login');
             return;
         }
-        fetchPenjualan();
+        fetchUnsold();
         fetchStats();
-        fetchAverageRate();
-        fetchGames(); // Fetch games when the component mounts
     }, [token, filter, navigate]);
 
     const handleFilterChange = (e) => {
@@ -128,8 +83,13 @@ const Penjualan = () => {
         });
     };
 
+    const handleOpenModalUpdate = (unsold) => {
+        setSelectedUnsold(unsold);
+        setShowModalUpdate(true);
+    };
+
     return (
-        <div className="total-penjualan-container">
+        <div className="total-unsold-container">
             {error && <p className="error-message">{error}</p>}
 
             {/* Stats Cards */}
@@ -137,31 +97,24 @@ const Penjualan = () => {
                 <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', padding: '15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <FaCoins style={{ color: '#3498db', fontSize: '2rem' }} />
                     <div style={{ textAlign: 'right' }}>
-                        <h5 style={{ margin: 0, color: '#7f8c8d', fontSize: '0.9rem' }}>Total Koin Dijual</h5>
-                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1.2rem', fontWeight: 'bold' }}>{statsData.total_koin_dijual}</h2>
+                        <h5 style={{ margin: 0, color: '#7f8c8d', fontSize: '0.9rem' }}>Total Koin</h5>
+                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1.2rem', fontWeight: 'bold' }}>{statsData.total_koin}</h2>
                     </div>
                 </div>
                 <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', padding: '15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <FaChartLine style={{ color: '#3498db', fontSize: '2rem' }} />
                     <div style={{ textAlign: 'right' }}>
-                        <h5 style={{ margin: 0, color: '#7f8c8d', fontSize: '0.9rem' }}>Rata-rata Rate</h5>
-                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1.2rem', fontWeight: 'bold' }}>{statsData.rata_rata_rate}</h2>
-                    </div>
-                </div>
-                <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', padding: '15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <FaMoneyBillAlt style={{ color: '#3498db', fontSize: '2rem' }} />
-                    <div style={{ textAlign: 'right' }}>
-                        <h5 style={{ margin: 0, color: '#7f8c8d', fontSize: '0.9rem' }}>Total Jumlah Uang</h5>
-                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1.2rem', fontWeight: 'bold' }}>{statsData.total_jumlah_uang}</h2>
+                        <h5 style={{ margin: 0, color: '#7f8c8d', fontSize: '0.9rem' }}>Total Harga</h5>
+                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1.2rem', fontWeight: 'bold' }}>{statsData.total_harga}</h2>
                     </div>
                 </div>
             </div>
 
-            {/* Penjualan Table Header */}
+            {/* Unsold Table Header */}
             <div className="card my-4">
                 <div className="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
                     <div className="bg-gradient-dark shadow-dark border-radius-lg pt-4 pb-3 d-flex justify-content-between align-items-center">
-                        <h6 className="text-white text-capitalize ps-3">Penjualan Table</h6>
+                        <h6 className="text-white text-capitalize ps-3">Unsold Table</h6>
                     </div>
                 </div>
 
@@ -198,25 +151,6 @@ const Penjualan = () => {
                                 ))}
                             </select>
                         </div>
-                        <div className="col-md-4">
-                            <select
-                                className="form-control"
-                                name="nama_game"
-                                value={filter.nama_game}
-                                onChange={handleFilterChange}
-                            >
-                                <option value="">Pilih Nama Game</option>
-                                {games.length > 0 ? (
-                                    games.map((game) => (
-                                        <option key={game.id_game} value={game.nama_game}>
-                                            {game.nama_game}
-                                        </option>
-                                    ))
-                                ) : (
-                                    <option value="">Tidak ada game tersedia</option>
-                                )}
-                            </select>
-                        </div>
                     </div>
                 </div>
 
@@ -230,36 +164,41 @@ const Penjualan = () => {
                                     <tr>
                                         <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">No</th>
                                         <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">NIP</th>
-                                        <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama</th>
+                                        <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Game</th>
+                                        <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Akun Steam</th>
                                         <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tanggal</th>
-                                        <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Server</th>
-                                        <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Demand</th>
-                                        <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Rate</th>
-                                        <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Keterangan</th>
-                                        <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Koin Dijual</th>
-                                        <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Jumlah Uang</th>
+                                        <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Koin</th>
+                                        <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Harga Beli</th>
+                                        <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Total Harga</th>
+                                        <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Aksi</th>
                                     </tr>
                                 </thead>
 
                                 <tbody>
-                                    {penjualanList && penjualanList.length > 0 ? (
-                                        penjualanList.map((penjualan, index) => (
-                                            <tr key={penjualan.id}>
+                                    {unsoldList && unsoldList.length > 0 ? (
+                                        unsoldList.map((unsold, index) => (
+                                            <tr key={unsold.id_unsold}>
                                                 <td>{index + 1}</td>
-                                                <td>{penjualan.NIP}</td>
-                                                <td>{penjualan.nama}</td>
-                                                <td>{penjualan.tgl_transaksi.split("T")[0]}</td>
-                                                <td>{penjualan.server}</td>
-                                                <td>{penjualan.demand}</td>
-                                                <td>{penjualan.rate}</td>
-                                                <td>{penjualan.ket}</td>
-                                                <td>{penjualan.dijual}</td>
-                                                <td>{penjualan.jumlah_uang}</td>
+                                                <td>{unsold.NIP}</td>
+                                                <td>{unsold.nama_game}</td>
+                                                <td>{unsold.username_steam}</td>
+                                                <td>{new Date(unsold.tanggal).toLocaleDateString('id-ID')}</td>
+                                                <td>{unsold.koin}</td>
+                                                <td>{unsold.harga_beli}</td>
+                                                <td>{unsold.total_harga}</td>
+                                                <td>
+                                                    <button
+                                                        className="btn btn-primary btn-sm"
+                                                        onClick={() => handleOpenModalUpdate(unsold)}
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                </td>
                                             </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="9">Tidak ada penjualan tersedia</td>
+                                            <td colSpan="7">Tidak ada data unsold tersedia</td>
                                         </tr>
                                     )}
                                 </tbody>
@@ -268,6 +207,19 @@ const Penjualan = () => {
                     )}
                 </div>
             </div>
+
+            {showModalUpdate && selectedUnsold && (
+                <ModalAddUnsold
+                    showModal={showModalUpdate}
+                    setShowModal={setShowModalUpdate}
+                    token={token}
+                    selectedUnsold={selectedUnsold}
+                    onAddSuccess={async (updatedData) => {
+                        await fetchUnsold();
+                        setShowModalUpdate(false);
+                    }}
+                />
+            )}
 
             {/* Inline CSS */}
             <style>{`
@@ -322,4 +274,4 @@ const Penjualan = () => {
     );
 };
 
-export default Penjualan;
+export default Unsold;

@@ -100,8 +100,8 @@ const SidebarManager = () => {
   const isMobile = window.innerWidth <= 768;
 
   const sidebarContent = (
-    <div className="sidebar-content" style={{ 
-      display: 'flex', 
+    <div className="sidebar-content" style={{
+      display: 'flex',
       flexDirection: 'column',
       height: '100%',
       overflowY: 'auto',
@@ -187,8 +187,14 @@ const SidebarManager = () => {
               <span className="align-middle">Kasbon</span>
             </Link>
           </li>
-          <li className={`sidebar-item ${location.pathname === "/manager/data_penjualan" ? "active" : ""}`}>
-            <Link className="sidebar-link" to="/manager/data_penjualan">
+          <li className={`sidebar-item ${location.pathname === "/manager/data_koin" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/manager/data_koin">
+              <FaSellcast className="align-middle" />{" "}
+              <span className="align-middle">Jual Koin</span>
+            </Link>
+          </li>
+          <li className={`sidebar-item ${location.pathname === "/manager/penjualan" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/manager/penjualan">
               <FaSellcast className="align-middle" />{" "}
               <span className="align-middle">Data Penjualan</span>
             </Link>

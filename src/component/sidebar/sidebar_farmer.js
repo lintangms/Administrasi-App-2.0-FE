@@ -156,6 +156,12 @@ const SidebarFarmer = () => {
                   <span className="align-middle">Riwayat Kasbon</span>
                 </Link>
               </li>
+              <li className={`sidebar-item ${location.pathname === "/farmer/riwayatunsold" ? "active" : ""}`}>
+                <Link className="sidebar-link" to="/farmer/riwayatunsold">
+                  <FaHistory className="align-middle" />{" "}
+                  <span className="align-middle">Riwayat Unsold</span>
+                </Link>
+              </li>
             </>
           )}
           {userRole === "booster" && (

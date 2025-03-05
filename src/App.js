@@ -41,9 +41,15 @@ import TugasForm from "./page/spv/tugas/tugas";
 import DaftarTugas from "./page/booster/tugas/daftar_tugas";
 import DaftarKasbon from "./page/manager/kasbon/daftar_kasbon";
 import Penjualan from "./page/spv/penjualan/penjualan";
+import TotalKoin from "./page/spv/koin/totalkoin";
+import DataGaji from "./page/spv/gaji/data_gaji";
+import PerolehanUnsold from "./page/farmer/unsold/unsold";
+import RiwayatUnsold from "./page/farmer/unsold/riwayatunsold";
+import Unsold from "./page/spv/unsold/unsold";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Dashboard from "./page/manager/dashboard/dashboardmanager";
 
 function App() {
   const [jabatan, setJabatan] = useState(null);
@@ -174,6 +180,10 @@ function App() {
           <Route path="/manager/perolehan_boosting" element={<Boosting />} />
           <Route path="/manager/data_absensi" element={<DataAbsensi />} />
           <Route path="/manager/data_kasbon" element={<DaftarKasbon />} />
+          <Route path="/manager/penjualan" element={<Penjualan />} />
+          <Route path="/manager/data_koin" element={<TotalKoin />} />
+          <Route path="/manager/data_gaji" element={<DataGaji />} />
+          <Route path="/manager/data_unsold" element={<Unsold />} />
 
           <Route path="/spv/dashboard" element={<DashboardSPV />} />
           <Route path="/spv/scan" element={<ScanQR />} />
@@ -190,6 +200,9 @@ function App() {
           <Route path="/spv/data_absensi" element={<DataAbsensi />} />
           <Route path="/spv/tugas" element={<TugasForm />} />
           <Route path="/spv/penjualan" element={<Penjualan />} />
+          <Route path="/spv/data_koin" element={<TotalKoin />} />
+          <Route path="/spv/data_gaji" element={<DataGaji />} />
+          <Route path="/spv/data_unsold" element={<Unsold />} />
 
           <Route path="/farmer/dashboard" element={<DashboardFarmer />} />
           <Route path="/farmer/absensi" element={<AbsensiFarmer />} />
@@ -199,6 +212,8 @@ function App() {
           <Route path="/farmer/riwayatperolehan" element={<RiwayatFarming />} />
           <Route path="/farmer/riwayatabsen" element={<RiwayatAbsen />} />
           <Route path="/farmer/riwayatkasbon" element={<RiwayatKasbon />} />
+          <Route path="/farmer/unsold" element={<PerolehanUnsold />} />
+          <Route path="/farmer/riwayatunsold" element={<RiwayatUnsold />} />
 
           <Route path="/booster/dashboard" element={<DashboardBooster />} />
           <Route path="/booster/absensi" element={<AbsensiBooster />} />
@@ -210,7 +225,7 @@ function App() {
           <Route path="/booster/riwayatkasbon" element={<RiwayatKasbon />} />
           <Route path="/booster/daftar_tugas" element={<DaftarTugas />} />
 
-          <Route path="/direktur/dashboard" element={<DashboardDirektur />} />
+          <Route path="/direktur/dashboard" element={<Dashboard />} />
           <Route path="/direktur/jabatandivisi" element={<Jabatan_Divisi_Direktur />} />
           <Route path="/direktur/shiftgame" element={<Shift_Game_Direktur />} />
           <Route path="/direktur/karyawan" element={<Karyawan_Direktur />} />
@@ -221,6 +236,7 @@ function App() {
           <Route path="/direktur/akun" element={<Akun_Direktur />} />
           <Route path="/direktur/pengeluaran" element={<Pengeluaran_Direktur />} />
           <Route path="/direktur/data_absensi" element={<DataAbsensi />} />
+          <Route path="/direktur/data_unsold" element={<Unsold />} />
 
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
