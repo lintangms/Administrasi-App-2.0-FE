@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaPen, FaTrash } from 'react-icons/fa'; 
-import { Link } from 'react-router-dom'; 
 import ModalAddAkun from './modaladdakun'; // Modal untuk menambah Akun
 import ModalUpdateAkun from './modalupdateakun'; // Modal untuk memperbarui Akun
 import { toast } from 'react-toastify'; // Import toast dari react-toastify
@@ -40,7 +39,7 @@ const Akun = () => {
     };
 
     fetchAkun();
-  }, [token]);
+  }, [token, BACKEND_URL]);
 
   // Handle Edit action for Akun
   const handleEditAkun = (akun) => {
@@ -49,17 +48,18 @@ const Akun = () => {
   };
 
   // Handle Delete action for Akun
-  const handleDeleteAkun = async (id) => {
-    if (!id) {
-      console.error('ID tidak valid:', id);
+  const handleDeleteAkun = async (id_akun) => {
+    if (!id_akun) {
+      console.error('ID tidak valid:', id_akun);
+      toast.error('ID tidak valid.'); // Notifikasi gagal
       return;
     }
     try {
-      const response = await axios.delete(`${BACKEND_URL}/api/akun/delete/${id}`, {
+      const response = await axios.delete(`${BACKEND_URL}/api/akun/delete/${id_akun}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.status === 200) {
-        setAkunList(akunList.filter((akun) => akun.id !== id));
+        setAkunList(akunList.filter((akun) => akun.id_akun !== id_akun));
         toast.success('Akun berhasil dihapus!'); // Notifikasi sukses
       }
     } catch (err) {
@@ -71,7 +71,6 @@ const Akun = () => {
   // Callback untuk menambahkan akun baru
   const handleAddAkun = (newAkun) => {
     setAkunList((prevList) => [newAkun, ...prevList]); // Tambahkan di atas
-    toast.success('Akun berhasil ditambahkan!'); // Notifikasi sukses
   };
 
   return (
@@ -136,7 +135,7 @@ const Akun = () => {
                   <tbody>
                     {akunList && akunList.length > 0 ? (
                       akunList.map((akun, index) => (
-                        <tr key={akun.id}>
+                        <tr key={akun.id_akun}>
                           <td>{index + 1}</td> {/* Menampilkan nomor urut */}
                           <td>{akun.username_steam}</td>
                           <td>{akun.password_steam}</td>
@@ -153,7 +152,7 @@ const Akun = () => {
                               <FaPen />
                             </button>
                             <button
-                              onClick={() => handleDeleteAkun(akun.id)}
+                              onClick={() => handleDeleteAkun(akun.id_akun)}
                               className="btn btn-danger btn-sm me-2 rounded" // Tambahkan kelas rounded
                             >
                               <FaTrash />
