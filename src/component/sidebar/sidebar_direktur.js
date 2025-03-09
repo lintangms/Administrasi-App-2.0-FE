@@ -24,6 +24,7 @@ import {
   FaSellcast,
   FaMoneyCheckAlt,
   FaDatabase,
+  FaBullseye,
 } from "react-icons/fa";
 
 // Komponen Header
@@ -117,6 +118,12 @@ const SidebarDirektur = () => {
             <Link className="sidebar-link" to="/direktur/data_absensi">
               <FaCheckCircle className="align-middle" />{" "}
               <span className="align-middle">Data Absensi</span>
+            </Link>
+          </li>
+          <li className={`sidebar-item ${location.pathname === "/direktur/data_target" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/direktur/data_target">
+              <FaBullseye className="align-middle" />{" "}
+              <span className="align-middle">Target</span>
             </Link>
           </li>
           <li className={`sidebar-item ${location.pathname === "/direktur/perolehan_farming" ? "active" : ""}`}>

@@ -48,6 +48,9 @@ import RiwayatUnsold from "./page/farmer/unsold/riwayatunsold";
 import Unsold from "./page/spv/unsold/unsold";
 import DataGaji_Direktur from "./page/direktur/gaji/gaji";
 import Unsold_Direktur from "./page/direktur/unsold/unsold";
+import TargetFarming from "./page/farmer/target/target";
+import RiwayatTarget from "./page/farmer/target/riwayattarget";
+import DataTarget from "./page/manager/target/data_target";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -186,6 +189,7 @@ function App() {
           <Route path="/manager/data_koin" element={<TotalKoin />} />
           <Route path="/manager/data_gaji" element={<DataGaji />} />
           <Route path="/manager/data_unsold" element={<Unsold />} />
+          <Route path="/manager/data_target" element={<DataTarget />} />
 
           <Route path="/spv/dashboard" element={<DashboardSPV />} />
           <Route path="/spv/scan" element={<ScanQR />} />
@@ -205,6 +209,7 @@ function App() {
           <Route path="/spv/data_koin" element={<TotalKoin />} />
           <Route path="/spv/data_gaji" element={<DataGaji />} />
           <Route path="/spv/data_unsold" element={<Unsold />} />
+          <Route path="/spv/data_target" element={<DataTarget />} />
 
           <Route path="/farmer/dashboard" element={<DashboardFarmer />} />
           <Route path="/farmer/absensi" element={<AbsensiFarmer />} />
@@ -216,6 +221,8 @@ function App() {
           <Route path="/farmer/riwayatkasbon" element={<RiwayatKasbon />} />
           <Route path="/farmer/unsold" element={<PerolehanUnsold />} />
           <Route path="/farmer/riwayatunsold" element={<RiwayatUnsold />} />
+          <Route path="/farmer/target" element={<TargetFarming />} />
+          <Route path="/farmer/riwayattarget" element={<RiwayatTarget />} />
 
           <Route path="/booster/dashboard" element={<DashboardBooster />} />
           <Route path="/booster/absensi" element={<AbsensiBooster />} />
@@ -241,6 +248,7 @@ function App() {
           <Route path="/direktur/data_unsold" element={<Unsold_Direktur />} />
           <Route path="/direktur/data_penjualan" element={<Penjualan />} />
           <Route path="/direktur/data_gaji" element={<DataGaji_Direktur />} />
+          <Route path="/direktur/data_target" element={<DataTarget />} />
 
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>

@@ -164,7 +164,6 @@ const RiwayatFarming = () => {
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">NIP</th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Koin</th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Periode</th>
-                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Aksi</th>
                     </tr>
                   </thead>
 
@@ -176,11 +175,7 @@ const RiwayatFarming = () => {
                           <td>{farming.NIP}</td>
                           <td>{farming.koin}</td>
                           <td>{new Date(farming.periode).toLocaleDateString()}</td>
-                          <td>
-                            <Link to={`/farmer/detail_farming/${farming.id_farming}`} className="btn btn-primary btn-sm rounded">
-                              <FaInfoCircle />
-                            </Link>
-                          </td>
+                         
                         </tr>
                       ))
                     ) : (

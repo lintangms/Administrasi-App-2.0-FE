@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   FaHome,
-  FaUser ,
+  FaUser,
   FaGamepad,
   FaBook,
   FaCheckCircle,
@@ -17,6 +17,7 @@ import {
   FaDatabase,
   FaUsers,
   FaListAlt,
+  FaBullseye,
 } from "react-icons/fa";
 
 // Komponen Header
@@ -65,7 +66,7 @@ const Header = ({ toggleSidebar, userName }) => {
               fontSize: "18px",
             }}
           >
-            <FaUser  />
+            <FaUser />
           </button>
         </Link>
       </div>
@@ -118,6 +119,12 @@ const SidebarSPV = () => {
               <span className="align-middle">Data Absensi</span>
             </Link>
           </li>
+          <li className={`sidebar-item ${location.pathname === "/spv/data_target" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/spv/data_target">
+              <FaBullseye className="align-middle" />{" "}
+              <span className="align-middle">Target</span>
+            </Link>
+          </li>
           <li className={`sidebar-item ${location.pathname === "/spv/perolehan_farming" ? "active" : ""}`}>
             <Link className="sidebar-link" to="/spv/perolehan_farming">
               <FaCoins className="align-middle" />{" "}
@@ -138,7 +145,7 @@ const SidebarSPV = () => {
           </li>
           <li className={`sidebar-item ${location.pathname === "/spv/jabatandivisi" ? "active" : ""}`}>
             <Link className="sidebar-link" to="/spv/jabatandivisi">
-              <FaUser  className="align-middle" />{" "}
+              <FaUser className="align-middle" />{" "}
               <span className="align-middle">Jabatan & Divisi</span>
             </Link>
           </li>
@@ -162,7 +169,7 @@ const SidebarSPV = () => {
           </li>
           <li className={`sidebar-item ${location.pathname === "/spv/akun" ? "active" : ""}`}>
             <Link className="sidebar-link" to="/spv/akun">
-              <FaUser  className="align-middle" />{" "}
+              <FaUser className="align-middle" />{" "}
               <span className="align-middle">Akun</span>
             </Link>
           </li>

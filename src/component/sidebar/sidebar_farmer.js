@@ -23,6 +23,7 @@ import {
   FaViacoin,
   FaMoneyBillWave,
   FaListAlt,
+  FaBullseye,
 } from "react-icons/fa";
 
 // Komponen Header
@@ -138,6 +139,12 @@ const SidebarFarmer = () => {
                   <span className="align-middle">Kasbon</span>
                 </Link>
               </li>
+              <li className={`sidebar-item ${location.pathname === "/farmer/target" ? "active" : ""}`}>
+                <Link className="sidebar-link" to="/farmer/target">
+                  <FaBullseye className="align-middle" />{" "}
+                  <span className="align-middle">Target</span>
+                </Link>
+              </li>
               <li className={`sidebar-item ${location.pathname === "/farmer/riwayatabsen" ? "active" : ""}`}>
                 <Link className="sidebar-link" to="/farmer/riwayatabsen">
                   <FaHistory className="align-middle" />{" "}
@@ -160,6 +167,12 @@ const SidebarFarmer = () => {
                 <Link className="sidebar-link" to="/farmer/riwayatunsold">
                   <FaHistory className="align-middle" />{" "}
                   <span className="align-middle">Riwayat Unsold</span>
+                </Link>
+              </li>
+              <li className={`sidebar-item ${location.pathname === "/farmer/riwayattarget" ? "active" : ""}`}>
+                <Link className="sidebar-link" to="/farmer/riwayattarget">
+                  <FaHistory className="align-middle" />{" "}
+                  <span className="align-middle">Riwayat Target</span>
                 </Link>
               </li>
             </>

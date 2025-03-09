@@ -24,6 +24,7 @@ import {
   FaSellcast,
   FaMoneyCheckAlt,
   FaDatabase,
+  FaBullseye,
 } from "react-icons/fa";
 
 // Komponen Header remains the same
@@ -131,6 +132,12 @@ const SidebarManager = () => {
             <Link className="sidebar-link" to="/manager/data_absensi">
               <FaCheckCircle className="align-middle" />{" "}
               <span className="align-middle">Data Absensi</span>
+            </Link>
+          </li>
+          <li className={`sidebar-item ${location.pathname === "/manager/data_target" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/manager/data_target">
+              <FaBullseye className="align-middle" />{" "}
+              <span className="align-middle">Target</span>
             </Link>
           </li>
           <li className={`sidebar-item ${location.pathname === "/manager/perolehan_farming" ? "active" : ""}`}>

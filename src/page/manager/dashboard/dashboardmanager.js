@@ -10,16 +10,17 @@ const Dashboard = () => {
         total_boosting: 0,
         jumlah_inventaris: 0,
     });
-    const [farmingData, setFarmingData] = useState([]);
-    const [boostingData, setBoostingData] = useState([]);
     const [yearlyFarmingData, setYearlyFarmingData] = useState([]);
     const [yearlyBoostingData, setYearlyBoostingData] = useState([]);
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [selectedGame, setSelectedGame] = useState(null);
+    const [selectedShift, setSelectedShift] = useState(null);
     const [games, setGames] = useState([]);
-    const [isDropdownOpen, setIsDropdownOpen] = useState({ month: false, year: false, game: false });
+    const [shifts, setShifts] = useState([]);
+    const [isDropdownOpen, setIsDropdownOpen] = useState({ month: false, year: false, game: false, shift: false });
     const [coinData, setCoinData] = useState([]);
+    const [boostingData, setBoostingData] = useState([]);
     const [boostingDataAvailable, setBoostingDataAvailable] = useState(false);
     const [coinDataAvailable, setCoinDataAvailable] = useState(false);
 
@@ -31,7 +32,14 @@ const Dashboard = () => {
 
     const fetchTotalData = async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/statistik/total`);
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/statistik/total`, {
+                params: { 
+                    nama_game: selectedGame, 
+                    bulan: selectedMonth, 
+                    tahun: selectedYear, 
+                    shift: selectedShift 
+                }
+            });
             setTotalData(response.data);
         } catch (error) {
             console.error("Error fetching total data:", error);
@@ -51,22 +59,39 @@ const Dashboard = () => {
         }
     };
 
+    const fetchShifts = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/shift/get`);
+            if (response.data && response.data.data && Array.isArray(response.data.data)) {
+                setShifts(response.data.data);
+            } else {
+                console.error("Expected an array of shifts, but got:", response.data);
+                setShifts([]);
+            }
+        } catch (error) {
+            console.error("Error fetching shifts:", error);
+        }
+    };
+
     const fetchPerformanceData = async () => {
         try {
-            const formattedMonth = String(selectedMonth).padStart(2, '0'); // Ensure month is two digits
-            const coinResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/farming/getall`, {
-                params: { bulan: formattedMonth, tahun: selectedYear, nama_game: selectedGame }
+            const formattedMonth = String(selectedMonth).padStart(2, '0');
+            const coinResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/statistik/farming`, {
+                params: { 
+                    bulan: formattedMonth, 
+                    tahun: selectedYear, 
+                    nama_game: selectedGame, 
+                    shift: selectedShift 
+                }
             });
 
-            if (coinResponse.data && coinResponse.data.data) {
-                const coinChartData = coinResponse.data.data
-                    .map(item => ({
-                        name: item.nama,
-                        saldo_koin: parseInt(item.saldo_koin),
-                        koin_dijual: parseInt(item.total_dijual) || 0,
-                    }))
-                    .sort((a, b) => b.saldo_koin - a.saldo_koin)
-                    .slice(0, 100);
+            if (coinResponse.data) {
+                const coinChartData = coinResponse.data.map(item => ({
+                    name: item.nama,
+                    saldo_koin: parseInt(item.total_saldo_koin) || 0,
+                    koin_dijual: parseInt(item.total_dijual) || 0,
+                })).sort((a, b) => b.saldo_koin - a.saldo_koin)
+                  .slice(0, 100);
 
                 setCoinData(coinChartData);
                 setCoinDataAvailable(coinChartData.length > 0);
@@ -76,17 +101,20 @@ const Dashboard = () => {
             }
 
             const boostingResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/statistik/boosting`, {
-                params: { bulan: formattedMonth, tahun: selectedYear, nama_game: selectedGame }
+                params: { 
+                    bulan: formattedMonth, 
+                    tahun: selectedYear, 
+                    nama_game: selectedGame, 
+                    shift: selectedShift 
+                }
             });
 
             if (boostingResponse.data) {
-                const boostingChartData = boostingResponse.data
-                    .sort((a, b) => b.total_boosting - a.total_boosting)
-                    .slice(0, 100)
-                    .map(item => ({
-                        name: item.nama,
-                        nominal: item.total_boosting,
-                    }));
+                const boostingChartData = boostingResponse.data.map(item => ({
+                    name: item.nama,
+                    nominal: item.total_boosting,
+                })).sort((a, b) => b.nominal - a.nominal)
+                  .slice(0, 100);
 
                 setBoostingData(boostingChartData);
                 setBoostingDataAvailable(boostingChartData.length > 0);
@@ -106,11 +134,19 @@ const Dashboard = () => {
     const fetchYearlyData = async () => {
         try {
             const farmingYearlyResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/statistik/totalfarming`, {
-                params: { tahun: selectedYear, nama_game: selectedGame }
+                params: { 
+                    tahun: selectedYear, 
+                    nama_game: selectedGame, 
+                    shift: selectedShift 
+                }
             });
 
             const boostingYearlyResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/statistik/totalboosting`, {
-                params: { tahun: selectedYear, nama_game: selectedGame }
+                params: { 
+                    tahun: selectedYear, 
+                    nama_game: selectedGame, 
+                    shift: selectedShift 
+                }
             });
 
             setYearlyFarmingData(farmingYearlyResponse.data);
@@ -123,9 +159,10 @@ const Dashboard = () => {
     useEffect(() => {
         fetchTotalData();
         fetchGames();
+        fetchShifts();
         fetchPerformanceData();
         fetchYearlyData();
-    }, [selectedMonth, selectedYear, selectedGame]);
+    }, [selectedMonth, selectedYear, selectedGame, selectedShift]);
 
     const styles = {
         container: {
@@ -396,6 +433,51 @@ const Dashboard = () => {
                                         }}
                                     >
                                         {game.nama_game}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    <div style={styles.dropdown}>
+                        <button 
+                            style={styles.dropdownTrigger}
+                            onClick={() => setIsDropdownOpen(prev => ({ ...prev, shift: !prev.shift }))}
+                        >
+                            <FaChartLine style={{ marginRight: '8px' }} /> 
+                            {selectedShift || "Select Shift"}
+                        </button>
+                        {isDropdownOpen.shift && (
+                            <div style={styles.dropdownContent}>
+                                <div 
+                                    style={{
+                                        ...styles.dropdownItem,
+                                        backgroundColor: selectedShift === null ? '#e7f1f7' : 'white',
+                                    }}
+                                    onClick={() => {
+                                        setSelectedShift(null);
+                                        setIsDropdownOpen(prev => ({ ...prev, shift: false }));
+                                        fetchPerformanceData();
+                                        fetchYearlyData();
+                                    }}
+                                >
+                                    Select Shift
+                                </div>
+                                {shifts.map(shift => (
+                                    <div 
+                                        key={shift.id_shift}
+                                        style={{
+                                            ...styles.dropdownItem,
+                                            backgroundColor: selectedShift === shift.nama_shift ? '#e7f1f7' : 'white',
+                                        }}
+                                        onClick={() => {
+                                            setSelectedShift(shift.nama_shift);
+                                            setIsDropdownOpen(prev => ({ ...prev, shift: false }));
+                                            fetchPerformanceData();
+                                            fetchYearlyData();
+                                        }}
+                                    >
+                                        {shift.nama_shift}
                                     </div>
                                 ))}
                             </div>
