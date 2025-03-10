@@ -218,7 +218,6 @@ const DataTarget = () => {
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tanggal</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Saldo Koin</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Persentase</th>
-                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Aksi</th>
                   </tr>
                 </thead>
 
@@ -234,14 +233,6 @@ const DataTarget = () => {
                         <td>{new Date(target.tanggal).toLocaleDateString()}</td>
                         <td>{target.saldo_koin}</td>
                         <td>{target.persentase}%</td>
-                        <td>
-                          <button
-                            className="btn btn-primary btn-sm"
-                            onClick={() => handleOpenModal(target)}
-                          >
-                            <FaInfoCircle />
-                          </button>
-                        </td>
                       </tr>
                     ))
                   ) : (

@@ -51,6 +51,8 @@ import Unsold_Direktur from "./page/direktur/unsold/unsold";
 import TargetFarming from "./page/farmer/target/target";
 import RiwayatTarget from "./page/farmer/target/riwayattarget";
 import DataTarget from "./page/manager/target/data_target";
+import Kasbon_Direktur from "./page/direktur/kasbon/kasbon";
+import Inventaris_Direktur from "./page/direktur/inventaris/inventaris";
 
   
 import { ToastContainer } from "react-toastify";
@@ -250,6 +252,9 @@ function App() {
           <Route path="/direktur/data_penjualan" element={<Penjualan />} />
           <Route path="/direktur/data_gaji" element={<DataGaji_Direktur />} />
           <Route path="/direktur/data_target" element={<DataTarget />} />
+          <Route path="/direktur/inventaris" element={<Inventaris_Direktur />} />
+          <Route path="/direktur/data_kasbon" element={<Kasbon_Direktur />} />
+
 
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>

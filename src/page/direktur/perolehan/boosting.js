@@ -72,9 +72,7 @@ const Boosting = () => {
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                         Keterangan
                       </th>
-                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                        Aksi
-                      </th>
+                     
                     </tr>
                   </thead>
 
@@ -87,11 +85,7 @@ const Boosting = () => {
                           <td>{boosting.nominal}</td>
                           <td>{boosting.periode}</td>
                           <td>{boosting.ket}</td>
-                          <td>
-                            <Link to={`/boosting/detail/${boosting.id_boosting}`} className="btn btn-primary btn-sm rounded">
-                              <FaInfoCircle />
-                            </Link>
-                          </td>
+                        
                         </tr>
                       ))
                     ) : (

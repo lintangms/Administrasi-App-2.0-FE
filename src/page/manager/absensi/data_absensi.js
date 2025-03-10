@@ -11,11 +11,26 @@ const DataAbsensi = () => {
     const [filter, setFilter] = useState({
         nama: '',
         tanggal: '',
+        nama_shift: '',
+        status: ''
     });
+    const [shifts, setShifts] = useState([]);
 
     const token = localStorage.getItem('token');
     const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
     const navigate = useNavigate();
+
+    const fetchShifts = async () => {
+        try {
+            const response = await axios.get(`${BACKEND_URL}/api/shift/get`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setShifts(response.data.data || []);
+        } catch (err) {
+            console.error('Error fetching shifts:', err);
+            toast.error('Gagal memuat data shift');
+        }
+    };
 
     const fetchAbsensi = async () => {
         setLoading(true);
@@ -25,6 +40,8 @@ const DataAbsensi = () => {
                 params: {
                     nama: filter.nama,
                     tanggal: filter.tanggal,
+                    nama_shift: filter.nama_shift,
+                    status: filter.status
                 },
             });
 
@@ -126,6 +143,7 @@ const DataAbsensi = () => {
             navigate('/login');
             return;
         }
+        fetchShifts();
         fetchAbsensi();
     }, [token, navigate, filter]);
 
@@ -162,6 +180,35 @@ const DataAbsensi = () => {
                                     value={filter.nama}
                                     onChange={handleFilterChange}
                                 />
+                            </div>
+                            <div className="col-md-3">
+                                <select
+                                    className="form-control"
+                                    name="nama_shift"
+                                    value={filter.nama_shift}
+                                    onChange={handleFilterChange}
+                                >
+                                    <option value="">Pilih Shift</option>
+                                    {shifts.map((shift) => (
+                                        <option key={shift.id_shift} value={shift.nama_shift}>
+                                            {shift.nama_shift}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="col-md-3">
+                                <select
+                                    className="form-control"
+                                    name="status"
+                                    value={filter.status}
+                                    onChange={handleFilterChange}
+                                >
+                                    <option value="">Pilih Status</option>
+                                    <option value="masuk">Masuk</option>
+                                    <option value="izin">Izin</option>
+                                    <option value="tidak_masuk">Tidak Masuk</option>
+                                    <option value="belum absen">Belum absen</option>
+                                </select>
                             </div>
                         </div>
                     </div>

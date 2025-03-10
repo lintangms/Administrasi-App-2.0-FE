@@ -4,7 +4,7 @@ import { FaInfoCircle } from 'react-icons/fa';
 import { Link } from 'react-router-dom'; 
 import { toast } from 'react-toastify'; // Import toast dari react-toastify
 
-const Inventaris = () => {
+const Inventaris_Direktur = () => {
   const [inventarisList, setInventarisList] = useState([]); // State untuk Inventaris
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -72,9 +72,7 @@ const Inventaris = () => {
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                         Ket
                       </th>
-                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                        Aksi
-                      </th>
+                      
                     </tr>
                   </thead>
 
@@ -87,11 +85,7 @@ const Inventaris = () => {
                           <td>{new Date(inventaris.tgl_beli).toLocaleDateString("id-ID")}</td>
                           <td>{inventaris.harga}</td>
                           <td>{inventaris.ket}</td>
-                          <td>
-                            <Link to={`/manager/detail_inventaris/${inventaris.id_inventaris}`} className="btn btn-primary btn-sm rounded">
-                              <FaInfoCircle />
-                            </Link>
-                          </td>
+                         
                         </tr>
                       ))
                     ) : (
@@ -155,4 +149,4 @@ const Inventaris = () => {
   );
 };
 
-export default Inventaris;
+export default Inventaris_Direktur;

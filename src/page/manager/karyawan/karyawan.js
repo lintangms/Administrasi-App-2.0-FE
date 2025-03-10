@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaPen, FaTrash, FaInfoCircle } from 'react-icons/fa' 
+import { FaPen, FaTrash, FaInfoCircle } from 'react-icons/fa'; 
 import { Link } from 'react-router-dom'; 
 import ModalAddKaryawan from './modaladdkaryawan';
 import ModalUpdateKaryawan from './modalupdatekaryawan';
@@ -13,6 +13,16 @@ const Karyawan = () => {
   const [selectedKaryawan, setSelectedKaryawan] = useState(null);
   const [showAddKaryawanModal, setShowAddKaryawanModal] = useState(false);
   const [showUpdateKaryawanModal, setShowUpdateKaryawanModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [games, setGames] = useState([]);
+  const [shifts, setShifts] = useState([]);
+  const [jabatans, setJabatans] = useState([]);
+  const [filters, setFilters] = useState({
+    nama_game: '',
+    nama_shift: '',
+    nama_jabatan: '',
+    status: ''
+  });
 
   const token = localStorage.getItem('token');
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -23,9 +33,10 @@ const Karyawan = () => {
       try {
         const response = await axios.get(`${BACKEND_URL}/api/karyawan/get`, {
           headers: { Authorization: `Bearer ${token}` },
+          params: filters
         });
         if (response.data) {
-          setKaryawanList(response.data);
+          setKaryawanList(response.data.data);
         } else {
           setKaryawanList([]);
         }
@@ -39,7 +50,49 @@ const Karyawan = () => {
     };
 
     fetchKaryawan();
-  }, [token, BACKEND_URL]);
+  }, [token, BACKEND_URL, filters]);
+
+  const fetchGames = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/game/get`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setGames(response.data.data || []);
+    } catch (err) {
+      console.error('Error fetching games:', err);
+      toast.error('Gagal memuat data game');
+    }
+  };
+
+  const fetchShifts = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/shift/get`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setShifts(response.data.data || []);
+    } catch (err) {
+      console.error('Error fetching shifts:', err);
+      toast.error('Gagal memuat data shift');
+    }
+  };
+
+  const fetchJabatans = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/jabatan/get`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setJabatans(response.data.data || []);
+    } catch (err) {
+      console.error('Error fetching jabatans:', err);
+      toast.error('Gagal memuat data jabatan');
+    }
+  };
+
+  useEffect(() => {
+    fetchGames();
+    fetchShifts();
+    fetchJabatans();
+  }, [token]);
 
   const handleEditKaryawan = (karyawan) => {
     setSelectedKaryawan(karyawan);
@@ -70,6 +123,21 @@ const Karyawan = () => {
     toast.success('Karyawan berhasil ditambahkan!');
   };
 
+  const handleFilterChange = (e) => {
+    setFilters({
+      ...filters,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const filteredKaryawanList = karyawanList.filter(karyawan => {
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    return (
+      (typeof karyawan.NIP === 'string' && karyawan.NIP.toLowerCase().includes(lowerCaseSearchTerm)) ||
+      (typeof karyawan.nama === 'string' && karyawan.nama.toLowerCase().includes(lowerCaseSearchTerm))
+    );
+  });
+
   return (
     <div className="karyawan-container">
       {error && <p className="error-message">{error}</p>}
@@ -94,6 +162,78 @@ const Karyawan = () => {
               </div>
             </div>
             <div className="card-body px-0 pb-2">
+              {/* Search Input */}
+              <div className="mb-3 px-4">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Cari Karyawan Nama"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              {/* Filter Dropdowns - Made narrower */}
+              <div className="mb-3 px-4">
+                <div className="row">
+                  <div className="col-md-3 mb-2">
+                    <select
+                      className="form-control"
+                      name="nama_game"
+                      value={filters.nama_game}
+                      onChange={handleFilterChange}
+                    >
+                      <option value="">Pilih Nama Game</option>
+                      {games.map((game) => (
+                        <option key={game.id_game} value={game.nama_game}>
+                          {game.nama_game}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="col-md-3 mb-2">
+                    <select
+                      className="form-control"
+                      name="nama_shift"
+                      value={filters.nama_shift}
+                      onChange={handleFilterChange}
+                    >
+                      <option value="">Pilih Shift</option>
+                      {shifts.map((shift) => (
+                        <option key={shift.id_shift} value={shift.nama_shift}>
+                          {shift.nama_shift}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="col-md-3 mb-2">
+                    <select
+                      className="form-control"
+                      name="nama_jabatan"
+                      value={filters.nama_jabatan}
+                      onChange={handleFilterChange}
+                    >
+                      <option value="">Pilih Jabatan</option>
+                      {jabatans.map((jabatan) => (
+                        <option key={jabatan.id_jabatan} value={jabatan.nama_jabatan}>
+                          {jabatan.nama_jabatan}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="col-md-3 mb-2">
+                    <select
+                      className="form-control"
+                      name="status"
+                      value={filters.status}
+                      onChange={handleFilterChange}
+                    >
+                      <option value="">Pilih Status</option>
+                      <option value="baru">Baru</option>
+                      <option value="lama">Lama</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
               <div className="table-responsive p-0">
                 <table className="table align-items-center mb-0">
                   <thead>
@@ -114,8 +254,8 @@ const Karyawan = () => {
                   </thead>
 
                   <tbody>
-                    {karyawanList && karyawanList.length > 0 ? (
-                      karyawanList.map((karyawan, index) => (
+                    {filteredKaryawanList && filteredKaryawanList.length > 0 ? (
+                      filteredKaryawanList.map((karyawan, index) => (
                         <tr key={karyawan.id_karyawan}>
                           <td>{index + 1}</td>
                           <td>{karyawan.NIP}</td>
@@ -133,7 +273,6 @@ const Karyawan = () => {
                             >
                               <FaTrash />
                             </button>
-                            {/* Updated Link component with proper NIP passing */}
                             <Link 
                               to={`/manager/detail_karyawan/${encodeURIComponent(karyawan.NIP)}`} 
                               className="btn btn-primary btn-sm rounded"
