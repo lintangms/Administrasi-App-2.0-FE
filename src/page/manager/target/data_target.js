@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaInfoCircle } from 'react-icons/fa'; 
-import { Link, useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom'; 
 import { toast } from 'react-toastify';
 
 const DataTarget = () => {
@@ -12,11 +12,13 @@ const DataTarget = () => {
     bulan: new Date().getMonth() + 1,
     tahun: new Date().getFullYear(),
     nama_game: '',
-    persentase: ''
+    persentase: '',
+    nama_shift: ''
   });
   const [showModal, setShowModal] = useState(false);
   const [selectedTarget, setSelectedTarget] = useState(null);
   const [games, setGames] = useState([]);
+  const [shifts, setShifts] = useState([]);
 
   const token = localStorage.getItem('token');
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -31,7 +33,8 @@ const DataTarget = () => {
           bulan: filter.bulan || undefined,
           tahun: filter.tahun || undefined,
           nama_game: filter.nama_game || undefined,
-          persentase: filter.persentase || undefined
+          persentase: filter.persentase || undefined,
+          nama_shift: filter.nama_shift || undefined
         },
       });
       if (response.data) {
@@ -63,6 +66,22 @@ const DataTarget = () => {
     }
   };
 
+  const fetchShifts = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/shift/get`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.data && response.data.data) {
+        setShifts(response.data.data);
+      } else {
+        setShifts([]);
+      }
+    } catch (err) {
+      console.error('Error fetching shifts:', err);
+      toast.error('Gagal memuat data shift');
+    }
+  };
+
   useEffect(() => {
     if (!token) {
       toast.error('Silakan login kembali');
@@ -71,6 +90,7 @@ const DataTarget = () => {
     }
     fetchTargets();
     fetchGames();
+    fetchShifts();
   }, [token, navigate]);
 
   useEffect(() => {
@@ -102,7 +122,7 @@ const DataTarget = () => {
         <div className="card-body px-0 pb-2">
           <form className="filter-form mb-4 px-3 py-2 bg-light">
             <div className="row">
-              <div className="col-md-4">
+              <div className="col-md-3">
                 <select
                   className="form-control"
                   name="nama_game"
@@ -121,7 +141,7 @@ const DataTarget = () => {
                   )}
                 </select>
               </div>
-              <div className="col-md-4">
+              <div className="col-md-3">
                 <select
                   className="form-control"
                   name="bulan"
@@ -136,7 +156,7 @@ const DataTarget = () => {
                   ))}
                 </select>
               </div>
-              <div className="col-md-4">
+              <div className="col-md-3">
                 <select
                   className="form-control"
                   name="tahun"
@@ -151,7 +171,7 @@ const DataTarget = () => {
                   ))}
                 </select>
               </div>
-              <div className="col-md-4">
+              <div className="col-md-3">
                 <input
                   type="number"
                   className="form-control"
@@ -160,6 +180,25 @@ const DataTarget = () => {
                   value={filter.persentase}
                   onChange={handleFilterChange}
                 />
+              </div>
+              <div className="col-md-3">
+                <select
+                  className="form-control"
+                  name="nama_shift"
+                  value={filter.nama_shift}
+                  onChange={handleFilterChange}
+                >
+                  <option value="">Pilih Shift</option>
+                  {shifts.length > 0 ? (
+                    shifts.map((shift) => (
+                      <option key={shift.id_shift} value={shift.nama_shift}>
+                        {shift.nama_shift}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="">Tidak ada shift tersedia</option>
+                  )}
+                </select>
               </div>
             </div>
           </form>
@@ -173,6 +212,7 @@ const DataTarget = () => {
                   <tr>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">No</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">NIP</th>
+                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama Game</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Target</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tanggal</th>
@@ -188,6 +228,7 @@ const DataTarget = () => {
                       <tr key={target.id_target}>
                         <td>{index + 1}</td>
                         <td>{target.nip}</td>
+                        <td>{target.nama_karyawan}</td>
                         <td>{target.nama_game}</td>
                         <td>{target.target}</td>
                         <td>{new Date(target.tanggal).toLocaleDateString()}</td>
@@ -205,7 +246,7 @@ const DataTarget = () => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="8">Tidak ada data target tersedia</td>
+                      <td colSpan="9">Tidak ada data target tersedia</td>
                     </tr>
                   )}
                 </tbody>
