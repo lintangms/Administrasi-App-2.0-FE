@@ -6,20 +6,35 @@ const ModalUpdateAkun = ({ showModal, setShowModal, selectedAkun, token, setAkun
   const [usernameSteam, setUsernameSteam] = useState('');
   const [passwordSteam, setPasswordSteam] = useState('');
   const [gmail, setGmail] = useState('');
-  const [passwordGmail, setPasswordGmail] = useState('');
-  const [noPemulihan, setNoPemulihan] = useState('');
-  const [emailPemulihan, setEmailPemulihan] = useState('');
   const [ket, setKet] = useState('');
+  const [namaGame, setNamaGame] = useState('');
+  const [gameOptions, setGameOptions] = useState([]);
+
+  useEffect(() => {
+    const fetchGames = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/game/get`);
+        if (Array.isArray(response.data.data)) {
+          setGameOptions(response.data.data);
+        } else {
+          throw new Error('Data game tidak valid');
+        }
+      } catch (error) {
+        console.error('Error fetching games:', error);
+        toast.error('Gagal memuat daftar game');
+      }
+    };
+
+    fetchGames();
+  }, []);
 
   useEffect(() => {
     if (selectedAkun) {
       setUsernameSteam(selectedAkun.username_steam || '');
       setPasswordSteam(selectedAkun.password_steam || '');
       setGmail(selectedAkun.gmail || '');
-      setPasswordGmail(selectedAkun.password_gmail || '');
-      setNoPemulihan(selectedAkun.no_pemulihan || '');
-      setEmailPemulihan(selectedAkun.email_pemulihan || '');
       setKet(selectedAkun.ket || '');
+      setNamaGame(selectedAkun.nama_game || '');
     }
   }, [selectedAkun]);
 
@@ -36,10 +51,8 @@ const ModalUpdateAkun = ({ showModal, setShowModal, selectedAkun, token, setAkun
           username_steam: usernameSteam,
           password_steam: passwordSteam,
           gmail,
-          password_gmail: passwordGmail,
-          no_pemulihan: noPemulihan,
-          email_pemulihan: emailPemulihan,
-          ket
+          ket,
+          nama_game: namaGame
         },
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -55,10 +68,8 @@ const ModalUpdateAkun = ({ showModal, setShowModal, selectedAkun, token, setAkun
                   username_steam: usernameSteam,
                   password_steam: passwordSteam,
                   gmail,
-                  password_gmail: passwordGmail,
-                  no_pemulihan: noPemulihan,
-                  email_pemulihan: emailPemulihan,
-                  ket
+                  ket,
+                  nama_game: namaGame
                 }
               : akun
           )
@@ -90,6 +101,24 @@ const ModalUpdateAkun = ({ showModal, setShowModal, selectedAkun, token, setAkun
               </div>
               <div className="modal-body">
                 <form onSubmit={(e) => e.preventDefault()}>
+                  <div className="form-group">
+                    <label htmlFor="nama_game" className="col-form-label">
+                      Nama Game:
+                    </label>
+                    <select
+                      className="form-control"
+                      id="nama_game"
+                      value={namaGame}
+                      onChange={(e) => setNamaGame(e.target.value)}
+                    >
+                      <option value="">Pilih Nama Game</option>
+                      {gameOptions.map((game) => (
+                        <option key={game.id_game} value={game.nama_game}>
+                          {game.nama_game}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                   <div className="form-group">
                     <label htmlFor="username_steam" className="col-form-label">
                       Username Steam:
@@ -127,45 +156,6 @@ const ModalUpdateAkun = ({ showModal, setShowModal, selectedAkun, token, setAkun
                       value={gmail}
                       onChange={(e) => setGmail(e.target.value)}
                       placeholder="Masukkan gmail"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="password_gmail" className="col-form-label">
-                      Password Gmail:
-                    </label>
-                    <input
-                      type="password"
-                      className="form-control"
-                      id="password_gmail"
-                      value={passwordGmail}
-                      onChange={(e) => setPasswordGmail(e.target.value)}
-                      placeholder="Masukkan password gmail"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="no-pemulihan" className="col-form-label">
-                      No Pemulihan:
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="no-pemulihan"
-                      value={noPemulihan}
-                      onChange={(e) => setNoPemulihan(e.target.value)}
-                      placeholder="Masukkan no pemulihan"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="email-pemulihan" className="col-form-label">
-                      Email Pemulihan:
-                    </label>
-                    <input
-                      type="email"
-                      className="form-control"
-                      id="email-pemulihan"
-                      value={emailPemulihan}
-                      onChange={(e) => setEmailPemulihan(e.target.value)}
-                      placeholder="Masukkan email pemulihan"
                     />
                   </div>
                   <div className="form-group">

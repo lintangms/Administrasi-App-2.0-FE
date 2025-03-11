@@ -115,13 +115,7 @@ const Akun = () => {
                         Gmail
                       </th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                        Password Gmail
-                      </th>
-                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                        No Pemulihan
-                      </th>
-                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                        Email Pemulihan
+                        Nama Game
                       </th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                         Keterangan
@@ -140,9 +134,7 @@ const Akun = () => {
                           <td>{akun.username_steam}</td>
                           <td>{akun.password_steam}</td>
                           <td>{akun.gmail}</td>
-                          <td>{akun.password_gmail}</td>
-                          <td>{akun.no_pemulihan}</td>
-                          <td>{akun.email_pemulihan}</td>
+                          <td>{akun.nama_game}</td>
                           <td>{akun.ket}</td>
                           <td>
                             <button

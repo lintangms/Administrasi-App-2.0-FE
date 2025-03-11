@@ -44,20 +44,57 @@ const ModalUpdateKaryawan = ({ showModal, setShowModal, selectedKaryawan, setKar
         setShiftList(shiftRes.data.data || []);
         setGameList(gameRes.data.data || []);
         setAkunList(akunRes.data.data || []);
+
+        if (selectedKaryawan) {
+          setFormData({
+            NIP: selectedKaryawan.NIP,
+            nama: selectedKaryawan.nama,
+            alamat: selectedKaryawan.alamat,
+            telp: selectedKaryawan.telp,
+            ttl: selectedKaryawan.ttl.split('T')[0], // Format date
+            pendidikan: selectedKaryawan.pendidikan,
+            status: selectedKaryawan.status,
+            mulai_bekerja: selectedKaryawan.mulai_bekerja.split('T')[0], // Format date
+            nama_jabatan: selectedKaryawan.nama_jabatan,
+            nama_divisi: selectedKaryawan.nama_divisi,
+            nama_shift: selectedKaryawan.nama_shift,
+            nama_game: selectedKaryawan.nama_game,
+            username_akun: selectedKaryawan.username_akun,
+            username: selectedKaryawan.username,
+            password: '', // Reset password field
+            ket: selectedKaryawan.ket,
+          });
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
         toast.error('Gagal mengambil data referensi');
       }
     };
 
-    fetchData();
-
-    if (selectedKaryawan) {
+    if (showModal) {
+      fetchData();
+    } else {
+      // Reset form data when modal is closed
       setFormData({
-        ...selectedKaryawan,
+        NIP: '',
+        nama: '',
+        alamat: '',
+        telp: '',
+        ttl: '',
+        pendidikan: '',
+        status: '',
+        mulai_bekerja: '',
+        nama_jabatan: '',
+        nama_divisi: '',
+        nama_shift: '',
+        nama_game: '',
+        username_akun: '',
+        username: '',
+        password: '',
+        ket: '',
       });
     }
-  }, [selectedKaryawan]);
+  }, [showModal, selectedKaryawan]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -207,7 +244,7 @@ const ModalUpdateKaryawan = ({ showModal, setShowModal, selectedKaryawan, setKar
                       type="date"
                       className="form-control"
                       name="mulai_bekerja"
-                      value={formData.mulai_bekerja?.split('T')[0]}
+                      value={formData.mulai_bekerja}
                       onChange={handleChange}
                     />
                   </div>

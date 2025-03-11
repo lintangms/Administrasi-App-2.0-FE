@@ -1,45 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { toast } from 'react-toastify'; // Import toast dari react-toastify
+import { toast } from 'react-toastify';
 
 const ModalAddAkun = ({ showModal, setShowModal, setAkunList, token, onAddSuccess }) => {
   const [usernameSteam, setUsernameSteam] = useState('');
   const [passwordSteam, setPasswordSteam] = useState('');
   const [gmail, setGmail] = useState('');
-  const [passwordGmail, setPasswordGmail] = useState('');
-  const [noPemulihan, setNoPemulihan] = useState('');
-  const [emailPemulihan, setEmailPemulihan] = useState('');
   const [ket, setKet] = useState('');
+  const [namaGame, setNamaGame] = useState('');
+  const [gameOptions, setGameOptions] = useState([]);
+
+  useEffect(() => {
+    const fetchGames = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/game/get`);
+        if (Array.isArray(response.data.data)) {
+          setGameOptions(response.data.data);
+        } else {
+          throw new Error('Data game tidak valid');
+        }
+      } catch (error) {
+        console.error('Error fetching games:', error);
+        toast.error('Gagal memuat daftar game');
+      }
+    };
+
+    fetchGames();
+  }, []);
 
   const handleSave = async () => {
-    if (usernameSteam.trim() === '' || passwordSteam.trim() === '' || gmail.trim() === '' || passwordGmail.trim() === '' || noPemulihan.trim() === '' || emailPemulihan.trim() === '' || ket.trim() === '') {
-      toast.error('Semua field harus diisi'); // Notifikasi error
-      return;
-    }
-
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/akun/add`, // Menggunakan URL dari .env
-        { 
-          username_steam: usernameSteam, 
-          password_steam: passwordSteam, 
-          gmail, 
-          password_gmail: passwordGmail, 
-          no_pemulihan: noPemulihan, 
-          email_pemulihan: emailPemulihan, 
-          ket 
+        `${process.env.REACT_APP_BACKEND_URL}/api/akun/add`,
+        {
+          username_steam: usernameSteam,
+          password_steam: passwordSteam,
+          gmail,
+          ket,
+          nama_game: namaGame
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (response.status === 201) {
-        onAddSuccess(response.data.data); // Callback untuk menambahkan akun baru
+        onAddSuccess(response.data.data);
         setShowModal(false);
-        toast.success('Akun berhasil ditambahkan!'); // Notifikasi sukses
+        toast.success('Akun berhasil ditambahkan!');
       }
     } catch (err) {
       console.error('Error saat menyimpan akun:', err);
-      toast.error('Gagal menambahkan akun'); // Notifikasi gagal
+      toast.error('Gagal menambahkan akun');
     }
   };
 
@@ -51,20 +61,30 @@ const ModalAddAkun = ({ showModal, setShowModal, setAkunList, token, onAddSucces
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">Tambah Akun</h5>
-                <button
-                  type="button"
-                  className="close"
-                  onClick={() => setShowModal(false)}
-                >
+                <button type="button" className="close" onClick={() => setShowModal(false)}>
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
               <div className="modal-body">
                 <form>
                   <div className="form-group">
-                    <label htmlFor="username_steam" className="col-form-label">
-                      Username Steam:
-                    </label>
+                    <label htmlFor="nama_game" className="col-form-label">Nama Game:</label>
+                    <select
+                      className="form-control"
+                      id="nama_game"
+                      value={namaGame}
+                      onChange={(e) => setNamaGame(e.target.value)}
+                    >
+                      <option value="">Pilih Nama Game</option>
+                      {gameOptions.map((game) => (
+                        <option key={game.id_game} value={game.nama_game}>
+                          {game.nama_game}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="username_steam" className="col-form-label">Username Steam:</label>
                     <input
                       type="text"
                       className="form-control"
@@ -75,9 +95,7 @@ const ModalAddAkun = ({ showModal, setShowModal, setAkunList, token, onAddSucces
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="password_steam" className="col-form-label">
-                      Password Steam:
-                    </label>
+                    <label htmlFor="password_steam" className="col-form-label">Password Steam:</label>
                     <input
                       type="password"
                       className="form-control"
@@ -88,9 +106,7 @@ const ModalAddAkun = ({ showModal, setShowModal, setAkunList, token, onAddSucces
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="gmail" className="col-form-label">
-                      Gmail:
-                    </label>
+                    <label htmlFor="gmail" className="col-form-label">Gmail:</label>
                     <input
                       type="email"
                       className="form-control"
@@ -101,48 +117,7 @@ const ModalAddAkun = ({ showModal, setShowModal, setAkunList, token, onAddSucces
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="password_gmail" className="col-form-label">
-                      Password Gmail:
-                    </label>
-                    <input
-                      type="password"
-                      className="form-control"
-                      id="password_gmail"
-                      value={passwordGmail}
-                      onChange={(e) => setPasswordGmail(e.target.value)}
-                      placeholder="Masukkan password gmail"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="no-pemulihan" className="col-form-label">
-                      No Pemulihan:
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="no-pemulihan"
-                      value={noPemulihan}
-                      onChange={(e) => setNoPemulihan(e.target.value)}
-                      placeholder="Masukkan no pemulihan"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="email-pemulihan" className="col-form-label">
-                      Email Pemulihan:
-                    </label>
-                    <input
-                      type="email"
-                      className="form-control"
-                      id="email-pemulihan"
-                      value={emailPemulihan}
-                      onChange={(e) => setEmailPemulihan(e.target.value)}
-                      placeholder="Masukkan email pemulihan"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="ket" className="col-form-label">
-                      Keterangan:
-                    </label>
+                    <label htmlFor="ket" className="col-form-label">Keterangan:</label>
                     <textarea
                       className="form-control"
                       id="ket"
@@ -154,18 +129,10 @@ const ModalAddAkun = ({ showModal, setShowModal, setAkunList, token, onAddSucces
                 </form>
               </div>
               <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setShowModal(false)}
-                >
+                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>
                   Tutup
                 </button>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={handleSave}
-                >
+                <button type="button" className="btn btn-primary" onClick={handleSave}>
                   Simpan
                 </button>
               </div>
@@ -174,7 +141,6 @@ const ModalAddAkun = ({ showModal, setShowModal, setAkunList, token, onAddSucces
         </div>
       )}
 
-      {/* Inline CSS for styling the modal */}
       <style>{`
         .modal-overlay {
           position: fixed;
@@ -193,9 +159,17 @@ const ModalAddAkun = ({ showModal, setShowModal, setAkunList, token, onAddSucces
           background: #fff;
           border-radius: 10px;
           box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-          overflow: hidden;
-          width: 500px;
-          max-width: 90%;
+          width: 90%;
+          max-width: 500px;
+          display: flex;
+          flex-direction: column;
+          max-height: 80vh;
+        }
+
+        .modal-content {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
         }
 
         .modal-header {
@@ -204,10 +178,13 @@ const ModalAddAkun = ({ showModal, setShowModal, setAkunList, token, onAddSucces
           display: flex;
           justify-content: space-between;
           align-items: center;
+          flex-shrink: 0;
         }
 
         .modal-body {
           padding: 15px;
+          overflow-y: auto;
+          flex-grow: 1;
         }
 
         .modal-footer {
@@ -216,10 +193,10 @@ const ModalAddAkun = ({ showModal, setShowModal, setAkunList, token, onAddSucces
           display: flex;
           justify-content: flex-end;
           gap: 10px;
-        }
-
-        .modal-content {
-          border: none;
+          flex-shrink: 0;
+          background: #fff;
+          border-bottom-left-radius: 10px;
+          border-bottom-right-radius: 10px;
         }
 
         .close {
@@ -235,6 +212,13 @@ const ModalAddAkun = ({ showModal, setShowModal, setAkunList, token, onAddSucces
         .close:hover {
           color: #000;
           opacity: 1;
+        }
+
+        @media (max-width: 576px) {
+          .modal-container {
+            width: 95%;
+            max-height: 85vh;
+          }
         }
       `}</style>
     </>

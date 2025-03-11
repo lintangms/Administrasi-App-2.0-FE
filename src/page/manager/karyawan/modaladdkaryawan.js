@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-const ModalAddKaryawan = ({ showModal, setShowModal, setKaryawanList, token }) => {
+const ModalUpdateKaryawan = ({ showModal, setShowModal, selectedKaryawan, setKaryawanList, token }) => {
   const [formData, setFormData] = useState({
     NIP: '',
     nama: '',
@@ -12,15 +12,14 @@ const ModalAddKaryawan = ({ showModal, setShowModal, setKaryawanList, token }) =
     pendidikan: '',
     status: '',
     mulai_bekerja: '',
-    nama_jabatan: '', // Ubah ke nama_jabatan
-    nama_divisi: '',  // Ubah ke nama_divisi
-    nama_shift: '',   // Tambah nama_shift untuk tampilan
-    nama_game: '',    // Tambah nama_game untuk tampilan
-    username_akun: '', // Tambah username_akun untuk tampilan
+    nama_jabatan: '',
+    nama_divisi: '',
+    nama_shift: '',
+    nama_game: '',
+    username_akun: '',
     username: '',
     password: '',
     ket: '',
-    gambar: null,
   });
 
   const [jabatanList, setJabatanList] = useState([]);
@@ -45,55 +44,87 @@ const ModalAddKaryawan = ({ showModal, setShowModal, setKaryawanList, token }) =
         setShiftList(shiftRes.data.data || []);
         setGameList(gameRes.data.data || []);
         setAkunList(akunRes.data.data || []);
+
+        if (selectedKaryawan) {
+          setFormData({
+            NIP: selectedKaryawan.NIP,
+            nama: selectedKaryawan.nama,
+            alamat: selectedKaryawan.alamat,
+            telp: selectedKaryawan.telp,
+            ttl: selectedKaryawan.ttl.split('T')[0], // Format date
+            pendidikan: selectedKaryawan.pendidikan,
+            status: selectedKaryawan.status,
+            mulai_bekerja: selectedKaryawan.mulai_bekerja.split('T')[0], // Format date
+            nama_jabatan: selectedKaryawan.nama_jabatan,
+            nama_divisi: selectedKaryawan.nama_divisi,
+            nama_shift: selectedKaryawan.nama_shift,
+            nama_game: selectedKaryawan.nama_game,
+            username_akun: selectedKaryawan.username_akun,
+            username: selectedKaryawan.username,
+            password: '', // Reset password field
+            ket: selectedKaryawan.ket,
+          });
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
         toast.error('Gagal mengambil data referensi');
       }
     };
-    fetchData();
-  }, []);
+
+    if (showModal) {
+      fetchData();
+    }
+  }, [showModal, selectedKaryawan]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleFileChange = (e) => {
-    setFormData({ ...formData, gambar: e.target.files[0] });
-  };
-
   const handleSave = async () => {
-    const formDataToSend = new FormData();
-    
-    // Append semua data ke FormData
-    Object.keys(formData).forEach(key => {
-      if (formData[key] !== null && formData[key] !== undefined) {
-        formDataToSend.append(key, formData[key]);
-      }
-    });
-
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/karyawan/add`,
-        formDataToSend,
+      const response = await axios.put(
+        `${process.env.REACT_APP_BACKEND_URL}/api/karyawan/update/${selectedKaryawan.id_karyawan}`,
         {
-          headers: {
+          NIP: formData.NIP,
+          nama: formData.nama,
+          alamat: formData.alamat,
+          telp: formData.telp,
+          ttl: formData.ttl,
+          pendidikan: formData.pendidikan,
+          status: formData.status,
+          mulai_bekerja: formData.mulai_bekerja,
+          nama_jabatan: formData.nama_jabatan,
+          nama_divisi: formData.nama_divisi,
+          nama_shift: formData.nama_shift,
+          nama_game: formData.nama_game,
+          username_akun: formData.username_akun,
+          username: formData.username,
+          password: formData.password || undefined, // Only send if changed
+          ket: formData.ket
+        },
+        { 
+          headers: { 
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data'
-          }
+            'Content-Type': 'application/json'
+          } 
         }
       );
 
-      if (response.status === 201) {
-        toast.success('Karyawan berhasil ditambahkan!');
+      if (response.status === 200) {
+        setKaryawanList((prevList) =>
+          prevList.map((karyawan) => 
+            karyawan.id_karyawan === selectedKaryawan.id_karyawan ? 
+            { ...karyawan, ...formData } : 
+            karyawan
+          )
+        );
+        toast.success('Karyawan berhasil diperbarui!');
         setShowModal(false);
-        setFormData({});
-        // Refresh karyawan list if needed
-        setKaryawanList(prev => [response.data.karyawanId, ...prev]);
       }
     } catch (error) {
-      console.error('Error:', error);
-      toast.error(error.response?.data?.message || 'Gagal menambahkan karyawan');
+      console.error('Error saat memperbarui karyawan:', error);
+      toast.error(error.response?.data?.message || 'Gagal memperbarui karyawan');
     }
   };
 
@@ -104,14 +135,13 @@ const ModalAddKaryawan = ({ showModal, setShowModal, setKaryawanList, token }) =
           <div className="modal-container">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title">Tambah Karyawan</h5>
+                <h5 className="modal-title">Update Karyawan</h5>
                 <button type="button" className="close" onClick={() => setShowModal(false)}>
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
               <div className="modal-body">
                 <form>
-                  {/* Basic Info Fields */}
                   <div className="form-group">
                     <label>NIP:</label>
                     <input
@@ -198,8 +228,6 @@ const ModalAddKaryawan = ({ showModal, setShowModal, setKaryawanList, token }) =
                       onChange={handleChange}
                     />
                   </div>
-
-                  {/* Dropdown Selections */}
                   <div className="form-group">
                     <label>Jabatan:</label>
                     <select
@@ -285,8 +313,6 @@ const ModalAddKaryawan = ({ showModal, setShowModal, setKaryawanList, token }) =
                       ))}
                     </select>
                   </div>
-
-                  {/* Login Info */}
                   <div className="form-group">
                     <label>Username:</label>
                     <input
@@ -306,24 +332,9 @@ const ModalAddKaryawan = ({ showModal, setShowModal, setKaryawanList, token }) =
                       name="password"
                       value={formData.password}
                       onChange={handleChange}
-                      required
+                      placeholder="Kosongkan jika tidak ingin mengubah password"
                     />
                   </div>
-
-                  {/* File Upload */}
-                  <div className="form-group">
-                    <label>Gambar:</label>
-                    <input
-                      type="file"
-                      className="form-control"
-                      name="gambar"
-                      onChange={handleFileChange}
-                      accept="image/*"
-                      required
-                    />
-                  </div>
-
-                  {/* Additional Info */}
                   <div className="form-group">
                     <label>Keterangan:</label>
                     <input
@@ -411,8 +422,9 @@ const ModalAddKaryawan = ({ showModal, setShowModal, setKaryawanList, token }) =
           cursor: pointer;
         }
       `}</style>
+
     </>
   );
 };
 
-export default ModalAddKaryawan;
+export default ModalUpdateKaryawan;
