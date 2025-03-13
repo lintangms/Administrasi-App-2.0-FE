@@ -201,11 +201,12 @@ const Farming = () => {
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">No</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">NIP</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama</th>
+                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Akun Steam</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Koin</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Periode</th>
-                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Keterangan</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama Shift</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama Game</th>
+                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Keterangan</th>
                   </tr>
                 </thead>
 
@@ -216,11 +217,12 @@ const Farming = () => {
                         <td>{index + 1}</td> {/* Menampilkan nomor urut */}
                         <td>{farming.NIP}</td>
                         <td>{farming.nama}</td>
+                        <td>{farming.username_steam}</td>
                         <td>{farming.koin}</td>
                         <td>{formatDateTime(farming.periode)}</td>
-                        <td>{farming.ket}</td>
                         <td>{farming.nama_shift}</td>
                         <td>{farming.nama_game}</td>
+                        <td>{farming.ket}</td>
                       </tr>
                     ))
                   ) : (

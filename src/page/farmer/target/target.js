@@ -8,6 +8,7 @@ const TargetFarming = () => {
   const [target, setTarget] = useState("");
   const [tanggal, setTanggal] = useState("");
   const [namaGame, setNamaGame] = useState(""); // State untuk nama game
+  const [ket, setKet] = useState(""); // State untuk keterangan
   const [games, setGames] = useState([]); // State untuk daftar game
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -55,7 +56,7 @@ const TargetFarming = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ nip: NIP, target, tanggal, nama_game: namaGame }), // Mengirim data target
+        body: JSON.stringify({ nip: NIP, target, tanggal, nama_game: namaGame, ket: ket || null }), // Mengirim data target
       });
 
       const data = await response.json();
@@ -65,6 +66,7 @@ const TargetFarming = () => {
         setTarget("");
         setTanggal(""); // Reset tanggal
         setNamaGame(""); // Reset nama game
+        setKet(""); // Reset keterangan
       } else {
         toast.error(data.message || "Gagal menambahkan target.");
       }
@@ -130,6 +132,14 @@ const TargetFarming = () => {
                         </option>
                       ))}
                     </select>
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Keterangan</label>
+                    <textarea
+                      className="form-control"
+                      value={ket}
+                      onChange={(e) => setKet(e.target.value)}
+                    />
                   </div>
                   <div className="d-grid gap-2 mt-3">
                     <button type="submit" className="btn btn-lg btn-primary" disabled={isLoading}>

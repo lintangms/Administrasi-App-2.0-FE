@@ -87,7 +87,7 @@ const RiwayatTarget = () => {
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Saldo Koin</th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Persentase</th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tanggal</th>
-                     
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Ket</th>
                     </tr>
                   </thead>
 
@@ -102,7 +102,7 @@ const RiwayatTarget = () => {
                           <td>{target.saldo_koin}</td>
                           <td>{target.persentase}%</td>
                           <td>{new Date(target.tanggal).toLocaleDateString()}</td>
-                         
+                          <td>{target.ket}</td>
                         </tr>
                       ))
                     ) : (
