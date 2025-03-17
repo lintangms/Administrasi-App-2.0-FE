@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaInfoCircle } from 'react-icons/fa';
+import { FaInfoCircle, FaPen } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import ModalUpdateKeterangan from './modalupdate'; // Import the modal component
 
 const DataAbsensi = () => {
     const [absenList, setAbsenList] = useState([]);
@@ -12,9 +13,12 @@ const DataAbsensi = () => {
         nama: '',
         tanggal: '',
         nama_shift: '',
-        status: ''
+        status: '',
+        id_absen: ''
     });
     const [shifts, setShifts] = useState([]);
+    const [selectedAbsen, setSelectedAbsen] = useState(null); // State for selected absen
+    const [showModal, setShowModal] = useState(false); // State for modal visibility
 
     const token = localStorage.getItem('token');
     const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -119,15 +123,7 @@ const DataAbsensi = () => {
     };
 
     const shouldShowActions = (absen) => {
-        if (absen.waktu_masuk || absen.waktu_pulang) {
-            return false;
-        }
-        
-        if (absen.status === 'izin' || absen.status === 'tidak_masuk') {
-            return false;
-        }
-
-        return true;
+        return ['masuk', 'izin', 'tidak_masuk'].includes(absen.status); // Show actions only for specific statuses
     };
 
     const handleFilterChange = (e) => {
@@ -135,6 +131,11 @@ const DataAbsensi = () => {
             ...filter,
             [e.target.name]: e.target.value
         });
+    };
+
+    const handleOpenModal = (absen) => {
+        setSelectedAbsen(absen);
+        setShowModal(true);
     };
 
     useEffect(() => {
@@ -223,6 +224,7 @@ const DataAbsensi = () => {
                                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Waktu Masuk</th>
                                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Waktu Pulang</th>
                                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Status</th>
+                                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Ket</th>
                                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Aksi</th>
                                 </tr>
                             </thead>
@@ -244,6 +246,7 @@ const DataAbsensi = () => {
                                                     {absen.status || '-'}
                                                 </span>
                                             </td>
+                                            <td>{absen.ket}</td>
                                             <td>
                                                 {shouldShowActions(absen) && (
                                                     <div className="btn-group" role="group">
@@ -257,7 +260,13 @@ const DataAbsensi = () => {
                                                             className="btn btn-outline-danger btn-sm"
                                                             onClick={() => handleTidakMasuk(absen.NIP)}
                                                         >
-                                                            Tidak Masuk
+                                                           Tidak masuk 
+                                                        </button>
+                                                        <button
+                                                            className="btn btn-outline-primary btn-sm"
+                                                            onClick={() => handleOpenModal(absen)} 
+                                                        >
+                                                            Ket
                                                         </button>
                                                     </div>
                                                 )}
@@ -274,6 +283,16 @@ const DataAbsensi = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Modal for updating keterangan */}
+            <ModalUpdateKeterangan 
+                showModal={showModal} 
+                setShowModal={setShowModal} 
+                selectedAbsen={selectedAbsen} 
+                setAbsenList={setAbsenList} 
+                token={token} 
+                onUpdateSuccess={fetchAbsensi} // Refresh data after update
+            />
 
             <style>{`
                 .table { width: 100%; margin-bottom: 1rem; color: #212529; }

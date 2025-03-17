@@ -101,6 +101,7 @@ const TargetFarming = () => {
                     <label className="form-label">Target</label>
                     <input
                       className="form-control"
+                      placeholder="Contoh mengisi = 3000, bukan 3K ! "
                       type="number"
                       value={target}
                       onChange={(e) => setTarget(e.target.value)}

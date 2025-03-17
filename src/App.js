@@ -53,6 +53,9 @@ import RiwayatTarget from "./page/farmer/target/riwayattarget";
 import DataTarget from "./page/manager/target/data_target";
 import Kasbon_Direktur from "./page/direktur/kasbon/kasbon";
 import Inventaris_Direktur from "./page/direktur/inventaris/inventaris";
+import FarmingDetails from "./page/direktur/perolehan/detailfarming";
+import RekapAbsensi from "./page/manager/absensi/rekapabsensi";
+import DetailAbsensi from "./page/manager/absensi/detailabsensi";
 
   
 import { ToastContainer } from "react-toastify";
@@ -193,6 +196,9 @@ function App() {
           <Route path="/manager/data_gaji" element={<DataGaji />} />
           <Route path="/manager/data_unsold" element={<Unsold />} />
           <Route path="/manager/data_target" element={<DataTarget />} />
+          <Route path="/manager/detail/:NIP" element={<FarmingDetails />} />
+          <Route path="/manager/rekap_absensi" element={<RekapAbsensi />} />
+          <Route path="/manager/detail_absensi/:NIP" element={<DetailAbsensi />} />
 
           <Route path="/spv/dashboard" element={<DashboardSPV />} />
           <Route path="/spv/scan" element={<ScanQR />} />
@@ -213,6 +219,9 @@ function App() {
           <Route path="/spv/data_gaji" element={<DataGaji />} />
           <Route path="/spv/data_unsold" element={<Unsold />} />
           <Route path="/spv/data_target" element={<DataTarget />} />
+          <Route path="/spv/kasbon" element={<Kasbon />} />
+          <Route path="/spv/riwayatkasbon" element={<RiwayatKasbon />} />
+          <Route path="/spv/rekap_absensi" element={<RekapAbsensi />} />
 
           <Route path="/farmer/dashboard" element={<DashboardFarmer />} />
           <Route path="/farmer/absensi" element={<AbsensiFarmer />} />
@@ -254,6 +263,7 @@ function App() {
           <Route path="/direktur/data_target" element={<DataTarget />} />
           <Route path="/direktur/inventaris" element={<Inventaris_Direktur />} />
           <Route path="/direktur/data_kasbon" element={<Kasbon_Direktur />} />
+          <Route path="/direktur/rekap_absensi" element={<RekapAbsensi />} />
 
 
           <Route path="*" element={<Navigate to="/login" />} />

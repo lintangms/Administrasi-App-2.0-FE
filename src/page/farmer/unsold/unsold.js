@@ -118,6 +118,7 @@ const PerolehanUnsold = () => {
                     <label className="form-label">Koin</label>
                     <input
                       className="form-control"
+                      placeholder="Contoh mengisi = 3000, bukan 3K ! "
                       type="number"
                       value={koin}
                       onChange={(e) => setKoin(e.target.value)}

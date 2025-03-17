@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaInfoCircle } from 'react-icons/fa';
+import { FaCheck, FaTimesCircle } from 'react-icons/fa';
 import { toast } from 'react-toastify';
-import { Link } from 'react-router-dom';
 
 const DaftarKasbon = () => {
   const [kasbonList, setKasbonList] = useState([]);
@@ -38,7 +37,7 @@ const DaftarKasbon = () => {
 
   const updateStatus = async (id_kasbon, newStatus) => {
     try {
-      const response = await axios.put(`${BACKEND_URL}/api/kasbon/update/${id_kasbon}`, { status: newStatus }, {
+      const response = await axios.put(`${BACKEND_URL}/api/kasbon/status/${id_kasbon}`, { status: newStatus }, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success(response.data.message);
@@ -51,6 +50,24 @@ const DaftarKasbon = () => {
     } catch (err) {
       console.error('Error saat memperbarui status kasbon:', err);
       toast.error(err.response?.data?.message || 'Gagal memperbarui status kasbon.');
+    }
+  };
+
+  const updateKonfirmasi = async (id_kasbon, newKonfirmasi) => {
+    try {
+      const response = await axios.put(`${BACKEND_URL}/api/kasbon/konfirmasi/${id_kasbon}`, { konfirmasi: newKonfirmasi }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success(response.data.message);
+      // Refresh the list after updating konfirmasi
+      setKasbonList((prevList) =>
+        prevList.map((kasbon) =>
+          kasbon.id_kasbon === id_kasbon ? { ...kasbon, konfirmasi: newKonfirmasi } : kasbon
+        )
+      );
+    } catch (err) {
+      console.error('Error saat memperbarui konfirmasi kasbon:', err);
+      toast.error(err.response?.data?.message || 'Gagal memperbarui konfirmasi kasbon.');
     }
   };
 
@@ -76,12 +93,16 @@ const DaftarKasbon = () => {
                     <tr>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">No</th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">NIP</th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama</th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nominal</th>
-                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Keperluan</th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity- 7 ps-2">Keperluan</th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tanggal</th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Dari</th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Keterangan</th>
-                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Status</th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Konfirmasi</th>
+                      {kasbonList.some(kasbon => kasbon.konfirmasi !== 'ditolak') && (
+                        <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Status</th>
+                      )}
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Aksi</th>
                     </tr>
                   </thead>
@@ -92,32 +113,45 @@ const DaftarKasbon = () => {
                         <tr key={kasbon.id_kasbon}>
                           <td>{index + 1}</td>
                           <td>{kasbon.NIP}</td>
+                          <td>{kasbon.nama}</td>
                           <td>{kasbon.nominal}</td>
                           <td>{kasbon.keperluan}</td>
                           <td>{new Date(kasbon.tanggal).toLocaleDateString()}</td>
                           <td>{kasbon.dari}</td>
                           <td>{kasbon.ket}</td>
-                          <td>{kasbon.status}</td>
+                          <td>{kasbon.konfirmasi}</td>
+                          {kasbon.konfirmasi !== 'ditolak' && <td>{kasbon.status}</td>}
                           <td>
-                           
-                            <button
-                              className="btn btn-success btn-sm rounded ms-2"
-                              onClick={() => updateStatus(kasbon.id_kasbon, 'lunas')}
-                            >
-                              Tandai Lunas
-                            </button>
-                            {/* <button
-                              className="btn btn-warning btn-sm rounded ms-2"
-                              onClick={() => updateStatus(kasbon.id_kasbon, 'belum_lunas')}
-                            >
-                              Tandai Belum Lunas
-                            </button> */}
+                            {kasbon.konfirmasi === 'menunggu' && (
+                              <>
+                                <button
+                                  className="btn btn-primary btn-sm rounded ms-2"
+                                  onClick={() => updateKonfirmasi(kasbon.id_kasbon, 'disetujui')}
+                                >
+                                  <FaCheck />
+                                </button>
+                                <button
+                                  className="btn btn-danger btn-sm rounded ms-2"
+                                  onClick={() => updateKonfirmasi(kasbon.id_kasbon, 'ditolak')}
+                                >
+                                  <FaTimesCircle />
+                                </button>
+                              </>
+                            )}
+                            {kasbon.konfirmasi === 'disetujui' && kasbon.status !== 'lunas' && (
+                              <button
+                                className="btn btn-success btn-sm rounded ms-2"
+                                onClick={() => updateStatus(kasbon.id_kasbon, 'lunas')}
+                              >
+                                Lunas
+                              </button>
+                            )}
                           </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="9">Tidak ada data untuk ditampilkan.</td>
+                        <td colSpan="11">Tidak ada data untuk ditampilkan.</td>
                       </tr>
                     )}
                   </tbody>

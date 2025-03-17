@@ -25,6 +25,7 @@ import {
   FaMoneyCheckAlt,
   FaDatabase,
   FaBullseye,
+  FaCalendarCheck,
 } from "react-icons/fa";
 
 // Komponen Header
@@ -118,6 +119,12 @@ const SidebarDirektur = () => {
             <Link className="sidebar-link" to="/direktur/data_absensi">
               <FaCheckCircle className="align-middle" />{" "}
               <span className="align-middle">Data Absensi</span>
+            </Link>
+          </li>
+          <li className={`sidebar-item ${location.pathname === "/direktur/rekap_absensi" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/direktur/rekap_absensi">
+              <FaCalendarCheck className="align-middle" />{" "}
+              <span className="align-middle">Rekap Absensi</span>
             </Link>
           </li>
           <li className={`sidebar-item ${location.pathname === "/direktur/data_target" ? "active" : ""}`}>

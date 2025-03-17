@@ -76,6 +76,7 @@ const Kasbon_Direktur = () => {
                     <tr>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">No</th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">NIP</th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama</th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nominal</th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Keperluan</th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tanggal</th>
@@ -92,6 +93,7 @@ const Kasbon_Direktur = () => {
                         <tr key={kasbon.id_kasbon}>
                           <td>{index + 1}</td>
                           <td>{kasbon.NIP}</td>
+                          <td>{kasbon.nama}</td>
                           <td>{kasbon.nominal}</td>
                           <td>{kasbon.keperluan}</td>
                           <td>{new Date(kasbon.tanggal).toLocaleDateString()}</td>

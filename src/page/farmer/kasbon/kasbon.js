@@ -111,6 +111,7 @@ const Kasbon = () => {
                     <input
                       className="form-control"
                       type="number"
+                      placeholder="Contoh mengisi = 100000, bukan 100 ! "
                       value={nominal}
                       onChange={(e) => setNominal(e.target.value)}
                       required

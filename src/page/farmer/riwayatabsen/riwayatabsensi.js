@@ -44,6 +44,20 @@ const RiwayatAbsen = () => {
     fetchAbsen();
   }, [token, NIP, navigate]);
 
+  const formatDateTime = (dateTime) => {
+    if (!dateTime) return "-";
+    const dateObj = new Date(dateTime);
+    if (isNaN(dateObj)) return "-";
+    return dateObj.toLocaleString("id-ID", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+    });
+};
   return (
     <div className="absen-container">
       {error && <p className="error-message">{error}</p>}
@@ -76,8 +90,8 @@ const RiwayatAbsen = () => {
                         <tr key={absen.id_absen}>
                           <td>{index + 1}</td>
                           <td>{absen.NIP}</td>
-                          <td>{new Date(absen.tanggal).toLocaleDateString()}</td>
-                          <td>{absen.status}</td>
+                          <td>{formatDateTime(absen.waktu)}</td>
+                          <td>{absen.tipe}</td>
                          
                         </tr>
                       ))

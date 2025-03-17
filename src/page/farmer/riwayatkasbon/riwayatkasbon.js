@@ -70,6 +70,7 @@ const RiwayatKasbon = () => {
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tanggal</th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Dari</th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Keterangan</th>
+                      <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Konfirmasi</th>
                       <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Status</th>
                     </tr>
                   </thead>
@@ -84,6 +85,7 @@ const RiwayatKasbon = () => {
                           <td>{new Date(kasbon.tanggal).toLocaleDateString()}</td>
                           <td>{kasbon.dari}</td>
                           <td>{kasbon.ket}</td>
+                          <td>{kasbon.konfirmasi}</td>
                           <td>{kasbon.status}</td>
                           
                         </tr>

@@ -18,6 +18,8 @@ import {
   FaUsers,
   FaListAlt,
   FaBullseye,
+  FaCalendar,
+  FaCalendarCheck,
 } from "react-icons/fa";
 
 // Komponen Header
@@ -119,6 +121,12 @@ const SidebarSPV = () => {
               <span className="align-middle">Data Absensi</span>
             </Link>
           </li>
+          <li className={`sidebar-item ${location.pathname === "/spv/rekap_absensi" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/spv/rekap_absensi">
+              <FaCalendarCheck className="align-middle" />{" "}
+              <span className="align-middle">Rekap Absensi</span>
+            </Link>
+          </li>
           <li className={`sidebar-item ${location.pathname === "/spv/data_target" ? "active" : ""}`}>
             <Link className="sidebar-link" to="/spv/data_target">
               <FaBullseye className="align-middle" />{" "}
@@ -183,6 +191,12 @@ const SidebarSPV = () => {
             <Link className="sidebar-link" to="/spv/kasbon">
               <FaMoneyBillAlt className="align-middle" />{" "}
               <span className="align-middle">Kasbon</span>
+            </Link>
+          </li>
+          <li className={`sidebar-item ${location.pathname === "/spv/riwayatkasbon" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/spv/riwayatkasbon">
+              <FaMoneyBillAlt className="align-middle" />{" "}
+              <span className="align-middle">RIwayat Kasbon</span>
             </Link>
           </li>
           <li className={`sidebar-item ${location.pathname === "/spv/data_koin" ? "active" : ""}`}>
