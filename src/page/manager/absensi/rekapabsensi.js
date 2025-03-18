@@ -152,7 +152,6 @@ const RekapAbsensi = () => {
                     <th>Total Hadir</th>
                     <th>Total Izin</th>
                     <th>Total Tidak Masuk</th>
-                    <th>Total Belum Absen</th>
                     <th>Aksi</th>
                   </tr>
                 </thead>
@@ -168,7 +167,6 @@ const RekapAbsensi = () => {
                         <td>{rekap.total_hadir}</td>
                         <td>{rekap.total_izin}</td>
                         <td>{rekap.total_tidak_masuk}</td>
-                        <td>{rekap.total_belum_absen}</td>
                         <td>
                           <button 
                             className="btn btn-primary btn-sm rounded" 

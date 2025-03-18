@@ -240,8 +240,8 @@ const Farming = () => {
                         <td>{farming.nip}</td>
                         <td>{farming.nama}</td>
                         <td>{farming.username_steam}</td>
-                        <td>{farming.saldo_koin}</td>
-                        <td>{farming.jumlah}</td>
+                        <td>{farming.saldo}</td>
+                        <td>{farming.total_saldo}</td>
                         <td>{formatDateTime(farming.periode)}</td>
                         <td>{farming.nama_shift}</td>
                         <td>{farming.nama_game}</td>
