@@ -9,6 +9,7 @@ const Farming = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [filter, setFilter] = useState({
+    tanggal: '', // New field for a single date
     bulan: new Date().getMonth() + 1, // Set to current month
     tahun: new Date().getFullYear(),   // Set to current year
     minggu_bulan: '',
@@ -29,6 +30,7 @@ const Farming = () => {
       const response = await axios.get(`${BACKEND_URL}/api/farming/get`, {
         headers: { Authorization: `Bearer ${token}` },
         params: {
+          tanggal: filter.tanggal, // Include tanggal in the request
           bulan: filter.bulan,
           tahun: filter.tahun,
           minggu_bulan: filter.minggu_bulan,
@@ -123,7 +125,7 @@ const Farming = () => {
         <div className="card-body px-0 pb-2">
           <div className="filter-form mb-4 px-3 py-2 bg-light">
             <div className="row">
-            <div className="col-md-3">
+              <div className="col-md-3">
                 <input
                   type="text"
                   className="form-control"
@@ -208,6 +210,15 @@ const Farming = () => {
                   ))}
                 </select>
               </div>
+              <div className="col-md-3">
+                <input
+                  type="date"
+                  className="form-control"
+                  name="tanggal"
+                  value={filter.tanggal}
+                  onChange={handleFilterChange}
+                />
+              </div>
             </div>
           </div>
 
@@ -242,7 +253,7 @@ const Farming = () => {
                         <td>{farming.username_steam}</td>
                         <td>{farming.saldo}</td>
                         <td>{farming.total_saldo}</td>
-                        <td>{formatDateTime(farming.periode)}</td>
+                        <td>{farming.tanggal}</td>
                         <td>{farming.nama_shift}</td>
                         <td>{farming.nama_game}</td>
                         <td>{farming.ket}</td>
