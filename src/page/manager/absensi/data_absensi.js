@@ -123,7 +123,7 @@ const DataAbsensi = () => {
     };
 
     const shouldShowActions = (absen) => {
-        return ['masuk', 'izin', 'tidak_masuk'].includes(absen.status); // Show actions only for specific statuses
+        return absen.status === '' || absen.status === 'belum absen'; // Show actions only for specific statuses
     };
 
     const handleFilterChange = (e) => {
@@ -248,7 +248,7 @@ const DataAbsensi = () => {
                                             </td>
                                             <td>{absen.ket}</td>
                                             <td>
-                                                {shouldShowActions(absen) && (
+                                                {shouldShowActions(absen) ? (
                                                     <div className="btn-group" role="group">
                                                         <button
                                                             className="btn btn-outline-warning btn-sm mx-1"
@@ -260,15 +260,16 @@ const DataAbsensi = () => {
                                                             className="btn btn-outline-danger btn-sm"
                                                             onClick={() => handleTidakMasuk(absen.NIP)}
                                                         >
-                                                           Tidak masuk 
-                                                        </button>
-                                                        <button
-                                                            className="btn btn-outline-primary btn-sm"
-                                                            onClick={() => handleOpenModal(absen)} 
-                                                        >
-                                                            Ket
+                                                           Tidak Masuk 
                                                         </button>
                                                     </div>
+                                                ) : (
+                                                    <button
+                                                        className="btn btn-outline-primary btn-sm"
+                                                        onClick={() => handleOpenModal(absen)} 
+                                                    >
+                                                        Ket
+                                                    </button>
                                                 )}
                                             </td>
                                         </tr>

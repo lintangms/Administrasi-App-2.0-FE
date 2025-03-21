@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-const ModalUpdateKaryawan = ({ showModal, setShowModal, selectedKaryawan, setKaryawanList, token }) => {
+const ModalAddKaryawan = ({ showModal, setShowModal, setKaryawanList, token }) => {
   const [formData, setFormData] = useState({
     NIP: '',
     nama: '',
@@ -14,12 +14,12 @@ const ModalUpdateKaryawan = ({ showModal, setShowModal, selectedKaryawan, setKar
     mulai_bekerja: '',
     nama_jabatan: '',
     nama_divisi: '',
-    nama_shift: '',
-    nama_game: '',
-    username_akun: '',
     username: '',
     password: '',
     ket: '',
+    username_akun: '',
+    nama_game: '',
+    nama_shift: '',
   });
 
   const [jabatanList, setJabatanList] = useState([]);
@@ -44,27 +44,6 @@ const ModalUpdateKaryawan = ({ showModal, setShowModal, selectedKaryawan, setKar
         setShiftList(shiftRes.data.data || []);
         setGameList(gameRes.data.data || []);
         setAkunList(akunRes.data.data || []);
-
-        if (selectedKaryawan) {
-          setFormData({
-            NIP: selectedKaryawan.NIP,
-            nama: selectedKaryawan.nama,
-            alamat: selectedKaryawan.alamat,
-            telp: selectedKaryawan.telp,
-            ttl: selectedKaryawan.ttl.split('T')[0], // Format date
-            pendidikan: selectedKaryawan.pendidikan,
-            status: selectedKaryawan.status,
-            mulai_bekerja: selectedKaryawan.mulai_bekerja.split('T')[0], // Format date
-            nama_jabatan: selectedKaryawan.nama_jabatan,
-            nama_divisi: selectedKaryawan.nama_divisi,
-            nama_shift: selectedKaryawan.nama_shift,
-            nama_game: selectedKaryawan.nama_game,
-            username_akun: selectedKaryawan.username_akun,
-            username: selectedKaryawan.username,
-            password: '', // Reset password field
-            ket: selectedKaryawan.ket,
-          });
-        }
       } catch (error) {
         console.error('Error fetching data:', error);
         toast.error('Gagal mengambil data referensi');
@@ -74,7 +53,7 @@ const ModalUpdateKaryawan = ({ showModal, setShowModal, selectedKaryawan, setKar
     if (showModal) {
       fetchData();
     }
-  }, [showModal, selectedKaryawan]);
+  }, [showModal]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -83,26 +62,9 @@ const ModalUpdateKaryawan = ({ showModal, setShowModal, selectedKaryawan, setKar
 
   const handleSave = async () => {
     try {
-      const response = await axios.put(
-        `${process.env.REACT_APP_BACKEND_URL}/api/karyawan/update/${selectedKaryawan.id_karyawan}`,
-        {
-          NIP: formData.NIP,
-          nama: formData.nama,
-          alamat: formData.alamat,
-          telp: formData.telp,
-          ttl: formData.ttl,
-          pendidikan: formData.pendidikan,
-          status: formData.status,
-          mulai_bekerja: formData.mulai_bekerja,
-          nama_jabatan: formData.nama_jabatan,
-          nama_divisi: formData.nama_divisi,
-          nama_shift: formData.nama_shift,
-          nama_game: formData.nama_game,
-          username_akun: formData.username_akun,
-          username: formData.username,
-          password: formData.password || undefined, // Only send if changed
-          ket: formData.ket
-        },
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/api/karyawan/add`,
+        formData,
         { 
           headers: { 
             Authorization: `Bearer ${token}`,
@@ -111,20 +73,14 @@ const ModalUpdateKaryawan = ({ showModal, setShowModal, selectedKaryawan, setKar
         }
       );
 
-      if (response.status === 200) {
-        setKaryawanList((prevList) =>
-          prevList.map((karyawan) => 
-            karyawan.id_karyawan === selectedKaryawan.id_karyawan ? 
-            { ...karyawan, ...formData } : 
-            karyawan
-          )
-        );
-        toast.success('Karyawan berhasil diperbarui!');
+      if (response.status === 201) {
+        setKaryawanList((prevList) => [...prevList, { ...formData, id_karyawan: response.data.karyawanId }]);
+        toast.success('Karyawan berhasil ditambahkan!');
         setShowModal(false);
       }
     } catch (error) {
-      console.error('Error saat memperbarui karyawan:', error);
-      toast.error(error.response?.data?.message || 'Gagal memperbarui karyawan');
+      console.error('Error saat menambahkan karyawan:', error);
+      toast.error(error.response?.data?.message || 'Gagal menambahkan karyawan');
     }
   };
 
@@ -135,7 +91,7 @@ const ModalUpdateKaryawan = ({ showModal, setShowModal, selectedKaryawan, setKar
           <div className="modal-container">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title">Update Karyawan</h5>
+                <h5 className="modal-title">Tambah Karyawan</h5>
                 <button type="button" className="close" onClick={() => setShowModal(false)}>
                   <span aria-hidden="true">&times;</span>
                 </button>
@@ -332,7 +288,7 @@ const ModalUpdateKaryawan = ({ showModal, setShowModal, selectedKaryawan, setKar
                       name="password"
                       value={formData.password}
                       onChange={handleChange}
-                      placeholder="Kosongkan jika tidak ingin mengubah password"
+                      required
                     />
                   </div>
                   <div className="form-group">
@@ -422,9 +378,8 @@ const ModalUpdateKaryawan = ({ showModal, setShowModal, selectedKaryawan, setKar
           cursor: pointer;
         }
       `}</style>
-
     </>
   );
 };
 
-export default ModalUpdateKaryawan;
+export default ModalAddKaryawan;

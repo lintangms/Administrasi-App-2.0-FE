@@ -9,13 +9,14 @@ const Farming = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [filter, setFilter] = useState({
-    tanggal: '', // New field for a single date
-    bulan: new Date().getMonth() + 1, // Set to current month
-    tahun: new Date().getFullYear(),   // Set to current year
+    tanggal: '',
+    bulan: new Date().getMonth() + 1,
+    tahun: new Date().getFullYear(),
     minggu_bulan: '',
     nama_shift: '',
     nama_game: '',
     nama: '',
+    order: 'DESC'
   });
   const [games, setGames] = useState([]);
   const [shifts, setShifts] = useState([]);
@@ -30,16 +31,18 @@ const Farming = () => {
       const response = await axios.get(`${BACKEND_URL}/api/farming/get`, {
         headers: { Authorization: `Bearer ${token}` },
         params: {
-          tanggal: filter.tanggal, // Include tanggal in the request
+          tanggal: filter.tanggal,
           bulan: filter.bulan,
           tahun: filter.tahun,
           minggu_bulan: filter.minggu_bulan,
           nama_shift: filter.nama_shift,
           nama_game: filter.nama_game,
           nama: filter.nama,
+          order: filter.order
         },
       });
-      setFarmingList(response.data.data || []);
+      const fetchedData = response.data.data || [];
+      setFarmingList(fetchedData);
     } catch (err) {
       console.error('Error saat mengambil data farming:', err);
       setError('Tidak ada data farming');
@@ -105,11 +108,17 @@ const Farming = () => {
     });
   };
 
-  const handleViewDetails = (nip) => {
-    navigate(`/manager/detail/${nip}`); // Navigate to the details page
+  const handleSortOrderChange = (e) => {
+    setFilter({
+      ...filter,
+      order: e.target.value
+    });
   };
 
-  // Generate years for dropdown
+  const handleViewDetails = (nip) => {
+    navigate(`/manager/detail/${nip}`);
+  };
+
   const years = [2025, 2026, 2027, 2028];
 
   return (
@@ -219,6 +228,7 @@ const Farming = () => {
                   onChange={handleFilterChange}
                 />
               </div>
+              
             </div>
           </div>
 
@@ -238,7 +248,6 @@ const Farming = () => {
                     <th>Periode</th>
                     <th>Nama Shift</th>
                     <th>Nama Game</th>
-                    <th>Keterangan</th>
                     <th>Aksi</th>
                   </tr>
                 </thead>
@@ -246,20 +255,18 @@ const Farming = () => {
                 <tbody>
                   {farmingList.length > 0 ? (
                     farmingList.map((farming, index) => (
-                      <tr key={farming.id_farming}>
+                      <tr key={`${farming.nip}-${index}`}>
                         <td>{index + 1}</td>
                         <td>{farming.nip}</td>
                         <td>{farming.nama}</td>
-                        <td>{farming.username_steam}</td>
-                        <td>{farming.saldo}</td>
-                        <td>{farming.total_saldo}</td>
-                        <td>{farming.tanggal}</td>
-                        <td>{farming.nama_shift}</td>
-                        <td>{farming.nama_game}</td>
-                        <td>{farming.ket}</td>
+                        <td>{farming.username_steam || '-'}</td>
+                        <td>{farming.saldo || 0}</td>
+                        <td>{farming.total_saldo || 0}</td>
+                        <td>{formatDateTime(farming.tanggal)}</td>
+                        <td>{farming.nama_shift || '-'}</td>
+                        <td>{farming.nama_game || '-'}</td>
                         <td>
-                          <button 
-                            className="btn btn-primary btn-sm rounded" 
+                          <button className="btn btn-primary btn-sm rounded" 
                             onClick={() => handleViewDetails(farming.nip)}
                           >
                             <FaInfoCircle />
@@ -269,7 +276,7 @@ const Farming = () => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="11">Tidak ada data farming tersedia</td>
+                      <td colSpan="10">Tidak ada data farming tersedia</td>
                     </tr>
                   )}
                 </tbody>

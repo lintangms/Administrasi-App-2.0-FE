@@ -253,7 +253,7 @@ const Penjualan = () => {
                                                 <td>{penjualan.demand}</td>
                                                 <td>{penjualan.rate}</td>
                                                 <td>{penjualan.ket}</td>
-                                                <td>{penjualan.dijual}</td>
+                                                <td>{penjualan.koin_dijual}</td>
                                                 <td>{penjualan.jumlah_uang}</td>
                                             </tr>
                                         ))
