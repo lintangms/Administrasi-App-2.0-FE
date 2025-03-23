@@ -8,7 +8,8 @@ const ModalAddPenjualan = ({ showModal, setShowModal, token, selectedKoin, onAdd
     demand: '',
     rate: '',
     ket: '',
-    koin_dijual: ''
+    koin_dijual: '',
+    tgl_transaksi: '' // New field for transaction date
   });
 
   const handleChange = (e) => {
@@ -20,7 +21,7 @@ const ModalAddPenjualan = ({ showModal, setShowModal, token, selectedKoin, onAdd
   };
 
   const handleSave = async () => {
-    if (!formData.server || !formData.demand || !formData.rate || !formData.ket || !formData.koin_dijual) {
+    if (!formData.server || !formData.demand || !formData.rate || !formData.ket || !formData.koin_dijual || !formData.tgl_transaksi) {
       toast.error('Semua field harus diisi');
       return;
     }
@@ -33,7 +34,8 @@ const ModalAddPenjualan = ({ showModal, setShowModal, token, selectedKoin, onAdd
         demand: formData.demand,
         rate: Number(formData.rate),
         ket: formData.ket,
-        koin_dijual: Number(formData.koin_dijual)
+        koin_dijual: Number(formData.koin_dijual),
+        tgl_transaksi: formData.tgl_transaksi // Include transaction date in payload
       };
 
       const response = await axios.post(
@@ -140,6 +142,17 @@ const ModalAddPenjualan = ({ showModal, setShowModal, token, selectedKoin, onAdd
                       value={formData.koin_dijual}
                       onChange={handleChange}
                       placeholder="Masukkan Koin Dijual"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="col-form-label">Tanggal Transaksi:</label>
+                    <input
+                      type="date"
+                      className="form-control"
+                      name="tgl_transaksi"
+                      value={formData.tgl_transaksi}
+                      onChange={handleChange}
+                      placeholder="Masukkan Tanggal Transaksi"
                     />
                   </div>
                 </form>
