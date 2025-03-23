@@ -165,6 +165,7 @@ const TotalKoin = () => {
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">No</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">NIP</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama</th>
+                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama Game</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Total Koin</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Saldo Koin</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Total Dijual</th>
@@ -179,6 +180,7 @@ const TotalKoin = () => {
                         <td>{index + 1}</td>
                         <td>{koin.NIP}</td>
                         <td>{koin.nama}</td>
+                        <td>{koin.nama_game}</td>
                         <td>{koin.total_koin}</td>
                         <td>{koin.saldo_koin}</td>
                         <td>{koin.total_dijual}</td>

@@ -11,12 +11,13 @@ const Penjualan = () => {
     const [filter, setFilter] = useState({
         bulan: new Date().getMonth() + 1,
         tahun: new Date().getFullYear(),
-        nama_game: ''
+        nama_game: '',
+        nama: '' // Menambahkan filter untuk nama karyawan
     });
     const [statsData, setStatsData] = useState({
         total_koin_dijual: 0,
         total_jumlah_uang: 0,
-        rata_rata_rate: 0,
+        avg_rate: 0,
     });
     const [games, setGames] = useState([]);
 
@@ -32,7 +33,8 @@ const Penjualan = () => {
                 params: {
                     bulan: filter.bulan,
                     tahun: filter.tahun,
-                    nama_game: filter.nama_game // Menambahkan nama_game ke parameter
+                    nama_game: filter.nama_game,
+                    nama: filter.nama // Menambahkan nama ke parameter
                 },
             });
             if (response.data && response.data.data) {
@@ -57,7 +59,8 @@ const Penjualan = () => {
                 params: {
                     bulan: filter.bulan,
                     tahun: filter.tahun,
-                    nama_game: filter.nama_game // Menambahkan nama_game ke parameter
+                    nama_game: filter.nama_game,
+                    nama: filter.nama // Menambahkan nama ke parameter
                 },
             });
             if (response.data && response.data.total_koin_dijual !== undefined) {
@@ -74,22 +77,32 @@ const Penjualan = () => {
 
     const fetchAverageRate = async () => {
         try {
+            // Perubahan: Menambahkan parameter bulan dan tahun dengan nilai dari filter
             const response = await axios.get(`${BACKEND_URL}/api/penjualan/rate`, {
                 headers: { Authorization: `Bearer ${token}` },
                 params: {
                     bulan: filter.bulan,
                     tahun: filter.tahun,
-                    nama_game: filter.nama_game // Menambahkan nama_game ke parameter
+                    nama_game: filter.nama_game,
                 },
             });
-            if (response.data && response.data.rata_rata_rate !== undefined) {
+            if (response.data && response.data.data && response.data.data.length > 0) {
                 setStatsData(prevStats => ({
                     ...prevStats,
-                    rata_rata_rate: response.data.rata_rata_rate,
+                    avg_rate: response.data.data[0].avg_rate, // Mengambil rata-rata rate dari hasil
+                }));
+            } else {
+                setStatsData(prevStats => ({
+                    ...prevStats,
+                    avg_rate: 0, // Reset jika tidak ada data
                 }));
             }
         } catch (err) {
             console.error('Error fetching average rate:', err);
+            setStatsData(prevStats => ({
+                ...prevStats,
+                avg_rate: 0, // Reset jika ada error
+            }));
         }
     };
 
@@ -99,9 +112,9 @@ const Penjualan = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (response.data && response.data.data) {
-                setGames(response.data.data); // Mengambil data dari response.data.data
+                setGames(response.data.data);
             } else {
-                setGames([]); // Mengatur games menjadi array kosong jika tidak ada data
+                setGames([]);
             }
         } catch (err) {
             console.error('Error fetching games:', err);
@@ -118,7 +131,7 @@ const Penjualan = () => {
         fetchPenjualan();
         fetchStats();
         fetchAverageRate();
-        fetchGames(); // Fetch games when the component mounts
+        fetchGames();
     }, [token, filter, navigate]);
 
     const handleFilterChange = (e) => {
@@ -145,7 +158,7 @@ const Penjualan = () => {
                     <FaChartLine style={{ color: '#3498db', fontSize: '2rem' }} />
                     <div style={{ textAlign: 'right' }}>
                         <h5 style={{ margin: 0, color: '#7f8c8d', fontSize: '0.9rem' }}>Rata-rata Rate</h5>
-                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1.2rem', fontWeight: 'bold' }}>{statsData.rata_rata_rate}</h2>
+                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1.2rem', fontWeight: 'bold' }}>{statsData.avg_rate}</h2>
                     </div>
                 </div>
                 <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', padding: '15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -168,7 +181,7 @@ const Penjualan = () => {
                 {/* Filter Form */}
                 <div className="filter-form mb-4 px-3 py-2 bg-light">
                     <div className="row">
-                        <div className="col-md-4">
+                        <div className="col-md-3">
                             <select
                                 className="form-control"
                                 name="bulan"
@@ -183,7 +196,7 @@ const Penjualan = () => {
                                 ))}
                             </select>
                         </div>
-                        <div className="col-md-4">
+                        <div className="col-md-3">
                             <select
                                 className="form-control"
                                 name="tahun"
@@ -198,7 +211,7 @@ const Penjualan = () => {
                                 ))}
                             </select>
                         </div>
-                        <div className="col-md-4">
+                        <div className="col-md-3">
                             <select
                                 className="form-control"
                                 name="nama_game"
@@ -217,6 +230,16 @@ const Penjualan = () => {
                                 )}
                             </select>
                         </div>
+                        <div className="col-md-3">
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="nama"
+                                placeholder="Nama Karyawan"
+                                value={filter.nama}
+                                onChange={handleFilterChange}
+                            />
+                        </div>
                     </div>
                 </div>
 
@@ -231,6 +254,7 @@ const Penjualan = () => {
                                         <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">No</th>
                                         <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">NIP</th>
                                         <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama</th>
+                                        <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama Game</th>
                                         <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tanggal</th>
                                         <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Server</th>
                                         <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Demand</th>
@@ -244,10 +268,11 @@ const Penjualan = () => {
                                 <tbody>
                                     {penjualanList && penjualanList.length > 0 ? (
                                         penjualanList.map((penjualan, index) => (
-                                            <tr key={penjualan.id}>
+                                            <tr key={penjualan.id_penjualan}>
                                                 <td>{index + 1}</td>
                                                 <td>{penjualan.NIP}</td>
-                                                <td>{penjualan.nama}</td>
+                                                <td>{penjualan.nama_karyawan}</td>
+                                                <td>{penjualan.nama_game}</td>
                                                 <td>{penjualan.tgl_transaksi.split("T")[0]}</td>
                                                 <td>{penjualan.server}</td>
                                                 <td>{penjualan.demand}</td>
@@ -259,7 +284,7 @@ const Penjualan = () => {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="9">Tidak ada penjualan tersedia</td>
+                                            <td colSpan="10">Tidak ada penjualan tersedia</td>
                                         </tr>
                                     )}
                                 </tbody>

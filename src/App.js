@@ -222,6 +222,8 @@ function App() {
           <Route path="/spv/kasbon" element={<Kasbon />} />
           <Route path="/spv/riwayatkasbon" element={<RiwayatKasbon />} />
           <Route path="/spv/rekap_absensi" element={<RekapAbsensi />} />
+          <Route path="/spv/perolehan" element={<PerolehanFarming />} />
+          <Route path="/spv/riwayatperolehan" element={<RiwayatFarming />} />
 
           <Route path="/farmer/dashboard" element={<DashboardFarmer />} />
           <Route path="/farmer/absensi" element={<AbsensiFarmer />} />

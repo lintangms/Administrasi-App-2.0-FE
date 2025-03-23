@@ -20,6 +20,7 @@ import {
   FaBullseye,
   FaCalendar,
   FaCalendarCheck,
+  FaHistory,
 } from "react-icons/fa";
 
 // Komponen Header
@@ -121,10 +122,16 @@ const SidebarSPV = () => {
               <span className="align-middle">Data Absensi</span>
             </Link>
           </li>
-          <li className={`sidebar-item ${location.pathname === "/spv/rekap_absensi" ? "active" : ""}`}>
-            <Link className="sidebar-link" to="/spv/rekap_absensi">
-              <FaCalendarCheck className="align-middle" />{" "}
-              <span className="align-middle">Rekap Absensi</span>
+          <li className={`sidebar-item ${location.pathname === "/spv/perolehan" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/spv/perolehan">
+              <FaCoins className="align-middle" />{" "}
+              <span className="align-middle">Perolehan Koin</span>
+            </Link>
+          </li>
+          <li className={`sidebar-item ${location.pathname === "/spv/riwayatperolehan" ? "active" : ""}`}>
+            <Link className="sidebar-link" to="/spv/riwayatperolehan">
+              <FaHistory className="align-middle" />{" "}
+              <span className="align-middle">Riwayat Perolehan</span>
             </Link>
           </li>
           <li className={`sidebar-item ${location.pathname === "/spv/data_target" ? "active" : ""}`}>
