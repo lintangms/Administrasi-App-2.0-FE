@@ -335,6 +335,7 @@ const DataGaji = () => {
                                         <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Kasbon</th>
                                         <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">THP</th>
                                         <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tanggal Transaksi</th>
+                                        <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Ket</th>
                                         <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Aksi</th>
                                     </tr>
                                 </thead>
@@ -353,6 +354,7 @@ const DataGaji = () => {
                                                 <td>{gaji.kasbon}</td>
                                                 <td>{gaji.THP}</td>
                                                 <td>{new Date(gaji.tgl_transaksi).toLocaleDateString('id-ID')}</td>
+                                                <td>{gaji.ket}</td>
                                                 <td>
                                                     {activeView === 'lama' ? (
                                                         <>
