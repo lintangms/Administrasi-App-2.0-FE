@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaInfoCircle } from 'react-icons/fa'; 
-import { Link, useNavigate } from 'react-router-dom'; 
 import { toast } from 'react-toastify';
 import ModalAddPenjualan from './modaladdpenjualan';
+import { useNavigate } from 'react-router-dom';
 
 const TotalKoin = () => {
   const [totalKoinList, setTotalKoinList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [filter, setFilter] = useState({
-    nip: '',
     bulan: new Date().getMonth() + 1,
     tahun: new Date().getFullYear(),
     nama_game: ''
@@ -29,13 +27,13 @@ const TotalKoin = () => {
       const response = await axios.get(`${BACKEND_URL}/api/farming/getall`, {
         headers: { Authorization: `Bearer ${token}` },
         params: {
-          nip: filter.nip,
           bulan: filter.bulan,
           tahun: filter.tahun,
           nama_game: filter.nama_game
         },
       });
-      if (response.data) {
+      
+      if (response.data && response.data.data) {
         setTotalKoinList(response.data.data);
       } else {
         setTotalKoinList([]);
@@ -43,6 +41,7 @@ const TotalKoin = () => {
     } catch (err) {
       console.error('Error saat mengambil data total koin:', err);
       setTotalKoinList([]);
+      toast.error('Gagal memuat data koin');
     } finally {
       setLoading(false);
     }
@@ -54,9 +53,9 @@ const TotalKoin = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (response.data && response.data.data) {
-        setGames(response.data.data); // Mengambil data dari response.data.data
+        setGames(response.data.data);
       } else {
-        setGames([]); // Mengatur games menjadi array kosong jika tidak ada data
+        setGames([]);
       }
     } catch (err) {
       console.error('Error fetching games:', err);
@@ -82,10 +81,17 @@ const TotalKoin = () => {
   };
 
   const handleOpenModal = (koin) => {
-    setSelectedKoin({
-      NIP: koin.NIP,
-      id_koin: koin.id_koin
-    });
+    const selectedKoinData = koin.nama_game === 'WOW' 
+      ? { 
+          NIP: 'WOW', 
+          id_koin: koin.id_wow || null 
+        }
+      : {
+          NIP: koin.NIP,
+          id_koin: koin.id_koin
+        };
+
+    setSelectedKoin(selectedKoinData);
     setShowModal(true);
   };
 
@@ -102,8 +108,7 @@ const TotalKoin = () => {
         <div className="card-body px-0 pb-2">
           <div className="filter-form mb-4 px-3 py-2 bg-light">
             <div className="row">
-             
-              <div className="col-md-4">
+              <div className="col-md-6">
                 <select
                   className="form-control"
                   name="nama_game"
@@ -122,7 +127,7 @@ const TotalKoin = () => {
                   )}
                 </select>
               </div>
-              <div className="col-md-4">
+              <div className="col-md-3">
                 <select
                   className="form-control"
                   name="bulan"
@@ -137,7 +142,7 @@ const TotalKoin = () => {
                   ))}
                 </select>
               </div>
-              <div className="col-md-4">
+              <div className="col-md-3">
                 <select
                   className="form-control"
                   name="tahun"
@@ -175,28 +180,30 @@ const TotalKoin = () => {
 
                 <tbody>
                   {totalKoinList && totalKoinList.length > 0 ? (
-                    totalKoinList.map((koin, index) => (
-                      <tr key={koin.NIP}>
-                        <td>{index + 1}</td>
-                        <td>{koin.NIP}</td>
-                        <td>{koin.nama}</td>
-                        <td>{koin.nama_game}</td>
-                        <td>{koin.total_koin}</td>
-                        <td>{koin.saldo_koin}</td>
-                        <td>{koin.total_dijual}</td>
-                        <td>
-                          <button
-                            className="btn btn-primary btn-sm"
-                            onClick={() => handleOpenModal(koin)}
-                          >
-                            Jual Koin
-                          </button>
-                        </td>
-                      </tr>
-                    ))
+                    totalKoinList.map((koin, index) => {
+                      return (
+                        <tr key={koin.NIP || koin.id_koin}>
+                          <td>{index + 1}</td>
+                          <td>{koin.nama_game === 'WOW' ? 'WOW' : koin.NIP}</td>
+                          <td>{koin.nama}</td>
+                          <td>{koin.nama_game}</td>
+                          <td>{koin.total_koin}</td>
+                          <td>{koin.saldo_koin}</td>
+                          <td>{koin.total_dijual}</td>
+                          <td>
+                            <button
+                              className="btn btn-primary btn-sm"
+                              onClick={() => handleOpenModal(koin)}
+                            >
+                              Jual Koin
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
                   ) : (
                     <tr>
-                      <td colSpan="6">Tidak ada data total koin tersedia</td>
+                      <td colSpan="8">Tidak ada data total koin tersedia</td>
                     </tr>
                   )}
                 </tbody>
@@ -213,7 +220,7 @@ const TotalKoin = () => {
           token={token} 
           selectedKoin={selectedKoin}
           onAddSuccess={() => {
-            fetchTotalKoin(); // Refresh data after successful addition
+            fetchTotalKoin(); 
             setShowModal(false);
           }}
         />

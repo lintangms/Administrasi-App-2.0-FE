@@ -4,7 +4,9 @@ import { toast } from 'react-toastify';
 import ModalUpdateGajiLama from './modalupdategaji'; // Modal untuk karyawan status lama
 import ModalUpdateGajiBaru from './modalupdategajibaru'; // Modal untuk karyawan status baru
 import ModalAddGajiBaru from './modaladdgaji'; // Modal untuk menambah gaji baru
-import { FaDollarSign, FaMoneyBillWave, FaClipboardList, FaChartLine, FaUser  } from 'react-icons/fa';
+import ModalAddRate from './modaladdrate'; // Modal untuk menambah rate baru
+import ModalAddGajiLama from './modaladdgajilama'; // Modal untuk menambah gaji lama
+import { FaDollarSign, FaMoneyBillWave, FaChartLine, FaUser , FaCoins } from 'react-icons/fa';
 
 const DataGaji = () => {
     const [totalGajiList, setTotalGajiList] = useState([]);
@@ -18,12 +20,16 @@ const DataGaji = () => {
     const [showModalLama, setShowModalLama] = useState(false);
     const [showModalBaru, setShowModalBaru] = useState(false);
     const [showModalAddBaru, setShowModalAddBaru] = useState(false); // State untuk modal tambah gaji baru
+    const [showModalAddRate, setShowModalAddRate] = useState(false); // State untuk modal tambah rate baru
+    const [showModalAddGajiLama, setShowModalAddGajiLama] = useState(false); // State untuk modal tambah gaji lama
     const [selectedGaji, setSelectedGaji] = useState(null);
     const [statsData, setStatsData] = useState({
         total_gaji_kotor: 0,
         total_kasbon: 0,
-        total_tunjangan_jabatan: 0,
         total_THP: 0,
+        wow_rate: 0,
+        tnl_rate: 0,
+        bns_rate: 0,
     });
     const [activeView, setActiveView] = useState('lama'); // 'lama' or 'baru'
 
@@ -74,6 +80,31 @@ const DataGaji = () => {
         }
     };
 
+    const fetchGameRates = async () => {
+        try {
+            const response = await axios.get(`${BACKEND_URL}/api/gaji/getrate`, {
+                headers: { Authorization: `Bearer ${token}` },
+                params: {
+                    bulan: filter.bulan,
+                    tahun: filter.tahun,
+                },
+            });
+            const rates = response.data.data;
+            const wowRate = rates.find(rate => rate.nama_game === 'WOW')?.rata_rata_rate || 0;
+            const tnlRate = rates.find(rate => rate.nama_game === 'TNL')?.rata_rata_rate || 0;
+            const bnsRate = rates.find(rate => rate.nama_game === 'BNS')?.rata_rata_rate || 0;
+
+            setStatsData(prevStats => ({
+                ...prevStats,
+                wow_rate: wowRate,
+                tnl_rate: tnlRate,
+                bns_rate: bnsRate,
+            }));
+        } catch (err) {
+            console.error('Error fetching game rates:', err);
+        }
+    };
+
     useEffect(() => {
         if (!token) {
             toast.error('Silakan login kembali');
@@ -81,6 +112,7 @@ const DataGaji = () => {
         }
         fetchTotalGaji();
         fetchStats();
+        fetchGameRates();
     }, [token, filter, activeView]);
 
     const handleFilterChange = (e) => {
@@ -109,6 +141,11 @@ const DataGaji = () => {
         toast.success('Gaji baru berhasil ditambahkan!');
     };
 
+    const handleAddGajiLama = (newGaji) => {
+        setTotalGajiList((prevList) => [newGaji, ...prevList]);
+        toast.success('Gaji lama berhasil ditambahkan!');
+    };
+
     const handleUpdateUnsoldGaji = async (NIP) => {
         try {
             const response = await axios.post(`${BACKEND_URL}/api/gaji/gajiunsold`, { NIP }, {
@@ -127,39 +164,53 @@ const DataGaji = () => {
             {error && <p className="error-message">{error}</p>}
 
             {/* Stats Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '15px', marginBottom: '20px' }}>
-                <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', padding: '15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <FaDollarSign style={{ color: '#3498db', fontSize: '2rem' }} />
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px', marginBottom: '15px' }}>
+                <div className="stat-card">
+                    <FaDollarSign style={{ color: '#3498db', fontSize: '1.5rem' }} />
                     <div style={{ textAlign: 'right' }}>
-                        <h5 style={{ margin: 0, color: '#7f8c8d', fontSize: '0.9rem' }}>Total Gaji Kotor</h5>
-                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1.2rem', fontWeight: 'bold' }}>{statsData.total_gaji_kotor}</h2>
+                        <h5 style={{ margin: 0, color: '#7f8c8d', fontSize: '0.8rem' }}>Total Gaji Kotor</h5>
+                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1rem', fontWeight: 'bold' }}>{statsData.total_gaji_kotor}</h2>
                     </div>
                 </div>
-                <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', padding: '15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <FaMoneyBillWave style={{ color: '#3498db', fontSize: '2rem' }} />
+                <div className="stat-card">
+                    <FaMoneyBillWave style={{ color: '#3498db', fontSize: '1.5rem' }} />
                     <div style={{ textAlign: 'right' }}>
-                        <h5 style={{ margin: 0, color: '#7f8c8d', fontSize: '0.9rem' }}>Total Kasbon</h5>
-                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1.2rem', fontWeight: 'bold' }}>{statsData.total_kasbon}</h2>
+                        <h5 style={{ margin: 0, color: '#7f8c8d', fontSize: '0.8rem' }}>Total Kasbon</h5>
+                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1rem', fontWeight: 'bold' }}>{statsData.total_kasbon}</h2>
                     </div>
                 </div>
-                <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', padding: '15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <FaClipboardList style={{ color: '#3498db', fontSize: '2rem' }} />
+                <div className="stat-card">
+                    <FaChartLine style={{ color: '#3498db', fontSize: '1.5rem' }} />
                     <div style={{ textAlign: 'right' }}>
-                        <h5 style={{ margin: 0, color: '#7f8c8d', fontSize: '0.9rem' }}>Total Tunjangan</h5>
-                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1.2rem', fontWeight: 'bold' }}>{statsData.total_tunjangan_jabatan}</h2>
+                        <h5 style={{ margin: 0, color: '#7f8c8d', fontSize: '0.8rem' }}>Total THP</h5>
+                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1rem', fontWeight: 'bold' }}>{statsData.total_THP}</h2>
                     </div>
                 </div>
-                <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', padding: '15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <FaChartLine style={{ color: '#3498db', fontSize: '2rem' }} />
+                <div className="stat-card">
+                    <FaCoins style={{ color: '#3498db', fontSize: '1.5rem' }} />
                     <div style={{ textAlign: 'right' }}>
-                        <h5 style={{ margin: 0, color: '#7f8c8d', fontSize: '0.9rem' }}>Total THP</h5>
-                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1.2rem', fontWeight: 'bold' }}>{statsData.total_THP}</h2>
+                        <h5 style={{ margin: 0, color: '#7f8c8d', fontSize: '0.8rem' }}>Rata-rata Rate WOW</h5>
+                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1rem', fontWeight: 'bold' }}>{statsData.wow_rate}</h2>
+                    </div>
+                </div>
+                <div className="stat-card">
+                    <FaCoins style={{ color: '#3498db', fontSize: '1.5rem' }} />
+                    <div style={{ textAlign: 'right' }}>
+                        <h5 style={{ margin: 0, color: '#7f8c8d', fontSize: '0.8rem' }}>Rata-rata Rate TNL</h5>
+                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1rem', fontWeight: 'bold' }}>{statsData.tnl_rate}</h2>
+                    </div>
+                </div>
+                <div className="stat-card">
+                    <FaCoins style={{ color: '#3498db', fontSize: '1.5rem' }} />
+                    <div style={{ textAlign: 'right' }}>
+                        <h5 style={{ margin: 0, color: '#7f8c8d', fontSize: '0.8rem' }}>Rata-rata Rate BNS</h5>
+                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1rem', fontWeight: 'bold' }}>{statsData.bns_rate}</h2>
                     </div>
                 </div>
             </div>
 
             {/* Status Toggle Buttons - Smaller Size */}
-            <div className="view-toggle-container mb-4">
+            <div className="view-toggle-container mb-4" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div className="btn-group" role="group" aria-label="Status toggle">
                     <button
                         type="button"
@@ -178,6 +229,14 @@ const DataGaji = () => {
                         Karyawan Status Baru
                     </button>
                 </div>
+                <button
+                    className="btn btn-success btn-sm"
+                    onClick={() => {
+                        setShowModalAddRate(true); // Open the Add Rate modal
+                    }}
+                >
+                    + Add Rate
+                </button>
             </div>
 
             {/* Stats Cards */}
@@ -196,6 +255,17 @@ const DataGaji = () => {
                                 }}
                             >
                                 + Add Gaji Baru
+                            </button>
+                        )}
+                        {activeView === 'lama' && (
+                            <button
+                                className="btn btn-success me-3"
+                                onClick={() => {
+                                    setShowModalAddGajiLama(true);
+                                    toast.info('Silakan isi form untuk menambahkan gaji lama.');
+                                }}
+                            >
+                                + Add Gaji Lama
                             </button>
                         )}
                     </div>
@@ -262,7 +332,6 @@ const DataGaji = () => {
                                         <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Unsold</th>
                                         <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Gaji Kotor</th>
                                         <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Potongan</th>
-                                        <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tunjangan</th>
                                         <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Kasbon</th>
                                         <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">THP</th>
                                         <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tanggal Transaksi</th>
@@ -281,7 +350,6 @@ const DataGaji = () => {
                                                 <td>{gaji.total_unsold_koin}</td>
                                                 <td>{gaji.gaji_kotor}</td>
                                                 <td>{gaji.potongan}</td>
-                                                <td>{gaji.tunjangan_jabatan}</td>
                                                 <td>{gaji.kasbon}</td>
                                                 <td>{gaji.THP}</td>
                                                 <td>{new Date(gaji.tgl_transaksi).toLocaleDateString('id-ID')}</td>
@@ -309,7 +377,6 @@ const DataGaji = () => {
                                                             >
                                                                 Edit Gaji
                                                             </button>
-                                                         
                                                         </>
                                                     )}
                                                 </td>
@@ -359,6 +426,24 @@ const DataGaji = () => {
                     setShowModal={setShowModalAddBaru}
                     token={token}
                     onAddSuccess={handleAddGajiBaru}
+                />
+            )}
+
+            {showModalAddRate && (
+                <ModalAddRate
+                    showModal={showModalAddRate}
+                    setShowModal={setShowModalAddRate}
+                    token={token}
+                    onAddSuccess={handleAddGajiBaru} // Assuming you want to handle success similarly
+                />
+            )}
+
+            {showModalAddGajiLama && (
+                <ModalAddGajiLama
+                    showModal={showModalAddGajiLama}
+                    setShowModal={setShowModalAddGajiLama}
+                    token={token}
+                    onAddSuccess={handleAddGajiLama}
                 />
             )}
 
@@ -428,6 +513,16 @@ const DataGaji = () => {
 
                 .me-1 {
                     margin-right: 0.25rem;
+                }
+
+                .stat-card {
+                    background-color: white;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                    padding: 15px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
                 }
             `}</style>
         </div>

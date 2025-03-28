@@ -3,7 +3,7 @@ import axios from 'axios';
 import { FaCoins, FaChartLine } from 'react-icons/fa'; 
 import { toast } from 'react-toastify'; 
 import { useNavigate } from 'react-router-dom';
-import ModalAddUnsold from './modaladdunsold'; // Updated import name
+import ModalAddUnsold from './modaladdunsold';
 
 const Unsold = () => {
     const [unsoldList, setUnsoldList] = useState([]);
@@ -12,6 +12,8 @@ const Unsold = () => {
     const [filter, setFilter] = useState({
         bulan: new Date().getMonth() + 1,
         tahun: new Date().getFullYear(),
+        nama: '',
+        nama_game: '',
     });
     const [statsData, setStatsData] = useState({
         total_koin: 0,
@@ -19,6 +21,7 @@ const Unsold = () => {
     });
     const [showModalUpdate, setShowModalUpdate] = useState(false);
     const [selectedUnsold, setSelectedUnsold] = useState(null);
+    const [games, setGames] = useState([]); // State to hold games
 
     const token = localStorage.getItem('token');
     const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -32,6 +35,8 @@ const Unsold = () => {
                 params: {
                     bulan: filter.bulan,
                     tahun: filter.tahun,
+                    nama: filter.nama,
+                    nama_game: filter.nama_game,
                 },
             });
             if (response.data && response.data.data) {
@@ -66,6 +71,20 @@ const Unsold = () => {
         }
     };
 
+    const fetchGames = async () => {
+        try {
+            const response = await axios.get(`${BACKEND_URL}/api/game/get`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (response.data && response.data.data) {
+                setGames(response.data.data);
+            }
+        } catch (err) {
+            console.error('Error fetching games:', err);
+            toast.error('Gagal memuat data game');
+        }
+    };
+
     useEffect(() => {
         if (!token) {
             toast.error('Silakan login kembali');
@@ -74,6 +93,7 @@ const Unsold = () => {
         }
         fetchUnsold();
         fetchStats();
+        fetchGames(); // Fetch games on component mount
     }, [token, filter, navigate]);
 
     const handleFilterChange = (e) => {
@@ -151,6 +171,33 @@ const Unsold = () => {
                                 ))}
                             </select>
                         </div>
+                        <div className="col-md-4">
+                            <input
+                                type="text"
+                                className="form-control"
+                                name="nama"
+                                placeholder="Filter by Nama"
+                                value={filter.nama}
+                                onChange={handleFilterChange}
+                            />
+                        </div>
+                    </div>
+                    <div className="row mt-2">
+                        <div className="col-md-4">
+                            <select
+                                className="form-control"
+                                name="nama_game"
+                                value={filter.nama_game}
+                                onChange={handleFilterChange}
+                            >
+                                <option value="">Pilih Game</option>
+                                {games.map((game) => (
+                                    <option key={game.id_game} value={game.nama_game}>
+                                        {game.nama_game}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
                 </div>
 
@@ -164,6 +211,7 @@ const Unsold = () => {
                                     <tr>
                                         <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">No</th>
                                         <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">NIP</th>
+                                        <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama</th>
                                         <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Game</th>
                                         <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Akun Steam</th>
                                         <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tanggal</th>
@@ -180,6 +228,7 @@ const Unsold = () => {
                                             <tr key={unsold.id_unsold}>
                                                 <td>{index + 1}</td>
                                                 <td>{unsold.NIP}</td>
+                                                <td>{unsold.nama}</td>
                                                 <td>{unsold.nama_game}</td>
                                                 <td>{unsold.username_steam}</td>
                                                 <td>{new Date(unsold.tanggal).toLocaleDateString('id-ID')}</td>
@@ -198,7 +247,7 @@ const Unsold = () => {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="7">Tidak ada data unsold tersedia</td>
+                                            <td colSpan="10">Tidak ada data unsold tersedia</td>
                                         </tr>
                                     )}
                                 </tbody>

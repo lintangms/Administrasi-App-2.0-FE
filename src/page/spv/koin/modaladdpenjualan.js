@@ -28,8 +28,9 @@ const ModalAddPenjualan = ({ showModal, setShowModal, token, selectedKoin, onAdd
 
     try {
       const payload = {
-        NIP: selectedKoin.NIP,
-        id_koin: selectedKoin.id_koin,
+        NIP: selectedKoin.NIP === 'WOW' ? null : selectedKoin.NIP,
+        id_koin: selectedKoin.NIP === 'WOW' ? null : selectedKoin.id_koin,
+        id_wow: selectedKoin.NIP === 'WOW' ? selectedKoin.id_koin : null,
         server: formData.server,
         demand: formData.demand,
         rate: Number(formData.rate),
@@ -77,7 +78,7 @@ const ModalAddPenjualan = ({ showModal, setShowModal, token, selectedKoin, onAdd
                     <input
                       type="text"
                       className="form-control"
-                      value={selectedKoin.NIP}
+                      value={selectedKoin.NIP === 'WOW' ? 'WOW' : selectedKoin.NIP}
                       readOnly
                     />
                   </div>
@@ -86,7 +87,7 @@ const ModalAddPenjualan = ({ showModal, setShowModal, token, selectedKoin, onAdd
                     <input
                       type="text"
                       className="form-control"
-                      value={selectedKoin.id_koin}
+                      value={selectedKoin.NIP === 'WOW' ? selectedKoin.id_koin : selectedKoin.id_koin}
                       readOnly
                     />
                   </div>

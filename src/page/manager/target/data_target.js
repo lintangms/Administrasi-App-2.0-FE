@@ -216,7 +216,7 @@ const DataTarget = () => {
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama Game</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Target</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tanggal</th>
-                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Saldo Koin</th>
+                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Total Koin</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Persentase</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Ket</th>
                   </tr>
@@ -232,7 +232,7 @@ const DataTarget = () => {
                         <td>{target.nama_game}</td>
                         <td>{target.target}</td>
                         <td>{new Date(target.tanggal).toLocaleDateString()}</td>
-                        <td>{target.saldo_koin}</td>
+                        <td>{target.total_koin}</td>
                         <td>{target.persentase}%</td>
                         <td>{target.ket}</td>
                       </tr>
