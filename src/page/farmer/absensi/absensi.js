@@ -56,60 +56,6 @@ const AbsensiFarmer = () => {
     fetchRekapAbsensi();
   }, [backendUrl]);
 
-  const handleAbsenMasuk = async () => {
-    setIsLoading(true);
-    const NIP = localStorage.getItem("NIP");
-
-    try {
-      const response = await fetch(`${backendUrl}/api/absen/absen`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ NIP, tipe: 'masuk' }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success(data.message);
-      } else {
-        toast.error(data.message || "Absen masuk gagal. Coba lagi!");
-      }
-    } catch (error) {
-      toast.error("Terjadi kesalahan saat menghubungi server. Coba lagi nanti.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handlePulang = async () => {
-    setIsLoading(true);
-    const NIP = localStorage.getItem("NIP");
-
-    try {
-      const response = await fetch(`${backendUrl}/api/absen/absen`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ NIP, tipe: 'pulang' }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success(data.message);
-      } else {
-        toast.error(data.message || "Pulang gagal. Coba lagi!");
-      }
-    } catch (error) {
-      toast.error("Terjadi kesalahan saat menghubungi server. Coba lagi nanti.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <main className="content">
       <div className="container-fluid p-0">
@@ -121,25 +67,9 @@ const AbsensiFarmer = () => {
                 <h5 className="card-title mb-0">Absensi</h5>
               </div>
               <div className="card-body text-center">
-                <div style={{ marginBottom: "10px" }}>
-                  <button 
-                    className="btn btn-primary" 
-                    onClick={handleAbsenMasuk} 
-                    disabled={isLoading} 
-                    style={{ width: "100%" }} // Set width to 100%
-                  >
-                    Masuk
-                  </button>
-                </div>
-                <div>
-                  <button 
-                    className="btn btn-success" 
-                    onClick={handlePulang} 
-                    disabled={isLoading} 
-                    style={{ width: "100%" }} // Set width to 100%
-                  >
-                    Pulang
-                  </button>
+                <div style={{ marginBottom: "10px", backgroundColor: "red", color: "white", padding: "20px", borderRadius: "10px" }}>
+                  <strong>Silahkan absen menggunakan scan QR dari ID Card! Temui Manager atau SPV untuk melakukan absensi!</strong>
+                  
                 </div>
               </div>
             </div>
@@ -171,7 +101,7 @@ const AbsensiFarmer = () => {
                 backgroundColor = "rgba(0, 181, 0, 0.75)"; // Hijau untuk hadir
               } else if (statusText === "izin") {
                 backgroundColor = "rgba(236, 236, 0, 0.66)"; // Kuning untuk izin
-              } else if (statusText === "Tidak Masuk") {
+              } else if (statusText === "Tidak Masuk ") {
                 backgroundColor = "rgba(255, 0, 0, 0.75)"; // Merah untuk tidak masuk
               }
 
