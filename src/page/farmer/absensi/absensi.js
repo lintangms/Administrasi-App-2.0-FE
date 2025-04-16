@@ -56,6 +56,60 @@ const AbsensiFarmer = () => {
     fetchRekapAbsensi();
   }, [backendUrl]);
 
+  const handleAbsenMasuk = async () => {
+    setIsLoading(true);
+    const NIP = localStorage.getItem("NIP");
+
+    try {
+      const response = await fetch(`${backendUrl}/api/absen/absen`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ NIP, tipe: 'masuk' }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success(data.message);
+      } else {
+        toast.error(data.message || "Absen masuk gagal. Coba lagi!");
+      }
+    } catch (error) {
+      toast.error("Terjadi kesalahan saat menghubungi server. Coba lagi nanti.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePulang = async () => {
+    setIsLoading(true);
+    const NIP = localStorage.getItem("NIP");
+
+    try {
+      const response = await fetch(`${backendUrl}/api/absen/absen`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ NIP, tipe: 'pulang' }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success(data.message);
+      } else {
+        toast.error(data.message || "Pulang gagal. Coba lagi!");
+      }
+    } catch (error) {
+      toast.error("Terjadi kesalahan saat menghubungi server. Coba lagi nanti.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <main className="content">
       <div className="container-fluid p-0">
@@ -67,133 +121,143 @@ const AbsensiFarmer = () => {
                 <h5 className="card-title mb-0">Absensi</h5>
               </div>
               <div className="card-body text-center">
-                <div style={{ marginBottom: "10px", backgroundColor: "red", color: "white", padding: "20px", borderRadius: "10px" }}>
-                  <strong>Silahkan absen menggunakan scan QR dari ID Card! Temui Manager atau SPV untuk melakukan absensi!</strong>
-                  
+                <div style={{ marginBottom: "10px" }}>
+                  <button 
+                    className="btn btn-primary" 
+                    onClick={handleAbsenMasuk} 
+                    disabled={isLoading} style={{ width: "100%" }}
+                  >
+                    Masuk
+                  </button>
+                </div>
+                <div>
+                  <button 
+                    className="btn btn-success" 
+                    onClick={handlePulang} 
+                    disabled={isLoading} 
+                    style={{ width: "100%" }}
+                  >
+                    Pulang
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="calendar-section mt-4" style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <div style={{ width: "100%", maxWidth: "560px", height: "auto", overflow: "hidden", boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)" }}>
-          <Calendar
-            onChange={setDate}
-            value={date}
-            className="custom-calendar"
-            tileContent={({ date }) => {
-              const formattedDate = date.toISOString().split("T")[0];
-              const absensi = absensiData.find(
-                (item) => item.tanggal && item.tanggal.startsWith(formattedDate)
-              );
+        <div className="calendar-section mt-4" style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ width: "100%", maxWidth: "560px", height: "auto", overflow: "hidden", boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)" }}>
+            <Calendar
+              onChange={setDate}
+              value={date}
+              className="custom-calendar"
+              tileContent={({ date }) => {
+                const formattedDate = date.toISOString().split("T")[0];
+                const absensi = absensiData.find(
+                  (item) => item.tanggal && item.tanggal.startsWith(formattedDate)
+                );
 
-              let statusText = "";
-              if (absensi) {
-                statusText = absensi.status; // Ambil status dari data
-              } else {
-                statusText = ""; // Jika tidak ada data, anggap tidak masuk
-              }
+                let statusText = absensi ? absensi.status : ""; // Ambil status dari data
+                let backgroundColor = "";
 
-              let backgroundColor = "";
-              if (statusText === "hadir") {
-                backgroundColor = "rgba(0, 181, 0, 0.75)"; // Hijau untuk hadir
-              } else if (statusText === "izin") {
-                backgroundColor = "rgba(236, 236, 0, 0.66)"; // Kuning untuk izin
-              } else if (statusText === "Tidak Masuk ") {
-                backgroundColor = "rgba(255, 0, 0, 0.75)"; // Merah untuk tidak masuk
-              }
+                if (statusText === "hadir") {
+                  backgroundColor = "rgba(0, 181, 0, 0.75)"; // Hijau untuk hadir
+                } else if (statusText === "izin") {
+                  backgroundColor = "rgba(236, 236, 0, 0.66)"; // Kuning untuk izin
+                } else if (statusText === "Tidak Masuk") {
+                  backgroundColor = "rgba(255, 0, 0, 0.75)"; // Merah untuk tidak masuk
+                }
 
-              return (
-                <div
-                  style={{
-                    backgroundColor,
-                    padding: "4px",
-                    textAlign: "center",
-                    color: "white",
-                    borderRadius: "4px",
-                  }}
-                >
-                  <p style={{ margin: 0 }}>{statusText}</p>
-                </div>
-              );
-            }}
-          />
-        </div>
-
-        <div className="rekap-card" style={{ width: "100%", maxWidth: "550px", height: "auto", marginLeft: "10px" }}>
-          <div className="card" style={{ height: "100%", padding: "20px", borderRadius: "15px", boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)" }}>
-            <div className="card-header">
-              <h5 className="card-title">Rekap Absensi</h5>
-            </div>
-            <div className="card-body">
-              {rekapData ? (
-                <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #ddd", paddingBottom: "8px", marginBottom: "8px" }}>
-                    <strong>Total Masuk:</strong>
-                    <span style={{ backgroundColor: "green", color: "white", padding: "2px 8px", borderRadius: "4px" }}>{rekapData.total_masuk}</span>
+                return (
+                  <div
+                    style={{
+                      backgroundColor,
+                      padding: "4px",
+                      textAlign: "center",
+                      color: "white",
+                      borderRadius: "4px",
+                    }}
+                  >
+                    <p style={{ margin: 0 }}>{statusText}</p>
                   </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #ddd", paddingBottom: "8px", marginBottom: "8px" }}>
-                    <strong>Total Izin:</strong>
-                    <span style={{ backgroundColor: "yellow", color: "black", padding: "2px 8px", borderRadius: "4px" }}>{rekapData.total_izin}</span>
+                );
+              }}
+            />
+          </div>
+
+          <div className="rekap-card" style={{ width: "100%", maxWidth: "550px", height: "auto", marginLeft: "10px" }}>
+            <div className="card" style={{ height: "100%", padding: "20px", borderRadius: "15px", boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)" }}>
+              <div className="card-header">
+                <h5 className="card-title">Rekap Absensi</h5>
+              </div>
+              <div className="card-body">
+                {rekapData ? (
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #ddd", paddingBottom: "8px", marginBottom: "8px" }}>
+                      <strong>Total Masuk:</strong>
+                      <span style={{ backgroundColor: "green", color: "white", padding: "2px 8px", borderRadius: "4px" }}>{rekapData.total_masuk}</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #ddd", paddingBottom: "8px", marginBottom: "8px" }}>
+                      <strong>Total Izin:</strong>
+                      <span style={{ backgroundColor: "yellow", color: "black", padding: "2px 8px", borderRadius: "4px" }}>{rekapData.total_izin}</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: "8px", marginBottom: "8px" }}>
+                      <strong>Total Tidak Absen:</strong>
+                      <span style={{ backgroundColor: "red", color: "white", padding: "2px 8px", borderRadius: "4px" }}>{rekapData.total_tidak_absen}</span>
+                    </div>
                   </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: "8px", marginBottom: "8px" }}>
-                    <strong>Total Tidak Absen:</strong>
-                    <span style={{ backgroundColor: "red", color: "white", padding: "2px 8px", borderRadius: "4px" }}>{rekapData.total_tidak_absen}</span>
-                  </div>
-                </div>
-              ) : (
-                <p>Loading...</p>
-              )}
+                ) : (
+                  <p>Loading...</p>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <style>{`
-        .custom-calendar {
-          width: 100%;
-          max-width: 100%;
-          height: auto;
-        }
+        <style>{`
+          .custom-calendar {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+          }
 
-        .react-calendar {
-          border-radius: 10px;
-          box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        }
+          .react-calendar {
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0. 1);
+          }
 
-        .react-calendar__tile {
-          height: 60px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .calendar-section {
-          margin-top: 20px;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-        }
-
-        @media (max-width: 768px) {
-          .calendar-section {
+          .react-calendar__tile {
+            height: 60px;
+            display: flex;
             flex-direction: column;
+            align-items: center;
+            justify-content: center;
           }
-          .calendar-section > div {
-            max-width: 100% !important;
-            width: 100% !important;
-            margin-left: 0 !important;
-          }
-          .rekap-card {
+
+          .calendar-section {
             margin-top: 20px;
-            width: 100% !important;
-            margin-left: 0 !important;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
           }
-        }
-      `}</style>
+
+          @media (max-width: 768px) {
+            .calendar-section {
+              flex-direction: column;
+            }
+            .calendar-section > div {
+              max-width: 100% !important;
+              width: 100% !important;
+              margin-left: 0 !important;
+            }
+            .rekap-card {
+              margin-top: 20px;
+              width: 100% !important;
+              margin-left: 0 !important;
+            }
+          }
+        `}</style>
+      </div>
     </main>
   );
 };
