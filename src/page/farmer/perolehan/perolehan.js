@@ -6,6 +6,7 @@ import "../../../app.css";
 const PerolehanFarming = () => {
   const [NIP, setNIP] = useState("");
   const [koin, setKoin] = useState("");
+  const [koinTake, setKoinTake] = useState(""); // State for Koin di Take
   const [ket, setKet] = useState("");
   const [namaGame, setNamaGame] = useState(""); // State untuk nama game
   const [games, setGames] = useState([]); // State untuk daftar game
@@ -14,8 +15,9 @@ const PerolehanFarming = () => {
   const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
   useEffect(() => {
-    document.documentElement.style.overflow = "hidden";
-    document.body.style.overflow = "hidden";
+    // Remove previous overflow settings
+    document.documentElement.style.overflow = "";
+    document.body.style.overflow = "";
 
     const storedNIP = localStorage.getItem("NIP");
     if (storedNIP) {
@@ -55,7 +57,13 @@ const PerolehanFarming = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ NIP, koin, ket, nama_game: namaGame }), // Mengirim nama_game
+        body: JSON.stringify({ 
+          NIP, 
+          koin, 
+          koin_take: koinTake, // Add koin_take to the request
+          ket, 
+          nama_game: namaGame 
+        }),
       });
 
       const data = await response.json();
@@ -63,8 +71,9 @@ const PerolehanFarming = () => {
       if (response.ok) {
         toast.success(data.message);
         setKoin("");
-        setKet(""); // Reset keterangan
-        setNamaGame(""); // Reset nama game
+        setKoinTake(""); // Reset koin take
+        setKet(""); 
+        setNamaGame(""); 
       } else {
         toast.error(data.message || "Gagal menambahkan data farming.");
       }
@@ -77,18 +86,17 @@ const PerolehanFarming = () => {
 
   return (
     <main
-      className="d-flex w-100 vh-100 align-items-center justify-content-center"
-      style={{ overflow: "hidden" }}
+      className="w-100 min-vh-100 py-4"
     >
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="col-sm-10 col-md-8 col-lg-6 col-xl-5">
-            <div className="text-center mt-4">
+      <div className="container" style={{ maxWidth: "100%" }}>
+        <div className="row justify-content-center mx-0">
+          <div className="col-sm-12 col-md-8 col-lg-6 col-xl-5 px-3">
+            <div className="text-center mt-2 mb-3">
               <h1 className="h2">Perolehan Farming</h1>
               <p>Silahkan Isi Data Dibawah</p>
             </div>
 
-            <div className="card shadow-lg">
+            <div className="card shadow-lg mb-4">
               <div className="card-body">
                 <form onSubmit={handleSubmit}>
                   <div className="mb-3">
@@ -96,7 +104,7 @@ const PerolehanFarming = () => {
                     <input className="form-control" type="text" value={NIP} readOnly />
                   </div>
                   <div className="mb-3">
-                    <label className="form-label">Koin</label>
+                    <label className="form-label">Koin di Tas</label>
                     <input
                       className="form-control"
                       placeholder="Contoh mengisi = 3000, bukan 3K ! "
@@ -107,12 +115,11 @@ const PerolehanFarming = () => {
                     />
                   </div>
                   <div className="mb-3">
-                    <label className="form-label">Keterangan</label>
+                    <label className="form-label">Keterangan </label>
                     <textarea
                       className="form-control"
                       value={ket}
                       onChange={(e) => setKet(e.target.value)}
-                      // Menghapus atribut required
                     />
                   </div>
                   <div className="mb-3">
@@ -141,6 +148,15 @@ const PerolehanFarming = () => {
                     </button>
                   </div>
                 </form>
+              </div>
+            </div>
+
+            <div className="card mb-4">
+              <div className="card-body text-center">
+                <h5 className="card-title">TERDAPAT PERUBAHAN SISTEM. MOHON DIBACA!</h5>
+                <p className="card-text">1. Pengisian koin diisi sesuai dengan koin yang ada ditas. Bukan perolehan dan bukan total koin!</p>
+                <p className="card-text">2. Pengisian koin wajib diisi SETIAP HARI ketika mau pulang.</p>
+                <p className="card-text">3. Kolom keterangan diisi koin yang ditake jika ada.</p>
               </div>
             </div>
           </div>
