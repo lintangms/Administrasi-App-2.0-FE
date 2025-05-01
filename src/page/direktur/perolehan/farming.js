@@ -262,7 +262,7 @@ const Farming = () => {
                         <td>{farming.username_steam || '-'}</td>
                         <td>{farming.saldo || 0}</td>
                         <td>{farming.total_saldo || 0}</td>
-                        <td>{formatDateTime(farming.tanggal)}</td>
+                        <td>{(farming.tanggal)}</td>
                         <td>{farming.nama_shift || '-'}</td>
                         <td>{farming.nama_game || '-'}</td>
                         <td>
