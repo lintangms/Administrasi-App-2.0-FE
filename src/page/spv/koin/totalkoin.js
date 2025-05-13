@@ -174,6 +174,7 @@ const TotalKoin = () => {
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Total Koin</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Saldo Koin</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Total Dijual</th>
+                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Estimasi Gaji</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Aksi</th>
                   </tr>
                 </thead>
@@ -190,6 +191,7 @@ const TotalKoin = () => {
                           <td>{koin.total_koin}</td>
                           <td>{koin.saldo_koin}</td>
                           <td>{koin.total_dijual}</td>
+                          <td>Rp.{koin.estimasi_gaji.toLocaleString('id-ID')}</td>
                           <td>
                             <button
                               className="btn btn-primary btn-sm"
