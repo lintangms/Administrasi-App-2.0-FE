@@ -24,7 +24,7 @@ const TotalKoin = () => {
   const fetchTotalKoin = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/farming/getall`, {
+      const response = await axios.get(`${BACKEND_URL}/api/gaji/estimasigaji`, {
         headers: { Authorization: `Bearer ${token}` },
         params: {
           bulan: filter.bulan,
@@ -172,8 +172,6 @@ const TotalKoin = () => {
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama Game</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Total Koin</th>
-                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Saldo Koin</th>
-                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Total Dijual</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Estimasi Gaji</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Aksi</th>
                   </tr>
@@ -189,8 +187,6 @@ const TotalKoin = () => {
                           <td>{koin.nama}</td>
                           <td>{koin.nama_game}</td>
                           <td>{koin.total_koin}</td>
-                          <td>{koin.saldo_koin}</td>
-                          <td>{koin.total_dijual}</td>
                           <td>Rp.{koin.estimasi_gaji.toLocaleString('id-ID')}</td>
                           <td>
                             <button
@@ -205,7 +201,7 @@ const TotalKoin = () => {
                     })
                   ) : (
                     <tr>
-                      <td colSpan="8">Tidak ada data total koin tersedia</td>
+                      <td colSpan="6">Tidak ada data total koin tersedia</td>
                     </tr>
                   )}
                 </tbody>
@@ -269,7 +265,7 @@ const TotalKoin = () => {
         }
 
         .border-radius-lg {
-          border-radius: 0.5rem;
+          border-radius:  0.5rem;
         }
 
         .filter-form { 
