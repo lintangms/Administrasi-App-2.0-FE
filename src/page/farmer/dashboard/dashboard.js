@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { FaCalendarAlt, FaChartLine } from 'react-icons/fa';
+import { FaCalendarAlt, FaChartLine, FaMoneyBillWave, FaGamepad, FaUser } from 'react-icons/fa';
 
 const DashboardFarming = () => {
     const [coinData, setCoinData] = useState([]);
@@ -13,6 +13,9 @@ const DashboardFarming = () => {
     const [games, setGames] = useState([]);
     const [shifts, setShifts] = useState([]);
     const [isDropdownOpen, setIsDropdownOpen] = useState({ month: false, year: false, game: false, shift: false });
+    const [salaryEstimation, setSalaryEstimation] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const years = Array.from({ length: 2027 - new Date().getFullYear() + 1 }, (_, i) => new Date().getFullYear() + i);
     const months = [
@@ -81,11 +84,58 @@ const DashboardFarming = () => {
         }
     };
 
+    const fetchSalaryEstimation = async () => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            // Get NIP from localStorage
+            const NIP = localStorage.getItem('NIP');
+            
+            if (!NIP) {
+                setError("NIP not found in localStorage. Please login again.");
+                setIsLoading(false);
+                return;
+            }
+            
+            const formattedMonth = String(selectedMonth).padStart(2, '0');
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/gaji/estimasi/${NIP}`, {
+                params: { 
+                    bulan: formattedMonth, 
+                    tahun: selectedYear,
+                    nama_game: selectedGame 
+                }
+            });
+
+            if (response.data && response.data.data) {
+                setSalaryEstimation(response.data.data);
+            } else {
+                setSalaryEstimation(null);
+                setError("No salary estimation data available");
+            }
+        } catch (error) {
+            console.error("Error fetching salary estimation:", error);
+            setSalaryEstimation(null);
+            setError(error.response?.data?.message || 'Failed to fetch salary estimation');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     useEffect(() => {
         fetchGames();
         fetchShifts();
         fetchCoinData();
+        fetchSalaryEstimation();
     }, [selectedMonth, selectedYear, selectedGame, selectedShift]);
+
+    // Format currency function
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0
+        }).format(amount);
+    };
 
     const styles = {
         container: {
@@ -194,6 +244,83 @@ const DashboardFarming = () => {
             padding: '20px',
             color: '#7f8c8d',
             fontStyle: 'italic',
+        },
+        // Salary card styles
+        salaryCardContainer: {
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+            marginBottom: '20px',
+            overflow: 'hidden',
+        },
+        salaryCardHeader: {
+            backgroundColor: '#3498db',
+            color: 'white',
+            padding: '15px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+        },
+        salaryCardTitle: {
+            margin: 0,
+            fontSize: '1.2rem',
+            fontWeight: 'bold',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+        },
+        salaryCardBody: {
+            padding: '20px',
+        },
+        salaryCardRow: {
+            display: 'flex',
+            justifyContent: 'space-between',
+            borderBottom: '1px solid #ecf0f1',
+            padding: '12px 0',
+        },
+        salaryCardLabel: {
+            color: '#7f8c8d',
+            fontSize: '0.9rem',
+        },
+        salaryCardValue: {
+            fontWeight: 'bold',
+            color: '#2c3e50',
+        },
+        salaryCardTotal: {
+            display: 'flex',
+            justifyContent: 'space-between',
+            padding: '15px 0',
+            marginTop: '10px',
+            borderTop: '2px solid #ecf0f1',
+        },
+        salaryCardTotalLabel: {
+            fontWeight: 'bold',
+            fontSize: '1.1rem',
+            color: '#2c3e50',
+        },
+        salaryCardTotalValue: {
+            fontWeight: 'bold',
+            fontSize: '1.2rem',
+            color: '#27ae60',
+        },
+        salaryCardGame: {
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            backgroundColor: '#e7f4fd',
+            padding: '8px 12px',
+            borderRadius: '4px',
+            marginBottom: '15px',
+        },
+        errorMessage: {
+            color: '#e74c3c',
+            textAlign: 'center',
+            padding: '20px',
+        },
+        loadingContainer: {
+            textAlign: 'center',
+            padding: '20px',
+            color: '#7f8c8d',
         }
     };
 
@@ -216,10 +343,112 @@ const DashboardFarming = () => {
         return null;
     };
 
+    // Render salary estimation card
+    const renderSalaryEstimationCard = () => {
+        if (isLoading) {
+            return (
+                <div style={styles.salaryCardContainer}>
+                    <div style={styles.salaryCardHeader}>
+                        <h3 style={styles.salaryCardTitle}>
+                            <FaMoneyBillWave /> Estimasi Gaji
+                        </h3>
+                    </div>
+                    <div style={styles.loadingContainer}>
+                        <p>Loading salary estimation data...</p>
+                    </div>
+                </div>
+            );
+        }
+
+        if (error) {
+            return (
+                <div style={styles.salaryCardContainer}>
+                    <div style={styles.salaryCardHeader}>
+                        <h3 style={styles.salaryCardTitle}>
+                            <FaMoneyBillWave /> Estimasi Gaji
+                        </h3>
+                    </div>
+                    <div style={styles.errorMessage}>
+                        <p>{error}</p>
+                    </div>
+                </div>
+            );
+        }
+
+        if (!salaryEstimation || salaryEstimation.length === 0) {
+            return (
+                <div style={styles.salaryCardContainer}>
+                    <div style={styles.salaryCardHeader}>
+                        <h3 style={styles.salaryCardTitle}>
+                            <FaMoneyBillWave /> Estimasi Gaji
+                        </h3>
+                    </div>
+                    <div style={styles.noDataMessage}>
+                        <p>Data estimasi gaji tidak tersedia untuk periode ini.</p>
+                    </div>
+                </div>
+            );
+        }
+
+        // Calculate total estimated salary from all games
+        const totalEstimatedSalary = salaryEstimation.reduce((total, item) => total + item.estimasi_gaji, 0);
+
+        return (
+            <div style={styles.salaryCardContainer}>
+                <div style={styles.salaryCardHeader}>
+                    <h3 style={styles.salaryCardTitle}>
+                        <FaMoneyBillWave /> Estimasi Gaji
+                    </h3>
+                    <div style={{ fontSize: '0.9rem' }}>
+                        {months[selectedMonth - 1]} {selectedYear}
+                    </div>
+                </div>
+                <div style={styles.salaryCardBody}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
+                        <FaUser style={{ color: '#3498db' }} />
+                        <div>
+                            <div style={{ fontWeight: 'bold' }}>{salaryEstimation[0]?.nama || 'User'}</div>
+                            <div style={{ fontSize: '0.9rem', color: '#7f8c8d' }}>NIP: {salaryEstimation[0]?.NIP || '-'}</div>
+                        </div>
+                    </div>
+
+                    {salaryEstimation.map((item, index) => (
+                        <div key={index} style={{ marginBottom: '20px' }}>
+                            <div style={styles.salaryCardGame}>
+                                <FaGamepad style={{ color: '#3498db' }} />
+                                <span style={{ fontWeight: 'bold' }}>{item.nama_game}</span>
+                            </div>
+
+                            <div style={styles.salaryCardRow}>
+                                <div style={styles.salaryCardLabel}>Total Koin</div>
+                                <div style={styles.salaryCardValue}>{item.total_koin.toLocaleString()}</div>
+                            </div>
+
+                            <div style={styles.salaryCardRow}>
+                                <div style={styles.salaryCardLabel}>Rata-rata Rate</div>
+                                <div style={styles.salaryCardValue}>{item.rata_rata_rate}</div>
+                            </div>
+
+                            <div style={styles.salaryCardRow}>
+                                <div style={styles.salaryCardLabel}>Rate Dikurangi</div>
+                                <div style={styles.salaryCardValue}>{item.rate_dikurangi}</div>
+                            </div>
+                        </div>
+                    ))}
+
+                    <div style={styles.salaryCardTotal}>
+                        <div style={styles.salaryCardTotalLabel}>Total Estimasi Gaji</div>
+                        <div style={styles.salaryCardTotalValue}>{formatCurrency(totalEstimatedSalary)}</div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     return (
         <div style={styles.container}>
             <div style={styles.header}>
-                <h2 style={styles.title}>Data Perolehan Koin</h2>
+                <h2 style={styles.title}>Filter Data</h2>
                 <div style={styles.filterContainer}>
                     <div style={styles.dropdown}>
                         <button 
@@ -362,6 +591,9 @@ const DashboardFarming = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Salary Estimation Card */}
+            {renderSalaryEstimationCard()}
 
             {coinDataAvailable ? (
                 <div style={styles.chartCard}>
