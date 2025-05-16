@@ -24,7 +24,7 @@ const TotalKoin = () => {
   const fetchTotalKoin = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/gaji/estimasigaji`, {
+      const response = await axios.get(`${BACKEND_URL}/api/farming/getall`, {
         headers: { Authorization: `Bearer ${token}` },
         params: {
           bulan: filter.bulan,
@@ -102,7 +102,7 @@ const TotalKoin = () => {
       <div className="card my-4">
         <div className="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
           <div className="bg-gradient-dark shadow-dark border-radius-lg pt-4 pb-3 d-flex justify-content-between align-items-center">
-            <h6 className="text-white text-capitalize ps-3">Total Koin</h6>
+            <h6 className="text-white text-capitalize ps-3">Jual Koin</h6>
           </div>
         </div>
         <div className="card-body px-0 pb-2">
@@ -172,6 +172,8 @@ const TotalKoin = () => {
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama Game</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Total Koin</th>
+                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Saldo Koin</th>
+                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Total Dijual</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Estimasi Gaji</th>
                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Aksi</th>
                   </tr>
@@ -181,13 +183,15 @@ const TotalKoin = () => {
                   {totalKoinList && totalKoinList.length > 0 ? (
                     totalKoinList.map((koin, index) => {
                       return (
-                        <tr key={koin.NIP || koin.id_koin}>
+                        <tr key={koin.NIP || koin.id_koin || koin.id_wow}>
                           <td>{index + 1}</td>
                           <td>{koin.nama_game === 'WOW' ? 'WOW' : koin.NIP}</td>
                           <td>{koin.nama}</td>
                           <td>{koin.nama_game}</td>
-                          <td>{koin.total_koin}</td>
-                          <td>Rp.{koin.estimasi_gaji.toLocaleString('id-ID')}</td>
+                          <td>{koin.total_koin?.toLocaleString('id-ID')}</td>
+                          <td>{koin.saldo_koin?.toLocaleString('id-ID')}</td>
+                          <td>{koin.total_dijual?.toLocaleString('id-ID')}</td>
+                          <td>Rp {koin.estimasi_gaji?.toLocaleString('id-ID')}</td>
                           <td>
                             <button
                               className="btn btn-primary btn-sm"
@@ -201,7 +205,7 @@ const TotalKoin = () => {
                     })
                   ) : (
                     <tr>
-                      <td colSpan="6">Tidak ada data total koin tersedia</td>
+                      <td colSpan="10" className="text-center">Tidak ada data total koin tersedia</td>
                     </tr>
                   )}
                 </tbody>
@@ -254,6 +258,10 @@ const TotalKoin = () => {
 
         .text-xxs {
           font-size: 0.75rem;
+        }
+
+        .text-center {
+          text-align: center;
         }
 
         .font-weight-bolder {
