@@ -6,7 +6,8 @@ import ModalUpdateGajiBaru from './modalupdategajibaru'; // Modal untuk karyawan
 import ModalAddGajiBaru from './modaladdgaji'; // Modal untuk menambah gaji baru
 import ModalAddRate from './modaladdrate'; // Modal untuk menambah rate baru
 import ModalAddGajiLama from './modaladdgajilama'; // Modal untuk menambah gaji lama
-import { FaDollarSign, FaMoneyBillWave, FaChartLine, FaUser , FaCoins } from 'react-icons/fa';
+import generateSlipGajiPDF from './slipgaji'; // Import PDF generator
+import { FaDollarSign, FaMoneyBillWave, FaChartLine, FaUser, FaCoins, FaDownload } from 'react-icons/fa';
 
 const DataGaji = () => {
     const [totalGajiList, setTotalGajiList] = useState([]);
@@ -159,6 +160,23 @@ const DataGaji = () => {
         }
     };
 
+    // Function to handle PDF download
+    const handleDownloadPDF = (gaji) => {
+        try {
+            // Prepare data with additional calculated fields if needed
+            const gajiDataForPDF = {
+                ...gaji,
+                rate_per_koin: gaji.gaji_kotor / (gaji.total_dijual || 1), // Calculate rate if not available
+            };
+            
+            generateSlipGajiPDF(gajiDataForPDF);
+            toast.success('Slip gaji berhasil diunduh!');
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+            toast.error('Gagal mengunduh slip gaji. Silakan coba lagi.');
+        }
+    };
+
     return (
         <div className="total-gaji-container">
             {error && <p className="error-message">{error}</p>}
@@ -217,7 +235,7 @@ const DataGaji = () => {
                         className={`btn btn-sm ${activeView === 'lama' ? 'btn-primary' : 'btn-outline-primary'}`}
                         onClick={() => handleViewChange('lama')}
                     >
-                        <FaUser  className="me-1" style={{ fontSize: '0.8rem' }} />
+                        <FaUser className="me-1" style={{ fontSize: '0.8rem' }} />
                         Karyawan Status Lama
                     </button>
                     <button
@@ -225,7 +243,7 @@ const DataGaji = () => {
                         className={`btn btn-sm ${activeView === 'baru' ? 'btn-primary' : 'btn-outline-primary'}`}
                         onClick={() => handleViewChange('baru')}
                     >
-                        <FaUser  className="me-1" style={{ fontSize: '0.8rem' }} />
+                        <FaUser className="me-1" style={{ fontSize: '0.8rem' }} />
                         Karyawan Status Baru
                     </button>
                 </div>
@@ -356,37 +374,49 @@ const DataGaji = () => {
                                                 <td>{new Date(gaji.tgl_transaksi).toLocaleDateString('id-ID')}</td>
                                                 <td>{gaji.ket}</td>
                                                 <td>
-                                                    {activeView === 'lama' ? (
-                                                        <>
-                                                            <button
-                                                                className="btn btn-primary btn-sm"
-                                                                onClick={() => handleOpenModal(gaji)}
-                                                            >
-                                                                Edit Gaji
-                                                            </button>
-                                                            <button
-                                                                className="btn btn-success btn-sm ms-2"
-                                                                onClick={() => handleUpdateUnsoldGaji(gaji.NIP)}
-                                                            >
-                                                                Update Unsold Gaji
-                                                            </button>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <button
-                                                                className="btn btn-primary btn-sm"
-                                                                onClick={() => handleOpenModalBaru(gaji)}
-                                                            >
-                                                                Edit Gaji
-                                                            </button>
-                                                        </>
-                                                    )}
+                                                    <div className="d-flex gap-1">
+                                                        {/* Download PDF Button */}
+                                                        <button
+                                                            className="btn btn-info btn-sm"
+                                                            onClick={() => handleDownloadPDF(gaji)}
+                                                            title="Download Slip Gaji"
+                                                        >
+                                                            <FaDownload style={{ fontSize: '0.8rem' }} />
+                                                        </button>
+                                                        
+                                                        {activeView === 'lama' ? (
+                                                            <>
+                                                                <button
+                                                                    className="btn btn-primary btn-sm"
+                                                                    onClick={() => handleOpenModal(gaji)}
+                                                                >
+                                                                    Edit
+                                                                </button>
+                                                                <button
+                                                                    className="btn btn-success btn-sm"
+                                                                    onClick={() => handleUpdateUnsoldGaji(gaji.NIP)}
+                                                                    title="Update Unsold Gaji"
+                                                                >
+                                                                    Update
+                                                                </button>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <button
+                                                                    className="btn btn-primary btn-sm"
+                                                                    onClick={() => handleOpenModalBaru(gaji)}
+                                                                >
+                                                                    Edit
+                                                                </button>
+                                                            </>
+                                                        )}
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="10">Tidak ada data gaji tersedia</td>
+                                            <td colSpan="12">Tidak ada data gaji tersedia</td>
                                         </tr>
                                     )}
                                 </tbody>
@@ -525,6 +555,26 @@ const DataGaji = () => {
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
+                }
+
+                .d-flex {
+                    display: flex;
+                }
+
+                .gap-1 {
+                    gap: 0.25rem;
+                }
+
+                .btn-info {
+                    background-color: #17a2b8;
+                    border-color: #17a2b8;
+                    color: white;
+                }
+
+                .btn-info:hover {
+                    background-color: #138496;
+                    border-color: #117a8b;
+                    color: white;
                 }
             `}</style>
         </div>
