@@ -104,43 +104,43 @@ const generateSlipGajiPDF = (gajiData) => {
 
   // Call drawLogo with desired position and size
   drawLogo(10, 10, 30, 30); 
-// Page setup
-const pageWidth = doc.internal.pageSize.getWidth();
-const pageHeight = doc.internal.pageSize.getHeight();
-const margin = 15;
 
-// Get data values
-const soldKoin = safeNumber(gajiData.total_dijual);
-const unsoldKoin = safeNumber(gajiData.total_unsold_koin);
-const potonganPercent = safeNumber(gajiData.potongan);
-const kasbon = safeNumber(gajiData.kasbon);
-const rateTNL = safeNumber(gajiData.rata_rata_rate || gajiData.rate_tnl || 100);
-const thp = safeNumber(gajiData.THP);
+  // Page setup
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 15;
 
-// Calculate Gaji Kotor
-const gajiKotorSold = soldKoin * rateTNL;
-const gajiKotorUnsold = unsoldKoin * rateTNL;
-const totalGajiKotor = gajiKotorSold + gajiKotorUnsold;
+  // Get data values
+  const soldKoin = safeNumber(gajiData.total_dijual);
+  const unsoldKoin = safeNumber(gajiData.total_unsold_koin);
+  const potonganPercent = safeNumber(gajiData.potongan);
+  const kasbon = safeNumber(gajiData.kasbon);
+  const rateTNL = safeNumber(gajiData.rata_rata_rate || gajiData.rate_tnl || 100);
+  const thp = safeNumber(gajiData.THP);
 
-const potonganAmount = totalGajiKotor * (potonganPercent / 100);
-const gajiSetelahPotongan = potonganAmount; 
+  // Calculate Gaji Kotor
+  const gajiKotorSold = soldKoin * rateTNL;
+  const gajiKotorUnsold = unsoldKoin * rateTNL;
+  const totalGajiKotor = gajiKotorSold + gajiKotorUnsold;
 
-// Final THP (after kasbon)
-const finalTHP = gajiSetelahPotongan - kasbon;
+  const potonganAmount = totalGajiKotor * (potonganPercent / 100);
+  const gajiSetelahPotongan = totalGajiKotor - potonganAmount; 
 
+  // Final THP (after kasbon)
+  const finalTHP = gajiSetelahPotongan - kasbon;
 
-// Colors
-const primaryColor = [41, 128, 185]; // Warna biru kop
+  // Colors
+  const primaryColor = [41, 128, 185]; // Warna biru kop
 
-// Set default text color
-doc.setTextColor(0, 0, 0);
+  // Set default text color
+  doc.setTextColor(0, 0, 0);
 
-// Header Background
-doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-doc.rect(0, 0, pageWidth, 40, 'F');
+  // Header Background
+  doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+  doc.rect(0, 0, pageWidth, 40, 'F');
 
-// Company Logo
-drawLogo(margin, 8, 24, 24); // Gambar logo
+  // Company Logo
+  drawLogo(margin, 8, 24, 24); // Gambar logo
 
   // Company Header
   doc.setTextColor(255, 255, 255);
@@ -172,22 +172,22 @@ drawLogo(margin, 8, 24, 24); // Gambar logo
   doc.setFont('helvetica', 'normal');
   doc.text(`Periode: ${period}`, pageWidth / 2, 72, { align: 'center' });
 
-  // Employee Information Section
-  let yPos = 85;
+  // Employee Information Section - FIXED POSITIONING
+  let yPos = 82;
   doc.setFillColor(248, 249, 250);
-  doc.roundedRect(margin, yPos, pageWidth - (margin * 2), 28, 2, 2, 'F');
+  doc.roundedRect(margin, yPos, pageWidth - (margin * 2), 25, 2, 2, 'F');
   
   // Border
   doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
   doc.setLineWidth(0.5);
-  doc.roundedRect(margin, yPos, pageWidth - (margin * 2), 28, 2, 2, 'S');
+  doc.roundedRect(margin, yPos, pageWidth - (margin * 2), 25, 2, 2, 'S');
 
   doc.setFontSize(11);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
   doc.text('INFORMASI KARYAWAN', margin + 5, yPos + 7);
 
-  yPos += 13;
+  yPos += 12;
   doc.setFontSize(9);
   doc.setTextColor(0, 0, 0);
   
@@ -224,8 +224,8 @@ drawLogo(margin, 8, 24, 24); // Gambar logo
   doc.setFont('helvetica', 'normal');
   doc.text('Karyawan Lama', rightCol + 26, yPos);
 
-  // Detail Penjualan Section
-  yPos += 20;
+  // Detail Penjualan Section - FIXED POSITIONING
+  yPos += 18;
   doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
   doc.rect(margin, yPos, pageWidth - (margin * 2), 10, 'F');
   
@@ -237,12 +237,12 @@ drawLogo(margin, 8, 24, 24); // Gambar logo
   yPos += 16;
   doc.setTextColor(0, 0, 0);
   doc.setFillColor(252, 252, 252);
-  doc.rect(margin, yPos, pageWidth - (margin * 2), 50, 'F');
+  doc.rect(margin, yPos, pageWidth - (margin * 2), 45, 'F');
   
   // Border
   doc.setDrawColor(189, 195, 199);
   doc.setLineWidth(0.3);
-  doc.rect(margin, yPos, pageWidth - (margin * 2), 50, 'S');
+  doc.rect(margin, yPos, pageWidth - (margin * 2), 45, 'S');
 
   yPos += 8;
   doc.setFontSize(9);
@@ -296,7 +296,7 @@ drawLogo(margin, 8, 24, 24); // Gambar logo
   doc.setFont('helvetica', 'normal');
   doc.text(`${formatNumber(soldKoin + unsoldKoin)} koin`, detailLeftCol + 38, yPos);
 
-  // Perhitungan Section
+  // Perhitungan Section - FIXED POSITIONING AND HEIGHT
   yPos += 18;
   doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
   doc.rect(margin, yPos, pageWidth - (margin * 2), 10, 'F');
@@ -311,7 +311,8 @@ drawLogo(margin, 8, 24, 24); // Gambar logo
   doc.setFillColor(255, 255, 255);
   doc.setLineWidth(0.5);
   doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-  doc.rect(margin, yPos, pageWidth - (margin * 2), 65, 'FD');
+  // FIXED HEIGHT TO PREVENT OVERFLOW
+  doc.rect(margin, yPos, pageWidth - (margin * 2), 70, 'FD');
 
   yPos += 8;
   doc.setFontSize(9);
@@ -342,7 +343,7 @@ drawLogo(margin, 8, 24, 24); // Gambar logo
   yPos += 6;
   doc.setFont('helvetica', 'normal');
   doc.text(`   ${formatCurrency(totalGajiKotor)} × ${potonganPercent}% = ${formatCurrency(potonganAmount)}`, margin + 8, yPos);
-  yPos += 6;
+  yPos += 5;
   doc.text(`   ${formatCurrency(totalGajiKotor)} - ${formatCurrency(potonganAmount)} = ${formatCurrency(gajiSetelahPotongan)}`, margin + 8, yPos);
 
   // Step 3: Final THP
@@ -353,8 +354,8 @@ drawLogo(margin, 8, 24, 24); // Gambar logo
   doc.setFont('helvetica', 'normal');
   doc.text(`   ${formatCurrency(gajiSetelahPotongan)} - ${formatCurrency(kasbon)} (Kasbon) = ${formatCurrency(finalTHP)}`, margin + 8, yPos);
 
-  // Final THP Highlight
-  yPos += 18;
+  // Final THP Highlight - FIXED POSITIONING
+  yPos += 20;
   doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
   doc.rect(margin, yPos - 4, pageWidth - (margin * 2), 16, 'F');
   
@@ -363,7 +364,7 @@ drawLogo(margin, 8, 24, 24); // Gambar logo
   doc.setFont('helvetica', 'bold');
   doc.text(`GAJI BERSIH (THP): ${formatCurrency(thp)}`, pageWidth / 2, yPos + 5, { align: 'center' });
 
-  // Terbilang
+  // Terbilang - FIXED POSITIONING
   yPos += 22;
   doc.setTextColor(0, 0, 0);
   const terbilangText = numberToWords(thp).trim() + ' rupiah';
@@ -374,22 +375,22 @@ drawLogo(margin, 8, 24, 24); // Gambar logo
   doc.setFont('helvetica', 'italic');
   doc.text(`Terbilang: "${terbilangText}"`, pageWidth / 2, yPos + 2, { align: 'center' });
 
-  // Additional Information
+  // Additional Information - FIXED POSITIONING
   yPos += 18;
   doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-  doc.rect(margin, yPos, pageWidth - (margin * 2), 16, 'F');
+  doc.rect(margin, yPos, pageWidth - (margin * 2), 18, 'F');
   
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(8);
   doc.setFont('helvetica', 'bold');
-  doc.text('INFORMASI TAMBAHAN:', margin + 5, yPos + 5);
+  doc.text('INFORMASI TAMBAHAN:', margin + 5, yPos + 6);
   
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'normal');
   doc.text(`Tanggal Transaksi: ${formatDate(gajiData.tgl_transaksi)}`, margin + 5, yPos + 11);
   doc.text(`Keterangan: ${safeText(gajiData.ket)}`, margin + 5, yPos + 15);
 
-  // Signature section
+  // Signature section - ADJUSTED POSITIONING
   yPos += 30;
   doc.setFontSize(9);
   doc.setFont('helvetica', 'normal');
@@ -442,11 +443,9 @@ drawLogo(margin, 8, 24, 24); // Gambar logo
   doc.setFontSize(8);
   doc.text('Syamsul Arifin', rightSignX + signBoxWidth/2, yPos + signBoxHeight + 11, { align: 'center' });
 
-  // Footer
+  // Footer - POSITIONED AT BOTTOM
   const footerY = pageHeight - 12;
   doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-  // doc.setLineWidth(0.5);
-  // doc.line(margin, footerY, pageWidth - margin, footerY);
   
   doc.setFontSize(7);
   doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
@@ -467,4 +466,3 @@ drawLogo(margin, 8, 24, 24); // Gambar logo
 };
 
 export default generateSlipGajiPDF;
-
