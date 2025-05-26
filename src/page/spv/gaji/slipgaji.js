@@ -110,21 +110,20 @@ const generateSlipGajiPDF = (gajiData) => {
   const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 15;
 
-  // Get data values
-  const soldKoin = safeNumber(gajiData.total_dijual);
+  // Get data values - Updated calculation logic
+  const soldKoin = safeNumber(gajiData.total_dijual || gajiData.total_sold_koin);
   const unsoldKoin = safeNumber(gajiData.total_unsold_koin);
+  const totalKoin = soldKoin + unsoldKoin; // Total koin untuk perhitungan gaji
   const potonganPercent = safeNumber(gajiData.potongan);
   const kasbon = safeNumber(gajiData.kasbon);
   const rateTNL = safeNumber(gajiData.rata_rata_rate || gajiData.rate_tnl || 100);
   const thp = safeNumber(gajiData.THP);
 
-  // Calculate Gaji Kotor
-  const gajiKotorSold = soldKoin * rateTNL;
-  const gajiKotorUnsold = unsoldKoin * rateTNL;
-  const totalGajiKotor = gajiKotorSold + gajiKotorUnsold;
+  // Calculate Gaji Kotor - SESUAI BACKEND: menggunakan total_koin untuk perhitungan
+  const gajiKotor = totalKoin * rateTNL; // Ini sesuai dengan backend: total_koin * rata_rata_rate
 
-  const potonganAmount = totalGajiKotor * (potonganPercent / 100);
-  const gajiSetelahPotongan = totalGajiKotor - potonganAmount; 
+  const potonganAmount = gajiKotor * (potonganPercent / 100);
+  const gajiSetelahPotongan = gajiKotor - potonganAmount; 
 
   // Final THP (after kasbon)
   const finalTHP = gajiSetelahPotongan - kasbon;
@@ -137,30 +136,30 @@ const generateSlipGajiPDF = (gajiData) => {
 
   // Header Background
   doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-  doc.rect(0, 0, pageWidth, 40, 'F');
+  doc.rect(0, 0, pageWidth, 30, 'F'); // Dikecilkan
 
   // Company Logo
-  drawLogo(margin, 8, 24, 24); // Gambar logo
+  drawLogo(margin, 5, 24, 24); // Gambar logo dikecilkan
 
   // Company Header
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(16);
+  doc.setFontSize(14); // Dikecilkan
   doc.setFont('helvetica', 'bold');
-  doc.text('PT. HARVEST GAME', margin + 35, 18);
+  doc.text('PT. HARVEST GAME', margin + 35, 15); // Dikecilkan
 
   doc.setFontSize(8);
   doc.setFont('helvetica', 'normal');
-  doc.text('XJVX+9X, Buring, Kec. Kedungkandang, Kota Malang, Jawa Timur', margin + 35, 24);
-  doc.text('Telp: (0341) 123-4567 | Email: info@harvestgame.com', margin + 35, 28);
+  doc.text('XJVX+9X, Buring, Kec. Kedungkandang, Kota Malang, Jawa Timur', margin + 35, 22);
+  doc.text('Telp: (0341) 123-4567 | Email: info@harvestgame.com', margin + 35, 26);
 
   // Title Section
   doc.setTextColor(0, 0, 0);
   doc.setFillColor(236, 240, 241);
-  doc.rect(margin, 50, pageWidth - (margin * 2), 16, 'F');
+  doc.rect(margin, 40, pageWidth - (margin * 2), 16, 'F');
   
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
-  doc.text('SLIP GAJI KARYAWAN', pageWidth / 2, 60, { align: 'center' });
+  doc.text('SLIP GAJI KARYAWAN', pageWidth / 2, 50, { align: 'center' });
 
   // Period
   const currentDate = new Date();
@@ -170,10 +169,10 @@ const generateSlipGajiPDF = (gajiData) => {
   
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
-  doc.text(`Periode: ${period}`, pageWidth / 2, 72, { align: 'center' });
+  doc.text(`Periode: ${period}`, pageWidth / 2, 62, { align: 'center' });
 
   // Employee Information Section - FIXED POSITIONING
-  let yPos = 82;
+  let yPos = 72; // Dikecilkan
   doc.setFillColor(248, 249, 250);
   doc.roundedRect(margin, yPos, pageWidth - (margin * 2), 25, 2, 2, 'F');
   
@@ -239,8 +238,8 @@ const generateSlipGajiPDF = (gajiData) => {
   doc.setFillColor(252, 252, 252);
   doc.rect(margin, yPos, pageWidth - (margin * 2), 45, 'F');
   
-  // Border
-  doc.setDrawColor(189, 195, 199);
+  // PERUBAHAN 1: Border DETAIL PENJUALAN & PERHITUNGAN GAJI diubah menjadi WARNA BIRU
+  doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]); // Warna biru sesuai primaryColor
   doc.setLineWidth(0.3);
   doc.rect(margin, yPos, pageWidth - (margin * 2), 45, 'S');
 
@@ -294,9 +293,9 @@ const generateSlipGajiPDF = (gajiData) => {
   doc.text('TOTAL KOIN', detailLeftCol, yPos);
   doc.text('=', detailLeftCol + 35, yPos);
   doc.setFont('helvetica', 'normal');
-  doc.text(`${formatNumber(soldKoin + unsoldKoin)} koin`, detailLeftCol + 38, yPos);
+  doc.text(`${formatNumber(totalKoin)} koin`, detailLeftCol + 38, yPos);
 
-  // Perhitungan Section - FIXED POSITIONING AND HEIGHT
+  // Perhitungan Section - UPDATED CALCULATION LOGIC
   yPos += 18;
   doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
   doc.rect(margin, yPos, pageWidth - (margin * 2), 10, 'F');
@@ -311,29 +310,43 @@ const generateSlipGajiPDF = (gajiData) => {
   doc.setFillColor(255, 255, 255);
   doc.setLineWidth(0.5);
   doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-  // FIXED HEIGHT TO PREVENT OVERFLOW
-  doc.rect(margin, yPos, pageWidth - (margin * 2), 70, 'FD');
+
+  // PERUBAHAN 2: Tinggi kotak perhitungan diperkecil karena garis bawah akan dipindah ke luar kotak
+  const calcBoxHeight = 78; // Dikurangi dari 95 karena THP akan dipindah keluar kotak
+  doc.rect(margin, yPos, pageWidth - (margin * 2), calcBoxHeight, 'FD');
 
   yPos += 8;
   doc.setFontSize(9);
   doc.setFont('helvetica', 'bold');
 
-  // Step 1: Gaji Kotor Calculation
+  // Step 1: Gaji Kotor Calculation - UPDATED SESUAI BACKEND
   doc.text('1. PERHITUNGAN GAJI KOTOR:', margin + 5, yPos);
   yPos += 6;
   doc.setFont('helvetica', 'normal');
-  doc.text(`   • Sold Koin: ${formatNumber(soldKoin)} × ${formatCurrency(rateTNL)} = ${formatCurrency(gajiKotorSold)}`, margin + 8, yPos);
+  doc.text(`   • Sold Koin: ${formatNumber(soldKoin)} koin`, margin + 8, yPos);
   
+  yPos += 5;
   if (unsoldKoin > 0) {
-    yPos += 5;
-    doc.text(`   • Unsold Koin: ${formatNumber(unsoldKoin)} × ${formatCurrency(rateTNL)} = ${formatCurrency(gajiKotorUnsold)}`, margin + 8, yPos);
+    doc.text(`   • Unsold Koin: ${formatNumber(unsoldKoin)} koin`, margin + 8, yPos);
+  } else {
+    doc.setTextColor(127, 140, 141);
+    doc.text(`   • Unsold Koin: 0 koin`, margin + 8, yPos);
+    doc.setTextColor(0, 0, 0);
   }
+  
+  yPos += 5;
+  doc.setFont('helvetica', 'bold');
+  doc.text(`   • Total Koin: ${formatNumber(totalKoin)} koin`, margin + 8, yPos);
+  
+  yPos += 6;
+  doc.setFont('helvetica', 'normal');
+  doc.text(`   • Perhitungan: ${formatNumber(totalKoin)} × ${formatCurrency(rateTNL)} = ${formatCurrency(gajiKotor)}`, margin + 8, yPos);
   
   yPos += 6;
   doc.setFont('helvetica', 'bold');
   doc.setFillColor(230, 230, 230);
   doc.rect(margin + 5, yPos - 3, pageWidth - (margin * 2) - 10, 7, 'F');
-  doc.text(`   TOTAL GAJI KOTOR = ${formatCurrency(totalGajiKotor)}`, margin + 8, yPos);
+  doc.text(`   TOTAL GAJI KOTOR = ${formatCurrency(gajiKotor)}`, margin + 8, yPos);
 
   // Step 2: After Potongan
   yPos += 12;
@@ -342,9 +355,9 @@ const generateSlipGajiPDF = (gajiData) => {
   doc.text('2. SETELAH POTONGAN:', margin + 5, yPos);
   yPos += 6;
   doc.setFont('helvetica', 'normal');
-  doc.text(`   ${formatCurrency(totalGajiKotor)} × ${potonganPercent}% = ${formatCurrency(potonganAmount)}`, margin + 8, yPos);
+  doc.text(`   ${formatCurrency(gajiKotor)} × ${potonganPercent}% = ${formatCurrency(potonganAmount)}`, margin + 8, yPos);
   yPos += 5;
-  doc.text(`   ${formatCurrency(totalGajiKotor)} - ${formatCurrency(potonganAmount)} = ${formatCurrency(gajiSetelahPotongan)}`, margin + 8, yPos);
+  doc.text(`   ${formatCurrency(gajiKotor)} - ${formatCurrency(potonganAmount)} = ${formatCurrency(gajiSetelahPotongan)}`, margin + 8, yPos);
 
   // Step 3: Final THP
   yPos += 10;
@@ -354,18 +367,18 @@ const generateSlipGajiPDF = (gajiData) => {
   doc.setFont('helvetica', 'normal');
   doc.text(`   ${formatCurrency(gajiSetelahPotongan)} - ${formatCurrency(kasbon)} (Kasbon) = ${formatCurrency(finalTHP)}`, margin + 8, yPos);
 
-  // Final THP Highlight - FIXED POSITIONING
-  yPos += 20;
+  // PERUBAHAN 3: Final THP Highlight - DIPINDAH KELUAR KOTAK PERHITUNGAN
+  yPos += 15; // Jarak dari akhir perhitungan
   doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-  doc.rect(margin, yPos - 4, pageWidth - (margin * 2), 16, 'F');
-  
+  doc.rect(margin + 3, yPos - 6, pageWidth - (margin * 2) - 6, 13, 'F');
+
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
-  doc.text(`GAJI BERSIH (THP): ${formatCurrency(thp)}`, pageWidth / 2, yPos + 5, { align: 'center' });
+  doc.text(`GAJI BERSIH (THP): ${formatCurrency(thp)}`, pageWidth / 2, yPos + 3, { align: 'center' });
 
   // Terbilang - FIXED POSITIONING
-  yPos += 22;
+  yPos += 25;
   doc.setTextColor(0, 0, 0);
   const terbilangText = numberToWords(thp).trim() + ' rupiah';
   doc.setFillColor(248, 249, 250);
@@ -391,7 +404,7 @@ const generateSlipGajiPDF = (gajiData) => {
   doc.text(`Keterangan: ${safeText(gajiData.ket)}`, margin + 5, yPos + 15);
 
   // Signature section - ADJUSTED POSITIONING
-  yPos += 30;
+  yPos += 28;
   doc.setFontSize(9);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(0, 0, 0);
