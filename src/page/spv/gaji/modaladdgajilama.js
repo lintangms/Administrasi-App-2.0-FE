@@ -9,9 +9,9 @@ const ModalAddGajiLama = ({ showModal, setShowModal, token, onAddSuccess }) => {
     const [game, setGame] = useState('WOW'); // Default game
     const [ket, setKet] = useState('');
     const [karyawan, setKaryawan] = useState([]); // State for Karyawan list
-    const [koinDetails, setKoinDetails] = useState([]); // State for Koin details
-    const [saldoKoin, setSaldoKoin] = useState(null); // State for saldo koin
-    const [selectedKoinDijual, setSelectedKoinDijual] = useState(''); // State for selected koin dijual
+    const [sold, setSold] = useState(''); // State for sold koin
+    const [unsold, setUnsold] = useState(''); // State for unsold koin
+    const [isLoadingSoldUnsold, setIsLoadingSoldUnsold] = useState(false); // Loading state
 
     useEffect(() => {
         const fetchKaryawan = async () => {
@@ -31,46 +31,63 @@ const ModalAddGajiLama = ({ showModal, setShowModal, token, onAddSuccess }) => {
         }
     }, [showModal, token]);
 
+    // Fetch sold dan unsold data ketika NIP dan game berubah
     useEffect(() => {
-        const fetchKoinDetails = async () => {
-            if (NIP) {
+        const fetchSoldUnsold = async () => {
+            if (NIP && game && bulan && tahun) {
+                setIsLoadingSoldUnsold(true);
                 try {
-                    const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/gaji/koindetail`, {
+                    const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/gaji/getsoldunsold`, {
                         headers: { Authorization: `Bearer ${token}` },
-                        params: { NIP, bulan, tahun }
+                        params: { NIP, game, bulan, tahun }
                     });
 
-                    if (game === "WOW") {
-                        setSaldoKoin(response.data.saldo_koin);
-                        setKoinDetails([]); // Clear koin details if game is WOW
-                    } else {
-                        setKoinDetails(response.data.rincian_koin);
-                        setSaldoKoin(null); // Clear saldo koin if game is not WOW
+                    if (response.data && response.data.data) {
+                        setSold(response.data.data.sold || 0);
+                        setUnsold(response.data.data.unsold || 0);
                     }
                 } catch (err) {
-                    console.error('Error fetching koin details:', err);
-                    toast.error(err.response?.data?.message || 'Gagal memuat data koin');
+                    console.error('Error fetching sold/unsold data:', err);
+                    toast.error(err.response?.data?.message || 'Gagal memuat data sold/unsold');
+                    setSold('');
+                    setUnsold('');
+                } finally {
+                    setIsLoadingSoldUnsold(false);
                 }
+            } else {
+                setSold('');
+                setUnsold('');
             }
         };
 
-        fetchKoinDetails();
-    }, [NIP, bulan, tahun, game, token]);
+        fetchSoldUnsold();
+    }, [NIP, game, bulan, tahun, token]);
 
     const handleAddGajiLama = async () => {
+        // Validasi input
+        if (!NIP || !bulan || !tahun || !game) {
+            toast.error('NIP, bulan, tahun, dan game harus diisi');
+            return;
+        }
+
+        if (sold === '' || unsold === '') {
+            toast.error('Data sold dan unsold harus tersedia');
+            return;
+        }
+
         const newGaji = {
             NIP,
-            bulan,
-            tahun,
+            bulan: parseInt(bulan),
+            tahun: parseInt(tahun),
             game,
             ket,
-            saldo_koin: saldoKoin, // Include saldo koin if applicable
-            koin_dijual: selectedKoinDijual // Include selected koin dijual if applicable
+            sold: parseFloat(sold),
+            unsold: parseFloat(unsold)
         };
 
         try {
             const response = await axios.post(
-                `${process.env.REACT_APP_BACKEND_URL}/api/gaji/addgaji`, // Ganti dengan endpoint yang sesuai
+                `${process.env.REACT_APP_BACKEND_URL}/api/gaji/addgaji`,
                 newGaji,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -78,12 +95,32 @@ const ModalAddGajiLama = ({ showModal, setShowModal, token, onAddSuccess }) => {
             if (response.status === 201) {
                 onAddSuccess(response.data.data); // Callback untuk memperbarui data gaji
                 setShowModal(false);
+                // Reset form
+                setNIP('');
+                setBulan(new Date().getMonth() + 1);
+                setTahun(new Date().getFullYear());
+                setGame('WOW');
+                setKet('');
+                setSold('');
+                setUnsold('');
                 toast.success('Gaji lama berhasil ditambahkan!');
             }
         } catch (err) {
             console.error('Error saat menambahkan gaji lama:', err);
             toast.error(err.response?.data?.message || 'Gagal menambahkan gaji lama');
         }
+    };
+
+    const handleModalClose = () => {
+        setShowModal(false);
+        // Reset form ketika modal ditutup
+        setNIP('');
+        setBulan(new Date().getMonth() + 1);
+        setTahun(new Date().getFullYear());
+        setGame('WOW');
+        setKet('');
+        setSold('');
+        setUnsold('');
     };
 
     return (
@@ -97,7 +134,7 @@ const ModalAddGajiLama = ({ showModal, setShowModal, token, onAddSuccess }) => {
                                 <button
                                     type="button"
                                     className="close"
-                                    onClick={() => setShowModal(false)}
+                                    onClick={handleModalClose}
                                 >
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -175,6 +212,51 @@ const ModalAddGajiLama = ({ showModal, setShowModal, token, onAddSuccess }) => {
                                             <option value="BNS">BNS</option>
                                         </select>
                                     </div>
+                                    
+                                    {/* Tampilkan field Sold dan Unsold ketika NIP dan game sudah dipilih */}
+                                    {NIP && game && (
+                                        <>
+                                            <div className="form-group">
+                                                <label htmlFor="sold" className="col-form-label">
+                                                    Sold (Koin Terjual):
+                                                </label>
+                                                {isLoadingSoldUnsold ? (
+                                                    <div className="loading-indicator">Loading...</div>
+                                                ) : (
+                                                    <input
+                                                        type="number"
+                                                        className="form-control"
+                                                        id="sold"
+                                                        value={sold}
+                                                        onChange={(e) => setSold(e.target.value)}
+                                                        placeholder="Masukkan jumlah koin terjual"
+                                                        min="0"
+                                                        step="0.01"
+                                                    />
+                                                )}
+                                            </div>
+                                            <div className="form-group">
+                                                <label htmlFor="unsold" className="col-form-label">
+                                                    Unsold (Koin Tidak Terjual):
+                                                </label>
+                                                {isLoadingSoldUnsold ? (
+                                                    <div className="loading-indicator">Loading...</div>
+                                                ) : (
+                                                    <input
+                                                        type="number"
+                                                        className="form-control"
+                                                        id="unsold"
+                                                        value={unsold}
+                                                        onChange={(e) => setUnsold(e.target.value)}
+                                                        placeholder="Masukkan jumlah koin tidak terjual"
+                                                        min="0"
+                                                        step="0.01"
+                                                    />
+                                                )}
+                                            </div>
+                                        </>
+                                    )}
+
                                     <div className="form-group">
                                         <label htmlFor="ket" className="col-form-label">
                                             Keterangan:
@@ -185,43 +267,16 @@ const ModalAddGajiLama = ({ showModal, setShowModal, token, onAddSuccess }) => {
                                             value={ket}
                                             onChange={(e) => setKet(e.target.value)}
                                             placeholder="Masukkan keterangan"
+                                            rows="3"
                                         />
                                     </div>
-                                    {game !== "WOW" && koinDetails.length > 0 && (
-                                        <div className="form-group">
-                                            <label htmlFor="koinDijual" className="col-form-label">
-                                                Koin Dijual:
-                                            </label>
-                                            <select
-                                                className="form-control"
-                                                id="koinDijual"
-                                                value={selectedKoinDijual}
-                                                onChange={(e) => setSelectedKoinDijual(e.target.value)}
-                                            >
-                                                <option value="">Pilih Koin Dijual</option>
-                                                {koinDetails.map((detail, index) => (
-                                                    <option key={index} value={detail.koin_dijual}>
-                                                        {detail.tgl_transaksi} - {detail.koin_dijual} Koin
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                    )}
-                                    {game === "WOW" && saldoKoin !== null && (
-                                        <div className="form-group">
-                                            <label className="col-form-label">
-                                                Saldo Koin:
-                                            </label>
-                                            <p>{saldoKoin} Koin</p>
-                                        </div>
-                                    )}
                                 </form>
                             </div>
                             <div className="modal-footer">
                                 <button
                                     type="button"
                                     className="btn btn-secondary"
-                                    onClick={() => setShowModal(false)}
+                                    onClick={handleModalClose}
                                 >
                                     Tutup
                                 </button>
@@ -229,6 +284,7 @@ const ModalAddGajiLama = ({ showModal, setShowModal, token, onAddSuccess }) => {
                                     type="button"
                                     className="btn btn-primary"
                                     onClick={handleAddGajiLama}
+                                    disabled={isLoadingSoldUnsold || !NIP || !game || sold === '' || unsold === ''}
                                 >
                                     Simpan
                                 </button>
@@ -260,6 +316,8 @@ const ModalAddGajiLama = ({ showModal, setShowModal, token, onAddSuccess }) => {
                     overflow: hidden;
                     width: 500px;
                     max-width: 90%;
+                    max-height: 90vh;
+                    overflow-y: auto;
                 }
 
                 .modal-header {
@@ -268,10 +326,11 @@ const ModalAddGajiLama = ({ showModal, setShowModal, token, onAddSuccess }) => {
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
+                    background-color: #f8f9fa;
                 }
 
                 .modal-body {
-                    padding: 15px;
+                    padding: 20px;
                 }
 
                 .modal-footer {
@@ -280,10 +339,87 @@ const ModalAddGajiLama = ({ showModal, setShowModal, token, onAddSuccess }) => {
                     display: flex;
                     justify-content: flex-end;
                     gap: 10px;
+                    background-color: #f8f9fa;
                 }
 
                 .modal-content {
                     border: none;
+                }
+
+                .form-group {
+                    margin-bottom: 15px;
+                }
+
+                .col-form-label {
+                    font-weight: 600;
+                    margin-bottom: 5px;
+                    display: block;
+                    color: #495057;
+                }
+
+                .form-control {
+                    width: 100%;
+                    padding: 8px 12px;
+                    border: 1px solid #ced4da;
+                    border-radius: 4px;
+                    font-size: 14px;
+                    line-height: 1.5;
+                    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+                }
+
+                .form-control:focus {
+                    outline: 0;
+                    border-color: #80bdff;
+                    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+                }
+
+                .form-control:disabled {
+                    background-color: #e9ecef;
+                    opacity: 1;
+                }
+
+                .btn {
+                    padding: 8px 16px;
+                    border: 1px solid transparent;
+                    border-radius: 4px;
+                    font-size: 14px;
+                    line-height: 1.5;
+                    cursor: pointer;
+                    text-decoration: none;
+                    display: inline-block;
+                    font-weight: 400;
+                    text-align: center;
+                    vertical-align: middle;
+                    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+                }
+
+                .btn-primary {
+                    color: #fff;
+                    background-color: #007bff;
+                    border-color: #007bff;
+                }
+
+                .btn-primary:hover:not(:disabled) {
+                    color: #fff;
+                    background-color: #0056b3;
+                    border-color: #004085;
+                }
+
+                .btn-primary:disabled {
+                    opacity: 0.65;
+                    cursor: not-allowed;
+                }
+
+                .btn-secondary {
+                    color: #6c757d;
+                    background-color: transparent;
+                    border-color: #6c757d;
+                }
+
+                .btn-secondary:hover {
+                    color: #fff;
+                    background-color: #6c757d;
+                    border-color: #6c757d;
                 }
 
                 .close {
@@ -294,11 +430,28 @@ const ModalAddGajiLama = ({ showModal, setShowModal, token, onAddSuccess }) => {
                     color: #000;
                     opacity: 0.7;
                     cursor: pointer;
+                    padding: 0;
+                    margin: 0;
                 }
 
                 .close:hover {
                     color: #000;
                     opacity: 1;
+                }
+
+                .loading-indicator {
+                    padding: 8px 12px;
+                    background-color: #f8f9fa;
+                    border: 1px solid #ced4da;
+                    border-radius: 4px;
+                    color: #6c757d;
+                    font-style: italic;
+                }
+
+                .modal-title {
+                    margin: 0;
+                    font-size: 1.25rem;
+                    font-weight: 500;
                 }
             `}</style>
         </>

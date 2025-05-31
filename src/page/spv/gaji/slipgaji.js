@@ -110,17 +110,17 @@ const generateSlipGajiPDF = (gajiData) => {
   const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 15;
 
-  // Get data values - Updated calculation logic
-  const soldKoin = safeNumber(gajiData.total_dijual || gajiData.total_sold_koin);
-  const unsoldKoin = safeNumber(gajiData.total_unsold_koin);
+  // PERBAIKAN: Ambil data sold dan unsold dari table gaji langsung
+  const soldKoin = safeNumber(gajiData.sold); // Langsung dari table gaji
+  const unsoldKoin = safeNumber(gajiData.unsold); // Langsung dari table gaji
   const totalKoin = soldKoin + unsoldKoin; // Total koin untuk perhitungan gaji
   const potonganPercent = safeNumber(gajiData.potongan);
   const kasbon = safeNumber(gajiData.kasbon);
   const rateTNL = safeNumber(gajiData.rata_rata_rate || gajiData.rate_tnl || 100);
   const thp = safeNumber(gajiData.THP);
 
-  // Calculate Gaji Kotor - SESUAI BACKEND: menggunakan total_koin untuk perhitungan
-  const gajiKotor = totalKoin * rateTNL; // Ini sesuai dengan backend: total_koin * rata_rata_rate
+  // Calculate Gaji Kotor - menggunakan total_koin untuk perhitungan
+  const gajiKotor = totalKoin * rateTNL;
 
   const potonganAmount = gajiKotor * (potonganPercent / 100);
   const gajiSetelahPotongan = gajiKotor - potonganAmount; 
@@ -238,7 +238,7 @@ const generateSlipGajiPDF = (gajiData) => {
   doc.setFillColor(252, 252, 252);
   doc.rect(margin, yPos, pageWidth - (margin * 2), 45, 'F');
   
-  // PERUBAHAN 1: Border DETAIL PENJUALAN & PERHITUNGAN GAJI diubah menjadi WARNA BIRU
+  // Border DETAIL PENJUALAN & PERHITUNGAN GAJI diubah menjadi WARNA BIRU
   doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]); // Warna biru sesuai primaryColor
   doc.setLineWidth(0.3);
   doc.rect(margin, yPos, pageWidth - (margin * 2), 45, 'S');
@@ -295,7 +295,7 @@ const generateSlipGajiPDF = (gajiData) => {
   doc.setFont('helvetica', 'normal');
   doc.text(`${formatNumber(totalKoin)} koin`, detailLeftCol + 38, yPos);
 
-  // Perhitungan Section - UPDATED CALCULATION LOGIC
+  // Perhitungan Section
   yPos += 18;
   doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
   doc.rect(margin, yPos, pageWidth - (margin * 2), 10, 'F');
@@ -311,15 +311,15 @@ const generateSlipGajiPDF = (gajiData) => {
   doc.setLineWidth(0.5);
   doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
 
-  // PERUBAHAN 2: Tinggi kotak perhitungan diperkecil karena garis bawah akan dipindah ke luar kotak
-  const calcBoxHeight = 78; // Dikurangi dari 95 karena THP akan dipindah keluar kotak
+  // Tinggi kotak perhitungan diperkecil karena garis bawah akan dipindah ke luar kotak
+  const calcBoxHeight = 78;
   doc.rect(margin, yPos, pageWidth - (margin * 2), calcBoxHeight, 'FD');
 
   yPos += 8;
   doc.setFontSize(9);
   doc.setFont('helvetica', 'bold');
 
-  // Step 1: Gaji Kotor Calculation - UPDATED SESUAI BACKEND
+  // Step 1: Gaji Kotor Calculation
   doc.text('1. PERHITUNGAN GAJI KOTOR:', margin + 5, yPos);
   yPos += 6;
   doc.setFont('helvetica', 'normal');
@@ -367,7 +367,7 @@ const generateSlipGajiPDF = (gajiData) => {
   doc.setFont('helvetica', 'normal');
   doc.text(`   ${formatCurrency(gajiSetelahPotongan)} - ${formatCurrency(kasbon)} (Kasbon) = ${formatCurrency(finalTHP)}`, margin + 8, yPos);
 
-  // PERUBAHAN 3: Final THP Highlight - DIPINDAH KELUAR KOTAK PERHITUNGAN
+  // Final THP Highlight - DIPINDAH KELUAR KOTAK PERHITUNGAN
   yPos += 15; // Jarak dari akhir perhitungan
   doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
   doc.rect(margin + 3, yPos - 6, pageWidth - (margin * 2) - 6, 13, 'F');

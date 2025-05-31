@@ -365,8 +365,8 @@ const DataGaji = () => {
                                                 <td>{index + 1}</td>
                                                 <td>{gaji.NIP}</td>
                                                 <td>{gaji.nama}</td>
-                                                <td>{gaji.total_sold_koin}</td>
-                                                <td>{gaji.total_unsold_koin}</td>
+                                                <td>{gaji.sold}</td>
+                                                <td>{gaji.unsold}</td>
                                                 <td>{gaji.gaji_kotor}</td>
                                                 <td>{gaji.potongan}</td>
                                                 <td>{gaji.kasbon}</td>
