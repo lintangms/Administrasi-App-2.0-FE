@@ -168,7 +168,7 @@ const DataGaji = () => {
                 ...gaji,
                 rate_per_koin: gaji.gaji_kotor / (gaji.total_dijual || 1), // Calculate rate if not available
             };
-            
+
             generateSlipGajiPDF(gajiDataForPDF);
             toast.success('Slip gaji berhasil diunduh!');
         } catch (error) {
@@ -187,23 +187,30 @@ const DataGaji = () => {
                     <FaDollarSign style={{ color: '#3498db', fontSize: '1.5rem' }} />
                     <div style={{ textAlign: 'right' }}>
                         <h5 style={{ margin: 0, color: '#7f8c8d', fontSize: '0.8rem' }}>Total Gaji Kotor</h5>
-                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1rem', fontWeight: 'bold' }}>{statsData.total_gaji_kotor}</h2>
+                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1rem', fontWeight: 'bold' }}>
+                            {Number(statsData.total_gaji_kotor).toLocaleString('id-ID')}
+                        </h2>
                     </div>
                 </div>
                 <div className="stat-card">
                     <FaMoneyBillWave style={{ color: '#3498db', fontSize: '1.5rem' }} />
                     <div style={{ textAlign: 'right' }}>
                         <h5 style={{ margin: 0, color: '#7f8c8d', fontSize: '0.8rem' }}>Total Kasbon</h5>
-                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1rem', fontWeight: 'bold' }}>{statsData.total_kasbon}</h2>
+                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1rem', fontWeight: 'bold' }}>
+                            {Number(statsData.total_kasbon).toLocaleString('id-ID')}
+                        </h2>
                     </div>
                 </div>
                 <div className="stat-card">
                     <FaChartLine style={{ color: '#3498db', fontSize: '1.5rem' }} />
                     <div style={{ textAlign: 'right' }}>
                         <h5 style={{ margin: 0, color: '#7f8c8d', fontSize: '0.8rem' }}>Total THP</h5>
-                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1rem', fontWeight: 'bold' }}>{statsData.total_THP}</h2>
+                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1rem', fontWeight: 'bold' }}>
+                            {Number(statsData.total_THP).toLocaleString('id-ID')}
+                        </h2>
                     </div>
                 </div>
+
                 <div className="stat-card">
                     <FaCoins style={{ color: '#3498db', fontSize: '1.5rem' }} />
                     <div style={{ textAlign: 'right' }}>
@@ -365,12 +372,12 @@ const DataGaji = () => {
                                                 <td>{index + 1}</td>
                                                 <td>{gaji.NIP}</td>
                                                 <td>{gaji.nama}</td>
-                                                <td>{gaji.sold}</td>
-                                                <td>{gaji.unsold}</td>
-                                                <td>{gaji.gaji_kotor}</td>
-                                                <td>{gaji.potongan}</td>
-                                                <td>{gaji.kasbon}</td>
-                                                <td>{gaji.THP}</td>
+                                                <td>{Number(gaji.sold).toLocaleString('id-ID')}</td>
+                                                <td>{Number(gaji.unsold).toLocaleString('id-ID')}</td>
+                                                <td>{Number(gaji.gaji_kotor).toLocaleString('id-ID')}</td>
+                                                <td>{Number(gaji.potongan).toLocaleString('id-ID')}</td>
+                                                <td>{Number(gaji.kasbon).toLocaleString('id-ID')}</td>
+                                                <td>{Number(gaji.THP).toLocaleString('id-ID')}</td>
                                                 <td>{new Date(gaji.tgl_transaksi).toLocaleDateString('id-ID')}</td>
                                                 <td>{gaji.ket}</td>
                                                 <td>
@@ -383,7 +390,7 @@ const DataGaji = () => {
                                                         >
                                                             <FaDownload style={{ fontSize: '0.8rem' }} />
                                                         </button>
-                                                        
+
                                                         {activeView === 'lama' ? (
                                                             <>
                                                                 <button

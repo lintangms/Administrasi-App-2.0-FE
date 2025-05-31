@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaCoins, FaChartLine, FaMoneyBillAlt } from 'react-icons/fa'; 
-import { toast } from 'react-toastify'; 
+import { FaCoins, FaChartLine, FaMoneyBillAlt } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
 const Penjualan = () => {
@@ -151,21 +151,27 @@ const Penjualan = () => {
                     <FaCoins style={{ color: '#3498db', fontSize: '2rem' }} />
                     <div style={{ textAlign: 'right' }}>
                         <h5 style={{ margin: 0, color: '#7f8c8d', fontSize: '0.9rem' }}>Total Koin Dijual</h5>
-                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1.2rem', fontWeight: 'bold' }}>{statsData.total_koin_dijual}</h2>
+                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1.2rem', fontWeight: 'bold' }}>
+                            {Number(statsData.total_koin_dijual || 0).toLocaleString('id-ID')}
+                        </h2>
                     </div>
                 </div>
                 <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', padding: '15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <FaChartLine style={{ color: '#3498db', fontSize: '2rem' }} />
                     <div style={{ textAlign: 'right' }}>
                         <h5 style={{ margin: 0, color: '#7f8c8d', fontSize: '0.9rem' }}>Rata-rata Rate</h5>
-                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1.2rem', fontWeight: 'bold' }}>{statsData.avg_rate}</h2>
+                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1.2rem', fontWeight: 'bold' }}>
+                            {statsData.avg_rate}
+                        </h2>
                     </div>
                 </div>
                 <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', padding: '15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <FaMoneyBillAlt style={{ color: '#3498db', fontSize: '2rem' }} />
                     <div style={{ textAlign: 'right' }}>
                         <h5 style={{ margin: 0, color: '#7f8c8d', fontSize: '0.9rem' }}>Total Jumlah Uang</h5>
-                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1.2rem', fontWeight: 'bold' }}>{statsData.total_jumlah_uang}</h2>
+                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1.2rem', fontWeight: 'bold' }}>
+                            {Number(statsData.total_jumlah_uang || 0).toLocaleString('id-ID')}
+                        </h2>
                     </div>
                 </div>
             </div>
@@ -278,8 +284,8 @@ const Penjualan = () => {
                                                 <td>{penjualan.demand}</td>
                                                 <td>{penjualan.rate}</td>
                                                 <td>{penjualan.ket}</td>
-                                                <td>{penjualan.koin_dijual}</td>
-                                                <td>{penjualan.jumlah_uang}</td>
+                                                <td>{Number(penjualan.koin_dijual || 0).toLocaleString('id-ID')}</td>
+                                                <td>{Number(penjualan.jumlah_uang || 0).toLocaleString('id-ID')}</td>
                                             </tr>
                                         ))
                                     ) : (
