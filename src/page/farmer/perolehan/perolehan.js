@@ -89,8 +89,29 @@ const PerolehanFarming = () => {
       className="w-100 min-vh-100 py-4"
     >
       <div className="container" style={{ maxWidth: "100%" }}>
+        {/* Warning Card - Full Width */}
+        <div className="row mx-0 mb-4">
+          <div className="col-12 px-3">
+            <div className="card border-primary">
+              <div className="card-body">
+                <h5 className="card-title text-primary">
+                  <strong>PERUBAHAN SISTEM, MOHON DIBACA!</strong>
+                </h5>
+                <div className="card-text">
+                  <p><strong>1.</strong> Koin yang diisi adalah TOTAL KOIN, bukan koin di tas dan perolehan koin.</p>
+                  <p><strong>2.</strong> Cara mengisi adalah dengan mengupdate koin yang ada di tas.</p>
+                  <p><strong>3.</strong> Contoh : Hari senin koin total 3.000, maka isilah 3.000. Hari selasa koin total 6.000, di take 2.000 dan di tas sisa 4.000, maka tetap mengisi sejumlah 6.000 karena total koinnya 6.000.</p>
+                  <p><strong>4.</strong> Mohon diisi setiap hari karena akan ada slip gaji. Keterangan diisi dengan koin yang ada di tas dan koin yang di take</p>
+                  <p><strong>5.</strong> Mohon mengisi target terlebih dahulu sebelum mengisi total koin!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="row justify-content-center mx-0">
           <div className="col-sm-12 col-md-8 col-lg-6 col-xl-5 px-3">
+
             <div className="text-center mt-2 mb-3">
               <h1 className="h2">Perolehan Farming</h1>
               <p>Silahkan Isi Data Dibawah</p>
@@ -104,7 +125,7 @@ const PerolehanFarming = () => {
                     <input className="form-control" type="text" value={NIP} readOnly />
                   </div>
                   <div className="mb-3">
-                    <label className="form-label">Koin di Tas</label>
+                    <label className="form-label">Total Koin</label>
                     <input
                       className="form-control"
                       placeholder="Contoh mengisi = 3000, bukan 3K ! "
@@ -151,14 +172,14 @@ const PerolehanFarming = () => {
               </div>
             </div>
 
-            <div className="card mb-4">
+            {/* <div className="card mb-4">
               <div className="card-body text-center">
                 <h5 className="card-title">TERDAPAT PERUBAHAN SISTEM. MOHON DIBACA!</h5>
                 <p className="card-text">1. Pengisian koin diisi sesuai dengan koin yang ada ditas. Bukan perolehan dan bukan total koin!</p>
                 <p className="card-text">2. Pengisian koin wajib diisi SETIAP HARI ketika mau pulang.</p>
                 <p className="card-text">3. Kolom keterangan diisi koin yang ditake jika ada.</p>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
