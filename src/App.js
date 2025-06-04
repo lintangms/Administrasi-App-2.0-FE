@@ -209,7 +209,7 @@ function App() {
           <Route path="/spv/profile" element={<Profile />} />
           <Route path="/spv/inventaris" element={<Inventaris />} />
           <Route path="/spv/akun" element={<Akun />} />
-          <Route path="/spv/pengeluaran" element={<Pengeluaran />} />
+          {/* <Route path="/spv/pengeluaran" element={<Pengeluaran />} /> */}
           <Route path="/spv/perolehan_farming" element={<Farming />} />
           <Route path="/spv/perolehan_boosting" element={<Boosting />} />
           <Route path="/spv/data_absensi" element={<DataAbsensi />} />
