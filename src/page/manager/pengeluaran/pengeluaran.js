@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaCoins, FaMoneyBillAlt, FaPen, FaTrash } from 'react-icons/fa'; 
-import { toast } from 'react-toastify'; 
+import { FaCoins, FaMoneyBillAlt, FaPen, FaTrash } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import ModalAddPengeluaran from './modaladdpengeluaran'; // Modal untuk menambah Pengeluaran
 import ModalUpdatePengeluaran from './modalupdatepengeluaran'; // Modal untuk memperbarui Pengeluaran
@@ -132,7 +132,9 @@ const Pengeluaran = () => {
                     <FaCoins style={{ color: '#3498db', fontSize: '2rem' }} />
                     <div style={{ textAlign: 'right' }}>
                         <h5 style={{ margin: 0, color: '#7f8c8d', fontSize: '0.9rem' }}>Total Pengeluaran</h5>
-                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1.2rem', fontWeight: 'bold' }}>{totalNominal}</h2>
+                        <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '1.2rem', fontWeight: 'bold' }}>
+                            {totalNominal.toLocaleString('id-ID')}
+                        </h2>
                     </div>
                 </div>
             </div>
@@ -224,20 +226,20 @@ const Pengeluaran = () => {
                                                 <td>{index + 1}</td>
                                                 <td>{new Date(pengeluaran.tgl_transaksi).toLocaleDateString("id-ID")}</td>
                                                 <td>{pengeluaran.uraian}</td>
-                                                <td>{pengeluaran.nominal}</td>
+                                                <td>{Number(pengeluaran.nominal || 0).toLocaleString('id-ID')}</td>
                                                 <td>{pengeluaran.ket}</td>
                                                 <td>
                                                     <button
                                                         className="btn btn-info btn-sm me-2 rounded"
                                                         onClick={() => handleEditPengeluaran(pengeluaran)}
                                                     >
-                                                        <FaPen/>
+                                                        <FaPen />
                                                     </button>
                                                     <button
                                                         onClick={() => handleDeletePengeluaran(pengeluaran.id_pengeluaran)}
                                                         className="btn btn-danger btn-sm me-2 rounded"
                                                     >
-                                                        <FaTrash/>
+                                                        <FaTrash />
                                                     </button>
                                                 </td>
                                             </tr>
