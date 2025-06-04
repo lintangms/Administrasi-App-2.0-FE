@@ -188,12 +188,12 @@ const SidebarSPV = () => {
               <span className="align-middle">Akun</span>
             </Link>
           </li>
-          <li className={`sidebar-item ${location.pathname === "/spv/pengeluaran" ? "active" : ""}`}>
+          {/* <li className={`sidebar-item ${location.pathname === "/spv/pengeluaran" ? "active" : ""}`}>
             <Link className="sidebar-link" to="/spv/pengeluaran">
               <FaMoneyBillWave className="align-middle" />{" "}
               <span className="align-middle">Pengeluaran</span>
             </Link>
-          </li>
+          </li> */}
           <li className={`sidebar-item ${location.pathname === "/spv/kasbon" ? "active" : ""}`}>
             <Link className="sidebar-link" to="/spv/kasbon">
               <FaMoneyBillAlt className="align-middle" />{" "}
