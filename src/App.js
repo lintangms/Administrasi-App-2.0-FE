@@ -57,15 +57,41 @@ import FarmingDetails from "./page/direktur/perolehan/detailfarming";
 import RekapAbsensi from "./page/manager/absensi/rekapabsensi";
 import DetailAbsensi from "./page/manager/absensi/detailabsensi";
 
-  
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Dashboard from "./page/manager/dashboard/dashboardmanager";
+
+// Komponen untuk proteksi route berdasarkan role
+const ProtectedRoute = ({ children, allowedRoles, currentRole }) => {
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    if (!currentRole || !allowedRoles.includes(currentRole)) {
+      toast.error("Anda tidak memiliki akses ke halaman ini!");
+      navigate("/login");
+    }
+  }, [currentRole, allowedRoles, navigate]);
+
+  if (!currentRole || !allowedRoles.includes(currentRole)) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+};
+
+// Komponen untuk redirect ke dashboard sesuai role
+const RoleBasedRedirect = ({ currentRole }) => {
+  if (currentRole) {
+    return <Navigate to={`/${currentRole}/dashboard`} replace />;
+  }
+  return <Navigate to="/login" replace />;
+};
 
 function App() {
   const [jabatan, setJabatan] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -73,20 +99,39 @@ function App() {
     const token = localStorage.getItem("token");
     const storedJabatan = localStorage.getItem("jabatan");
 
-    // Pengecualian untuk halaman scan dan absensi scan
-    if (location.pathname === "/scan_absensi" && storedJabatan !== "manager" && storedJabatan !== "spv") {
-      navigate("/login");
+    // Halaman yang bisa diakses tanpa login
+    const publicRoutes = ["/login", "/scan_absensi"];
+    
+    // Jika di halaman publik, tidak perlu pengecekan token
+    if (publicRoutes.includes(location.pathname)) {
+      setIsLoading(false);
       return;
     }
 
-    if ((location.pathname === "/scan" || location.pathname === "/scan_absensi") || (token && storedJabatan)) {
-      if (token && storedJabatan) {
-        setIsLoggedIn(true);
-        setJabatan(storedJabatan);
+    // Jika ada token dan jabatan tersimpan
+    if (token && storedJabatan) {
+      setIsLoggedIn(true);
+      setJabatan(storedJabatan);
+      
+      // Validasi akses berdasarkan role dan path
+      const pathSegments = location.pathname.split('/');
+      const roleFromPath = pathSegments[1];
+      
+      // Jika role di URL tidak sesuai dengan role user
+      if (roleFromPath && roleFromPath !== storedJabatan && !publicRoutes.includes(location.pathname)) {
+        toast.error("Anda tidak memiliki akses ke halaman ini!");
+        navigate(`/${storedJabatan}/dashboard`);
+        setIsLoading(false);
+        return;
       }
-    } else if (location.pathname !== "/login" && location.pathname !== "/scan_absensi" && location.pathname !== "/scan") {
+    } else {
+      // Jika tidak ada token atau jabatan, redirect ke login
+      setIsLoggedIn(false);
+      setJabatan(null);
       navigate("/login");
     }
+    
+    setIsLoading(false);
   }, [navigate, location.pathname]);
 
   const handleLoginSuccess = (userjabatan) => {
@@ -96,9 +141,33 @@ function App() {
     navigate(`/${userjabatan}/dashboard`);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("jabatan");
+    setIsLoggedIn(false);
+    setJabatan(null);
+    navigate("/login");
+    toast.success("Berhasil logout!");
+  };
+
   const toggleSidebar = () => {
     setIsSidebarOpen((prevState) => !prevState);
   };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        fontSize: '18px'
+      }}>
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <div
@@ -121,13 +190,14 @@ function App() {
         pauseOnHover
       />
 
-      {isLoggedIn && location.pathname !== "/login" && (
+      {isLoggedIn && location.pathname !== "/login" && location.pathname !== "/scan_absensi" && (
         <>
           {jabatan === "manager" && (
             <SidebarManager
               jabatan={jabatan}
               isSidebarOpen={isSidebarOpen}
               onToggleSidebar={toggleSidebar}
+              onLogout={handleLogout}
             />
           )}
           {jabatan === "spv" && (
@@ -135,6 +205,7 @@ function App() {
               jabatan={jabatan}
               isSidebarOpen={isSidebarOpen}
               onToggleSidebar={toggleSidebar}
+              onLogout={handleLogout}
             />
           )}
           {jabatan === "farmer" && (
@@ -142,6 +213,7 @@ function App() {
               jabatan={jabatan}
               isSidebarOpen={isSidebarOpen}
               onToggleSidebar={toggleSidebar}
+              onLogout={handleLogout}
             />
           )}
           {jabatan === "booster" && (
@@ -149,6 +221,7 @@ function App() {
               jabatan={jabatan}
               isSidebarOpen={isSidebarOpen}
               onToggleSidebar={toggleSidebar}
+              onLogout={handleLogout}
             />
           )}
           {jabatan === "direktur" && (
@@ -156,6 +229,7 @@ function App() {
               jabatan={jabatan}
               isSidebarOpen={isSidebarOpen}
               onToggleSidebar={toggleSidebar}
+              onLogout={handleLogout}
             />
           )}
         </>
@@ -166,109 +240,454 @@ function App() {
           flex: 1,
           overflowY: "auto",
           padding: "20px",
-          marginTop: location.pathname === "/login" ? "0" : "50px",
+          marginTop: location.pathname === "/login" || location.pathname === "/scan_absensi" ? "0" : "50px",
           marginLeft: "-20px",
           transition: "all 0.3s ease",
         }}
       >
         <Routes>
+          {/* Public Routes */}
           <Route path="/scan_absensi" element={<AbsensiScan />} />
           <Route
             path="/login"
             element={<Login onLoginSuccess={handleLoginSuccess} />}
           />
-          <Route path="/manager/dashboard" element={<DashboardManager />} />
-          <Route path="/manager/scan" element={<ScanQR />} />
-          <Route path="/manager/jabatandivisi" element={<Jabatan_Divisi />} />
-          <Route path="/manager/shiftgame" element={<Shift_Game />} />
-          <Route path="/manager/karyawan" element={<Karyawan />} />
-          <Route path="/manager/detail_karyawan/:id" element={<DetailKaryawan />} />
-          <Route path="/manager/profile" element={<Profile />} />
-          <Route path="/manager/inventaris" element={<Inventaris />} />
-          <Route path="/manager/akun" element={<Akun />} />
-          <Route path="/manager/pengeluaran" element={<Pengeluaran />} />
-          <Route path="/manager/perolehan_farming" element={<Farming />} />
-          <Route path="/manager/perolehan_boosting" element={<Boosting />} />
-          <Route path="/manager/data_absensi" element={<DataAbsensi />} />
-          <Route path="/manager/data_kasbon" element={<DaftarKasbon />} />
-          <Route path="/manager/penjualan" element={<Penjualan />} />
-          <Route path="/manager/data_koin" element={<TotalKoin />} />
-          <Route path="/manager/data_gaji" element={<DataGaji />} />
-          <Route path="/manager/data_unsold" element={<Unsold />} />
-          <Route path="/manager/data_target" element={<DataTarget />} />
-          <Route path="/manager/detail/:NIP" element={<FarmingDetails />} />
-          <Route path="/manager/rekap_absensi" element={<RekapAbsensi />} />
-          <Route path="/manager/detail_absensi/:NIP" element={<DetailAbsensi />} />
 
-          <Route path="/spv/dashboard" element={<DashboardSPV />} />
-          <Route path="/spv/scan" element={<ScanQR />} />
-          <Route path="/spv/jabatandivisi" element={<Jabatan_Divisi />} />
-          <Route path="/spv/shiftgame" element={<Shift_Game />} />
-          <Route path="/spv/karyawan" element={<Karyawan />} />
-          <Route path="/spv/detail_karyawan/:id" element={<DetailKaryawan />} />
-          <Route path="/spv/profile" element={<Profile />} />
-          <Route path="/spv/inventaris" element={<Inventaris />} />
-          <Route path="/spv/akun" element={<Akun />} />
-          {/* <Route path="/spv/pengeluaran" element={<Pengeluaran />} /> */}
-          <Route path="/spv/perolehan_farming" element={<Farming />} />
-          <Route path="/spv/perolehan_boosting" element={<Boosting />} />
-          <Route path="/spv/data_absensi" element={<DataAbsensi />} />
-          <Route path="/spv/tugas" element={<TugasForm />} />
-          <Route path="/spv/penjualan" element={<Penjualan />} />
-          <Route path="/spv/data_koin" element={<TotalKoin />} />
-          <Route path="/spv/data_gaji" element={<DataGaji />} />
-          <Route path="/spv/data_unsold" element={<Unsold />} />
-          <Route path="/spv/data_target" element={<DataTarget />} />
-          <Route path="/spv/kasbon" element={<Kasbon />} />
-          <Route path="/spv/riwayatkasbon" element={<RiwayatKasbon />} />
-          <Route path="/spv/rekap_absensi" element={<RekapAbsensi />} />
-          <Route path="/spv/perolehan" element={<PerolehanFarming />} />
-          <Route path="/spv/riwayatperolehan" element={<RiwayatFarming />} />
+          {/* Manager Routes */}
+          <Route path="/manager/dashboard" element={
+            <ProtectedRoute allowedRoles={["manager"]} currentRole={jabatan}>
+              <DashboardManager />
+            </ProtectedRoute>
+          } />
+          <Route path="/manager/scan" element={
+            <ProtectedRoute allowedRoles={["manager"]} currentRole={jabatan}>
+              <ScanQR />
+            </ProtectedRoute>
+          } />
+          <Route path="/manager/jabatandivisi" element={
+            <ProtectedRoute allowedRoles={["manager"]} currentRole={jabatan}>
+              <Jabatan_Divisi />
+            </ProtectedRoute>
+          } />
+          <Route path="/manager/shiftgame" element={
+            <ProtectedRoute allowedRoles={["manager"]} currentRole={jabatan}>
+              <Shift_Game />
+            </ProtectedRoute>
+          } />
+          <Route path="/manager/karyawan" element={
+            <ProtectedRoute allowedRoles={["manager"]} currentRole={jabatan}>
+              <Karyawan />
+            </ProtectedRoute>
+          } />
+          <Route path="/manager/detail_karyawan/:id" element={
+            <ProtectedRoute allowedRoles={["manager"]} currentRole={jabatan}>
+              <DetailKaryawan />
+            </ProtectedRoute>
+          } />
+          <Route path="/manager/profile" element={
+            <ProtectedRoute allowedRoles={["manager"]} currentRole={jabatan}>
+              <Profile />
+            </ProtectedRoute>
+          } />
+          <Route path="/manager/inventaris" element={
+            <ProtectedRoute allowedRoles={["manager"]} currentRole={jabatan}>
+              <Inventaris />
+            </ProtectedRoute>
+          } />
+          <Route path="/manager/akun" element={
+            <ProtectedRoute allowedRoles={["manager"]} currentRole={jabatan}>
+              <Akun />
+            </ProtectedRoute>
+          } />
+          <Route path="/manager/pengeluaran" element={
+            <ProtectedRoute allowedRoles={["manager"]} currentRole={jabatan}>
+              <Pengeluaran />
+            </ProtectedRoute>
+          } />
+          <Route path="/manager/perolehan_farming" element={
+            <ProtectedRoute allowedRoles={["manager"]} currentRole={jabatan}>
+              <Farming />
+            </ProtectedRoute>
+          } />
+          <Route path="/manager/perolehan_boosting" element={
+            <ProtectedRoute allowedRoles={["manager"]} currentRole={jabatan}>
+              <Boosting />
+            </ProtectedRoute>
+          } />
+          <Route path="/manager/data_absensi" element={
+            <ProtectedRoute allowedRoles={["manager"]} currentRole={jabatan}>
+              <DataAbsensi />
+            </ProtectedRoute>
+          } />
+          <Route path="/manager/data_kasbon" element={
+            <ProtectedRoute allowedRoles={["manager"]} currentRole={jabatan}>
+              <DaftarKasbon />
+            </ProtectedRoute>
+          } />
+          <Route path="/manager/penjualan" element={
+            <ProtectedRoute allowedRoles={["manager"]} currentRole={jabatan}>
+              <Penjualan />
+            </ProtectedRoute>
+          } />
+          <Route path="/manager/data_koin" element={
+            <ProtectedRoute allowedRoles={["manager"]} currentRole={jabatan}>
+              <TotalKoin />
+            </ProtectedRoute>
+          } />
+          <Route path="/manager/data_gaji" element={
+            <ProtectedRoute allowedRoles={["manager"]} currentRole={jabatan}>
+              <DataGaji />
+            </ProtectedRoute>
+          } />
+          <Route path="/manager/data_unsold" element={
+            <ProtectedRoute allowedRoles={["manager"]} currentRole={jabatan}>
+              <Unsold />
+            </ProtectedRoute>
+          } />
+          <Route path="/manager/data_target" element={
+            <ProtectedRoute allowedRoles={["manager"]} currentRole={jabatan}>
+              <DataTarget />
+            </ProtectedRoute>
+          } />
+          <Route path="/manager/detail/:NIP" element={
+            <ProtectedRoute allowedRoles={["manager"]} currentRole={jabatan}>
+              <FarmingDetails />
+            </ProtectedRoute>
+          } />
+          <Route path="/manager/rekap_absensi" element={
+            <ProtectedRoute allowedRoles={["manager"]} currentRole={jabatan}>
+              <RekapAbsensi />
+            </ProtectedRoute>
+          } />
+          <Route path="/manager/detail_absensi/:NIP" element={
+            <ProtectedRoute allowedRoles={["manager"]} currentRole={jabatan}>
+              <DetailAbsensi />
+            </ProtectedRoute>
+          } />
 
-          <Route path="/farmer/dashboard" element={<DashboardFarmer />} />
-          <Route path="/farmer/absensi" element={<AbsensiFarmer />} />
-          <Route path="/farmer/perolehan" element={<PerolehanFarming />} />
-          <Route path="/farmer/profile" element={<Profile />} />
-          <Route path="/farmer/kasbon" element={<Kasbon />} />
-          <Route path="/farmer/riwayatperolehan" element={<RiwayatFarming />} />
-          <Route path="/farmer/riwayatabsen" element={<RiwayatAbsen />} />
-          <Route path="/farmer/riwayatkasbon" element={<RiwayatKasbon />} />
-          <Route path="/farmer/unsold" element={<PerolehanUnsold />} />
-          <Route path="/farmer/riwayatunsold" element={<RiwayatUnsold />} />
-          <Route path="/farmer/target" element={<TargetFarming />} />
-          <Route path="/farmer/riwayattarget" element={<RiwayatTarget />} />
+          {/* SPV Routes */}
+          <Route path="/spv/dashboard" element={
+            <ProtectedRoute allowedRoles={["spv"]} currentRole={jabatan}>
+              <DashboardSPV />
+            </ProtectedRoute>
+          } />
+          <Route path="/spv/scan" element={
+            <ProtectedRoute allowedRoles={["spv"]} currentRole={jabatan}>
+              <ScanQR />
+            </ProtectedRoute>
+          } />
+          <Route path="/spv/jabatandivisi" element={
+            <ProtectedRoute allowedRoles={["spv"]} currentRole={jabatan}>
+              <Jabatan_Divisi />
+            </ProtectedRoute>
+          } />
+          <Route path="/spv/shiftgame" element={
+            <ProtectedRoute allowedRoles={["spv"]} currentRole={jabatan}>
+              <Shift_Game />
+            </ProtectedRoute>
+          } />
+          <Route path="/spv/karyawan" element={
+            <ProtectedRoute allowedRoles={["spv"]} currentRole={jabatan}>
+              <Karyawan />
+            </ProtectedRoute>
+          } />
+          <Route path="/spv/detail_karyawan/:id" element={
+            <ProtectedRoute allowedRoles={["spv"]} currentRole={jabatan}>
+              <DetailKaryawan />
+            </ProtectedRoute>
+          } />
+          <Route path="/spv/profile" element={
+            <ProtectedRoute allowedRoles={["spv"]} currentRole={jabatan}>
+              <Profile />
+            </ProtectedRoute>
+          } />
+          <Route path="/spv/inventaris" element={
+            <ProtectedRoute allowedRoles={["spv"]} currentRole={jabatan}>
+              <Inventaris />
+            </ProtectedRoute>
+          } />
+          <Route path="/spv/akun" element={
+            <ProtectedRoute allowedRoles={["spv"]} currentRole={jabatan}>
+              <Akun />
+            </ProtectedRoute>
+          } />
+          <Route path="/spv/perolehan_farming" element={
+            <ProtectedRoute allowedRoles={["spv"]} currentRole={jabatan}>
+              <Farming />
+            </ProtectedRoute>
+          } />
+          <Route path="/spv/perolehan_boosting" element={
+            <ProtectedRoute allowedRoles={["spv"]} currentRole={jabatan}>
+              <Boosting />
+            </ProtectedRoute>
+          } />
+          <Route path="/spv/data_absensi" element={
+            <ProtectedRoute allowedRoles={["spv"]} currentRole={jabatan}>
+              <DataAbsensi />
+            </ProtectedRoute>
+          } />
+          <Route path="/spv/tugas" element={
+            <ProtectedRoute allowedRoles={["spv"]} currentRole={jabatan}>
+              <TugasForm />
+            </ProtectedRoute>
+          } />
+          <Route path="/spv/penjualan" element={
+            <ProtectedRoute allowedRoles={["spv"]} currentRole={jabatan}>
+              <Penjualan />
+            </ProtectedRoute>
+          } />
+          <Route path="/spv/data_koin" element={
+            <ProtectedRoute allowedRoles={["spv"]} currentRole={jabatan}>
+              <TotalKoin />
+            </ProtectedRoute>
+          } />
+          <Route path="/spv/data_gaji" element={
+            <ProtectedRoute allowedRoles={["spv"]} currentRole={jabatan}>
+              <DataGaji />
+            </ProtectedRoute>
+          } />
+          <Route path="/spv/data_unsold" element={
+            <ProtectedRoute allowedRoles={["spv"]} currentRole={jabatan}>
+              <Unsold />
+            </ProtectedRoute>
+          } />
+          <Route path="/spv/data_target" element={
+            <ProtectedRoute allowedRoles={["spv"]} currentRole={jabatan}>
+              <DataTarget />
+            </ProtectedRoute>
+          } />
+          <Route path="/spv/kasbon" element={
+            <ProtectedRoute allowedRoles={["spv"]} currentRole={jabatan}>
+              <Kasbon />
+            </ProtectedRoute>
+          } />
+          <Route path="/spv/riwayatkasbon" element={
+            <ProtectedRoute allowedRoles={["spv"]} currentRole={jabatan}>
+              <RiwayatKasbon />
+            </ProtectedRoute>
+          } />
+          <Route path="/spv/rekap_absensi" element={
+            <ProtectedRoute allowedRoles={["spv"]} currentRole={jabatan}>
+              <RekapAbsensi />
+            </ProtectedRoute>
+          } />
+          <Route path="/spv/perolehan" element={
+            <ProtectedRoute allowedRoles={["spv"]} currentRole={jabatan}>
+              <PerolehanFarming />
+            </ProtectedRoute>
+          } />
+          <Route path="/spv/riwayatperolehan" element={
+            <ProtectedRoute allowedRoles={["spv"]} currentRole={jabatan}>
+              <RiwayatFarming />
+            </ProtectedRoute>
+          } />
 
-          <Route path="/booster/dashboard" element={<DashboardBooster />} />
-          <Route path="/booster/absensi" element={<AbsensiBooster />} />
-          <Route path="/booster/perolehan" element={<PerolehanBoosting />} />
-          <Route path="/booster/profile" element={<Profile />} />
-          <Route path="/booster/kasbon" element={<Kasbon />} />
-          <Route path="/booster/riwayatperolehan" element={<RiwayatBoosting />} />
-          <Route path="/booster/riwayatabsen" element={<RiwayatAbsen />} />
-          <Route path="/booster/riwayatkasbon" element={<RiwayatKasbon />} />
-          <Route path="/booster/daftar_tugas" element={<DaftarTugas />} />
+          {/* Farmer Routes */}
+          <Route path="/farmer/dashboard" element={
+            <ProtectedRoute allowedRoles={["farmer"]} currentRole={jabatan}>
+              <DashboardFarmer />
+            </ProtectedRoute>
+          } />
+          <Route path="/farmer/absensi" element={
+            <ProtectedRoute allowedRoles={["farmer"]} currentRole={jabatan}>
+              <AbsensiFarmer />
+            </ProtectedRoute>
+          } />
+          <Route path="/farmer/perolehan" element={
+            <ProtectedRoute allowedRoles={["farmer"]} currentRole={jabatan}>
+              <PerolehanFarming />
+            </ProtectedRoute>
+          } />
+          <Route path="/farmer/profile" element={
+            <ProtectedRoute allowedRoles={["farmer"]} currentRole={jabatan}>
+              <Profile />
+            </ProtectedRoute>
+          } />
+          <Route path="/farmer/kasbon" element={
+            <ProtectedRoute allowedRoles={["farmer"]} currentRole={jabatan}>
+              <Kasbon />
+            </ProtectedRoute>
+          } />
+          <Route path="/farmer/riwayatperolehan" element={
+            <ProtectedRoute allowedRoles={["farmer"]} currentRole={jabatan}>
+              <RiwayatFarming />
+            </ProtectedRoute>
+          } />
+          <Route path="/farmer/riwayatabsen" element={
+            <ProtectedRoute allowedRoles={["farmer"]} currentRole={jabatan}>
+              <RiwayatAbsen />
+            </ProtectedRoute>
+          } />
+          <Route path="/farmer/riwayatkasbon" element={
+            <ProtectedRoute allowedRoles={["farmer"]} currentRole={jabatan}>
+              <RiwayatKasbon />
+            </ProtectedRoute>
+          } />
+          <Route path="/farmer/unsold" element={
+            <ProtectedRoute allowedRoles={["farmer"]} currentRole={jabatan}>
+              <PerolehanUnsold />
+            </ProtectedRoute>
+          } />
+          <Route path="/farmer/riwayatunsold" element={
+            <ProtectedRoute allowedRoles={["farmer"]} currentRole={jabatan}>
+              <RiwayatUnsold />
+            </ProtectedRoute>
+          } />
+          <Route path="/farmer/target" element={
+            <ProtectedRoute allowedRoles={["farmer"]} currentRole={jabatan}>
+              <TargetFarming />
+            </ProtectedRoute>
+          } />
+          <Route path="/farmer/riwayattarget" element={
+            <ProtectedRoute allowedRoles={["farmer"]} currentRole={jabatan}>
+              <RiwayatTarget />
+            </ProtectedRoute>
+          } />
 
-          <Route path="/direktur/dashboard" element={<Dashboard />} />
-          <Route path="/direktur/jabatandivisi" element={<Jabatan_Divisi_Direktur />} />
-          <Route path="/direktur/shiftgame" element={<Shift_Game_Direktur />} />
-          <Route path="/direktur/karyawan" element={<Karyawan_Direktur />} />
-          <Route path="/direktur/detail_karyawan/:id" element={<DetailKaryawan />} />
-          <Route path="/direktur/profile" element={<Profile />} />
-          <Route path="/direktur/perolehan_farming" element={<Farming />} />
-          <Route path="/direktur/perolehan_boosting" element={<Boosting />} />
-          <Route path="/direktur/akun" element={<Akun_Direktur />} />
-          <Route path="/direktur/pengeluaran" element={<Pengeluaran_Direktur />} />
-          <Route path="/direktur/data_absensi" element={<DataAbsensi />} />
-          <Route path="/direktur/data_unsold" element={<Unsold_Direktur />} />
-          <Route path="/direktur/data_penjualan" element={<Penjualan />} />
-          <Route path="/direktur/data_gaji" element={<DataGaji_Direktur />} />
-          <Route path="/direktur/data_target" element={<DataTarget />} />
-          <Route path="/direktur/inventaris" element={<Inventaris_Direktur />} />
-          <Route path="/direktur/data_kasbon" element={<Kasbon_Direktur />} />
-          <Route path="/direktur/rekap_absensi" element={<RekapAbsensi />} />
+          {/* Booster Routes */}
+          <Route path="/booster/dashboard" element={
+            <ProtectedRoute allowedRoles={["booster"]} currentRole={jabatan}>
+              <DashboardBooster />
+            </ProtectedRoute>
+          } />
+          <Route path="/booster/absensi" element={
+            <ProtectedRoute allowedRoles={["booster"]} currentRole={jabatan}>
+              <AbsensiBooster />
+            </ProtectedRoute>
+          } />
+          <Route path="/booster/perolehan" element={
+            <ProtectedRoute allowedRoles={["booster"]} currentRole={jabatan}>
+              <PerolehanBoosting />
+            </ProtectedRoute>
+          } />
+          <Route path="/booster/profile" element={
+            <ProtectedRoute allowedRoles={["booster"]} currentRole={jabatan}>
+              <Profile />
+            </ProtectedRoute>
+          } />
+          <Route path="/booster/kasbon" element={
+            <ProtectedRoute allowedRoles={["booster"]} currentRole={jabatan}>
+              <Kasbon />
+            </ProtectedRoute>
+          } />
+          <Route path="/booster/riwayatperolehan" element={
+            <ProtectedRoute allowedRoles={["booster"]} currentRole={jabatan}>
+              <RiwayatBoosting />
+            </ProtectedRoute>
+          } />
+          <Route path="/booster/riwayatabsen" element={
+            <ProtectedRoute allowedRoles={["booster"]} currentRole={jabatan}>
+              <RiwayatAbsen />
+            </ProtectedRoute>
+          } />
+          <Route path="/booster/riwayatkasbon" element={
+            <ProtectedRoute allowedRoles={["booster"]} currentRole={jabatan}>
+              <RiwayatKasbon />
+            </ProtectedRoute>
+          } />
+          <Route path="/booster/daftar_tugas" element={
+            <ProtectedRoute allowedRoles={["booster"]} currentRole={jabatan}>
+              <DaftarTugas />
+            </ProtectedRoute>
+          } />
 
+          {/* Direktur Routes */}
+          <Route path="/direktur/dashboard" element={
+            <ProtectedRoute allowedRoles={["direktur"]} currentRole={jabatan}>
+              <DashboardDirektur />
+            </ProtectedRoute>
+          } />
+          <Route path="/direktur/jabatandivisi" element={
+            <ProtectedRoute allowedRoles={["direktur"]} currentRole={jabatan}>
+              <Jabatan_Divisi_Direktur />
+            </ProtectedRoute>
+          } />
+          <Route path="/direktur/shiftgame" element={
+            <ProtectedRoute allowedRoles={["direktur"]} currentRole={jabatan}>
+              <Shift_Game_Direktur />
+            </ProtectedRoute>
+          } />
+          <Route path="/direktur/karyawan" element={
+            <ProtectedRoute allowedRoles={["direktur"]} currentRole={jabatan}>
+              <Karyawan_Direktur />
+            </ProtectedRoute>
+          } />
+          <Route path="/direktur/detail_karyawan/:id" element={
+            <ProtectedRoute allowedRoles={["direktur"]} currentRole={jabatan}>
+              <DetailKaryawan />
+            </ProtectedRoute>
+          } />
+          <Route path="/direktur/profile" element={
+            <ProtectedRoute allowedRoles={["direktur"]} currentRole={jabatan}>
+              <Profile />
+            </ProtectedRoute>
+          } />
+          <Route path="/direktur/perolehan_farming" element={
+            <ProtectedRoute allowedRoles={["direktur"]} currentRole={jabatan}>
+              <Farming />
+            </ProtectedRoute>
+          } />
+          <Route path="/direktur/perolehan_boosting" element={
+            <ProtectedRoute allowedRoles={["direktur"]} currentRole={jabatan}>
+              <Boosting />
+            </ProtectedRoute>
+          } />
+          <Route path="/direktur/akun" element={
+            <ProtectedRoute allowedRoles={["direktur"]} currentRole={jabatan}>
+              <Akun_Direktur />
+            </ProtectedRoute>
+          } />
+          <Route path="/direktur/pengeluaran" element={
+            <ProtectedRoute allowedRoles={["direktur"]} currentRole={jabatan}>
+              <Pengeluaran_Direktur />
+            </ProtectedRoute>
+          } />
+          <Route path="/direktur/data_absensi" element={
+            <ProtectedRoute allowedRoles={["direktur"]} currentRole={jabatan}>
+              <DataAbsensi />
+            </ProtectedRoute>
+          } />
+          <Route path="/direktur/data_unsold" element={
+            <ProtectedRoute allowedRoles={["direktur"]} currentRole={jabatan}>
+              <Unsold_Direktur />
+            </ProtectedRoute>
+          } />
+          <Route path="/direktur/data_penjualan" element={
+            <ProtectedRoute allowedRoles={["direktur"]} currentRole={jabatan}>
+              <Penjualan />
+            </ProtectedRoute>
+          } />
+          <Route path="/direktur/data_gaji" element={
+            <ProtectedRoute allowedRoles={["direktur"]} currentRole={jabatan}>
+              <DataGaji_Direktur />
+            </ProtectedRoute>
+          } />
+          <Route path="/direktur/data_target" element={
+            <ProtectedRoute allowedRoles={["direktur"]} currentRole={jabatan}>
+              <DataTarget />
+            </ProtectedRoute>
+          } />
+          <Route path="/direktur/inventaris" element={
+            <ProtectedRoute allowedRoles={["direktur"]} currentRole={jabatan}>
+              <Inventaris_Direktur />
+            </ProtectedRoute>
+          } />
+          <Route path="/direktur/data_kasbon" element={
+            <ProtectedRoute allowedRoles={["direktur"]} currentRole={jabatan}>
+              <Kasbon_Direktur />
+            </ProtectedRoute>
+          } />
+          <Route path="/direktur/rekap_absensi" element={
+            <ProtectedRoute allowedRoles={["direktur"]} currentRole={jabatan}>
+              <RekapAbsensi />
+            </ProtectedRoute>
+          } />
 
-          <Route path="*" element={<Navigate to="/login" />} />
+          {/* Root redirect berdasarkan role */}
+          <Route path="/" element={<RoleBasedRedirect currentRole={jabatan} />} />
+          
+          {/* Fallback untuk semua route lainnya */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </div>
     </div>
